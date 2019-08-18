@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.min.css'}"/>
+    <link rel="stylesheet" th:href="@{general.css}"/>
+    <title th:text="|${status} - ${error}|"></title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1 class="mt-5" th:text="|${status} - ${error}|"></h1>
+            <table>
+                <tr>
+                    <td>Date</td>
+                    <td th:text="${timestamp}"/>
+                </tr>
+                <tr>
+                    <td>Path</td>
+                    <td th:text="${path}"/>
+                </tr>
+                <tr>
+                    <td>Error</td>
+                    <td th:text="${error}"/>
+                </tr>
+                <tr>
+                    <td>Status</td>
+                    <td th:text="${status}"/>
+                </tr>
+                <tr>
+                    <td>Message</td>
+                    <td th:text="${message}"/>
+                </tr>
+                <tr>
+                    <td>Exception</td>
+                    <td th:text="${exception}"/>
+                </tr>
+                <tr>
+                    <td>Trace</td>
+                    <td>
+                        <pre th:text="${trace}"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

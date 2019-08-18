@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">>
+<head th:fragment="headerfiles">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+    <title th:text="${title}"></title>
+    <link as="style" rel="preload" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
+    <link as="style" rel="preload" th:href="@{general.css}"/>
+    <link as="script" rel="preload" th:href="${@environment.getProperty('jquery.link')}"/>
+    <link as="script" rel="preload" th:href="${@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"/>
+
+    <link rel="stylesheet" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
+    <link rel="stylesheet" th:href="@{general.css}"/>
+    <script th:src="${@environment.getProperty('jquery.link')}"></script>
+    <script th:src="${@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"></script>
+
+    <th:block th:each="src : ${scripts}">
+        <script th:src="${src}"></script>
+    </th:block>
+    <th:block th:if="${script}">
+        <script th:utext="${script}"></script>
+    </th:block>
+    <th:block th:each="lnk : ${links}">
+        <link rel="stylesheet" th:href="${lnk}"/>
+    </th:block>
+
+</head>
+<body>
+<nav class="navbar navbar-dark navbar-expand fixed-top bg-dark" th:fragment="navbar">
+
+    <a class="navbar-brand" href="/user"><img src="/favicon.ico" style="max-height: 30px;"/></a>
+
+    <ul class="nav navbar-nav navbar-expand mr-auto">
+        <li class="nav-item"><a class="nav-link tags" href="/stats">Pi Sensors</a></li>
+        <li class="nav-item"><a class="nav-link forms" href="/cmd?cmd=pwd && whoami">Command Line</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" th:text="${username}"></a>
+
+            <div class="dropdown-menu dropdown-menu-right">
+                <!---TODO: Do User-Control -->
+                <a class="dropdown-item" href="#">Dashboard</a>
+                <a class="dropdown-item" href="/Settings">Settings</a>
+                <a class="dropdown-item" href="/Site_Settings" sec:authorize="hasRole('ROLE_ADMIN')">Site Settings</a>
+                <a class="dropdown-item" href="/changepw">Change Password</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+
+        </li>
+    </ul>
+</nav>
+<th:block th:each="alert : ${alerts}" th:fragment="alert">
+    <div th:class="${alert.classes}" >
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <a th:utext="${alert.text}"></a>
+    </div>
+</th:block>
+</body>
+</html>

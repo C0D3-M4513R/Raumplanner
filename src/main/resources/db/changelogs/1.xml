@@ -1,0 +1,105 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <!--  table creation start   -->
+
+    <changeSet author="C0D3-M4513R" id="1">
+        <createTable tableName="User">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="true" name="active" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="Roles">
+            <column name="id" autoIncrement="true" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="role" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="USERROLES">
+            <column name="User_ID" type="INT">
+                <constraints deleteCascade="true"
+                             foreignKeyName="fk_User-Roles_User"
+                             referencedTableName="User"
+                             referencedColumnNames="id"/>
+            </column>
+            <column name="Role_ID" type="INT">
+                <constraints deleteCascade="true"
+                             foreignKeyName="fk_User-Roles_Roles"
+                             referencedTableName="Roles"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <!-- TODO: Add Permissions table for Roles -->
+
+    <changeSet id="2" author="C0D3-M4513R">
+        <createIndex indexName="User_username_index" tableName="User" unique="true">
+            <column name="username"/>
+        </createIndex>
+        <createIndex tableName="Roles" indexName="index_Roles_name" unique="true">
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+    <!--  table creation finish   -->
+
+    <!--  table population start -->
+    <changeSet id="3" author="C0D3-M4513R">
+
+        <insert tableName="Roles">
+            <column name="role">Admin</column>
+        </insert>
+
+        <insert tableName="Roles">
+            <column name="role">User</column>
+        </insert>
+
+        <insert tableName="User">
+            <column name="username">root</column>
+            <column name="password">$2a$10$w1nJqg814/lKjBAFvbIWGOiTcWNg48Vlg/yQ3g1IDQGajIzurH77S</column>
+        </insert>
+
+        <insert tableName="UserRoles">
+            <column name="User_ID">1</column>
+            <column name="Role_ID">1</column>
+        </insert>
+
+        <insert tableName="UserRoles">
+            <column name="User_ID">1</column>
+            <column name="Role_ID">2</column>
+        </insert>
+
+    </changeSet>
+    <!--  table population finish   -->
+    <changeSet id="4" author="C0D3-M4513R">
+        <createTable tableName="Settings">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="Value" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
