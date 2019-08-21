@@ -33,8 +33,7 @@
     <a class="navbar-brand" href="/user"><img src="/favicon.ico" style="max-height: 30px;"/></a>
 
     <ul class="nav navbar-nav navbar-expand mr-auto">
-        <li class="nav-item"><a class="nav-link tags" href="/stats">Pi Sensors</a></li>
-        <li class="nav-item"><a class="nav-link forms" href="/cmd?cmd=pwd && whoami">Command Line</a></li>
+        <li class="nav-item"><a class="nav-link tags" href="/room">Raumplaner</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
         <li class="nav-item dropdown">
@@ -42,11 +41,10 @@
 
             <div class="dropdown-menu dropdown-menu-right">
                 <!---TODO: Do User-Control -->
-                <a class="dropdown-item" href="#">Dashboard</a>
                 <a class="dropdown-item" href="/Settings">Settings</a>
                 <a class="dropdown-item" href="/Site_Settings" sec:authorize="hasRole('ROLE_ADMIN')">Site Settings</a>
-                <a class="dropdown-item" href="/changepw">Change Password</a>
                 <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/changepw">Change Password</a>
                 <a class="dropdown-item" href="/logout">Logout</a>
             </div>
 

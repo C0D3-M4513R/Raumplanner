@@ -1,4 +1,4 @@
-package com.piinfo.db;
+package com.piinfo.db.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,15 +1,14 @@
 package com.piinfo.springboot;
 
-import com.piinfo.db.RoleRepository;
-import com.piinfo.db.Roles;
-import com.piinfo.db.User;
-import com.piinfo.db.UserRepository;
+import com.piinfo.db.auth.RoleRepository;
+import com.piinfo.db.auth.Roles;
+import com.piinfo.db.auth.User;
+import com.piinfo.db.auth.UserRepository;
 import com.piinfo.service.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -96,7 +95,6 @@ public class UserController {
 		return this.changePW(model,auth);
 	}
 
-	//TODO: Add Role permissions on permission table
 
 	//begin debug mappings
 	@GetMapping(path = "/add") // Map ONLY GET Requests

@@ -7,17 +7,21 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Raumplaner" />
         <module name="PiInfo" />
+        <module name="Raumplaner" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="first-springboot-project" target="1.8" />
       <module name="PiInfo" target="1.8" />
+      <module name="Raumplaner" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="PiInfo" options="-parameters" />
+      <module name="Raumplaner" options="-parameters" />
     </option>
   </component>
 </project>

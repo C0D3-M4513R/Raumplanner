@@ -47,8 +47,6 @@
 
     </changeSet>
 
-    <!-- TODO: Add Permissions table for Roles -->
-
     <changeSet id="2" author="C0D3-M4513R">
         <createIndex indexName="User_username_index" tableName="User" unique="true">
             <column name="username"/>

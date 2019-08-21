@@ -1,4 +1,4 @@
-package com.piinfo.db;
+package com.piinfo.db.auth;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;

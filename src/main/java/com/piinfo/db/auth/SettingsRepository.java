@@ -1,4 +1,4 @@
-package com.piinfo.db;
+package com.piinfo.db.auth;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

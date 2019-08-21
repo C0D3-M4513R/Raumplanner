@@ -1,10 +1,10 @@
-package com.piinfo.db;
+package com.piinfo.db.auth;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 //auto implemented by springboot
 @Repository
-public interface RoleRepository extends JpaRepository<Roles, Integer> {
-	Roles findByRole (String role);
+public interface UserRepository extends JpaRepository<User, Integer> {
+	User findByUsername (String username);
 }

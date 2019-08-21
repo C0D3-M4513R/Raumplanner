@@ -1,8 +1,10 @@
 package com.piinfo.springboot;
 
-import com.piinfo.db.Settings;
-import com.piinfo.db.SettingsRepository;
-import com.piinfo.db.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.piinfo.db.auth.Settings;
+import com.piinfo.db.auth.SettingsRepository;
+import com.piinfo.db.auth.UserRepository;
 import com.piinfo.service.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -42,12 +44,14 @@ public class SettingsController {
 		
 		Header header = new Header("Setting","Name");
 		header.setAttr("data-sortable","true");
+		Header header1 = new Header("Value","Value");
 		
 		
 		Header[] headers = {
-				header
+				header,header1
 		};
 
+		model.addAttribute(headers);
 		return "settings";
 	}
 
@@ -80,11 +84,17 @@ public class SettingsController {
 	@RequestMapping("/Sitejson")
 	public @ResponseBody
 	String jsonSiteSettings () throws JSONException {
+		ObjectMapper om = new ObjectMapper();
 		Iterator<Settings> it = settings.findAll().iterator();
-		JSONArray json = new JSONArray();
-		while (it.hasNext()) {
-			json.put(it.next().toJSON());
+		try {
+			return om.writeValueAsString(it);
+		}catch (JsonProcessingException e){
+			JSONArray json = new JSONArray();
+			while (it.hasNext()) {
+				json.put(it.next().toJSON());
+			}
+			return json.toString().concat("1st failed");
 		}
-		return json.toString();
+		
 	}
 }

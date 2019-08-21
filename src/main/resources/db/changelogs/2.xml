@@ -2,4 +2,217 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="1" author="C0D3_M4513R">
+        <createTable tableName="Color">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Color" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Value" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="F_Group">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" />
+            </column>
+        </createTable>
+
+        <createTable tableName="Furniture_Settings" >
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="Cost" type="currency"/>
+            <column name="DType" type="VARCHAR"/>
+            <column name="Name" type="VARCHAR"/>
+            <column name="Width" type="double"/>
+            <column name="Length" type="double">
+                <constraints nullable="true"/>
+            </column>
+            <column name="isBigRound" type="boolean">
+                <constraints nullable="true"/>
+            </column>
+            <column name="Persons" type="int">
+                <constraints nullable="true"/>
+            </column>
+            <column name="imgUrl" type="VARCHAR"/>
+        </createTable>
+
+
+        <createTable tableName="Furniture">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="colorId" type="int" defaultValueNumeric="0" >
+                <constraints deleteCascade="false"
+                             referencedTableName="Color"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_Furniture_Color"
+                             />
+            </column>
+            <column name="furnitureType" type="int">
+                <constraints deleteCascade="true"
+                             referencedTableName="Furniture_Settings"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_Furniture_Furniture_Settings"
+                />
+            </column>
+            <column name="posx" type="int"/>
+            <column name="posy" type="int"/>
+            <column name="attached" type="int">
+                <constraints deleteCascade="false"
+                             foreignKeyName="Big_Billy_Group"
+                             referencedTableName="F_Group"
+                             referencedColumnNames="id"
+                             nullable="true"
+                />
+            </column>
+            <column name="groupId" type="int">
+                <constraints deleteCascade="true"
+                             foreignKeyName="fk_Group_Furniture"
+                             referencedTableName="F_Group"
+
+                             referencedColumnNames="id"
+                />
+            </column>
+        </createTable>
+        <createTable tableName="Rooms">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar"/>
+        </createTable>
+        <createTable tableName="Rooms_Furniture">
+            <column name="Roomid" type="int">
+                <constraints deleteCascade="true"
+                             referencedTableName="Rooms"
+                             referencedColumnNames="id"
+                             foreignKeyName="fk_room_Furniture_room"
+                />
+            </column>
+            <column name="FurnitureId" type="int">
+                <constraints deleteCascade="true"
+                             referencedColumnNames="id"
+                             referencedTableName="Furniture"
+                             foreignKeyName="fk_Rooms_Furniture_Furniture"
+                             foreignKeyName="fk_room_furniture_furniture"
+                />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="C0D3_M4513R">
+        <!-- insert Colors-->
+        <insert tableName="Color">
+            <column name="Color">Schwarz</column>
+            <column name="Value">black</column>
+        </insert>
+        <insert tableName="Color">
+            <column name="Color">Weiß</column>
+            <column name="Value">white</column>
+        </insert>
+        <insert tableName="Color">
+            <column name="Color">Rot</column>
+            <column name="Value">red</column>
+        </insert>
+        <insert tableName="Color">
+            <column name="Color">Gelb</column>
+            <column name="Value">Yellow</column>
+        </insert>
+        <insert tableName="Color">
+            <column name="Color">Blau</column>
+            <column name="Value">blue</column>
+        </insert>
+        <!--insert Furniture Settings-->
+        <!-- TODO: Add images-->
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Sofa</column>
+            <column name="Name">Komfort</column>
+            <column name="Width">2</column>
+            <column name="Length">1</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Sofa</column>
+            <column name="Name">deLuxe</column>
+            <column name="Width">1</column>
+            <column name="Length">1</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Sofatisch</column>
+            <column name="Name">Admiral</column>
+            <column name="Width">1</column>
+            <column name="Length">1</column>
+            <column name="isBigRound">false</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Sofatisch</column>
+            <column name="Name">Monte Carlo</column>
+            <column name="Width">1</column>
+            <column name="Length"/>
+            <column name="isBigRound">true</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Bett</column>
+            <column name="Name">Le France</column>
+            <column name="Width">2</column>
+            <column name="Length">2</column>
+            <column name="Persons">2</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Bett</column>
+            <column name="Name">Le Petit France</column>
+            <column name="Width">2</column>
+            <column name="Length">2</column>
+            <column name="Persons">1</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Stuhl</column>
+            <column name="Name">Nomade</column>
+            <column name="Width">.50</column>
+            <column name="Length">.50</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Esstisch</column>
+            <column name="Name">Wikinger</column>
+            <column name="Width">1.2</column>
+            <column name="Length">1.2</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Schrank</column>
+            <column name="Name">Billy</column>
+            <column name="Width">1.5</column>
+            <column name="Length">2</column>
+            <column name="isBigRound">false</column>
+            <column name="imgUrl"></column>
+        </insert>
+        <insert tableName="Furniture_Settings">
+            <column name="Cost">999</column>
+            <column name="DType">Schrank</column>
+            <column name="Name">Big Billy</column>
+            <column name="Width"/>
+            <column name="Length"/>
+            <column name="isBigRound">true</column>
+            <column name="imgUrl"></column>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
