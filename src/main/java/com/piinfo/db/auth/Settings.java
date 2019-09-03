@@ -1,9 +1,6 @@
 package com.piinfo.db.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -12,6 +9,7 @@ import javax.persistence.Id;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -20,8 +18,10 @@ public class Settings {
 	@Id
 	private Integer id;
 
+	@NonNull
 	private String name;
 
+	@NonNull
 	private String value;
 
 	public JSONObject toJSON () throws JSONException {

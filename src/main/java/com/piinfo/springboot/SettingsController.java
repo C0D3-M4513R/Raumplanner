@@ -14,12 +14,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -34,28 +35,24 @@ public class SettingsController {
 	@Autowired
 	private UserRepository users;
 
-	@RequestMapping("/Site_Settings")
+	@GetMapping("/Site_Settings")
 	public String siteSettings (Model model, Authentication auth) {
 		model.addAttribute("username", HtmlUtils.htmlEscape(auth.getName()));
 		String[] scripts = {"webjars/bootstrap-table/1.14.1/dist/bootstrap-table.js"
 				, "/mindmup-editabletable.js", "/numeric-input-example.js"};
 		String[] links = {"webjars/bootstrap-table/1.14.1/dist/bootstrap-table.css"};
 		model.addAttribute("scripts", scripts);
-		
-		Header header = new Header("Setting","Name");
-		header.setAttr("data-sortable","true");
-		Header header1 = new Header("Value","Value");
-		
-		
 		Header[] headers = {
-				header,header1
+				new Header("Setting","Name",true),
+				new Header("Value","Value",true)
 		};
 
-		model.addAttribute(headers);
-		return "settings";
+		model.addAttribute("headers",headers);
+
+		return "tableAndEdit";
 	}
 
-	@PostMapping("/updateSiteSettings")
+	@PostMapping("/Site_Settings")
 	public ResponseEntity<String> update (Authentication auth
 			, @RequestParam String name, @RequestParam String value) throws JSONException {
 		AtomicBoolean isAdmin = new AtomicBoolean(false);
@@ -81,11 +78,13 @@ public class SettingsController {
 
 	}
 
-	@RequestMapping("/Sitejson")
+	@GetMapping(value = "/Site_Settings",params = "type")
 	public @ResponseBody
 	String jsonSiteSettings () throws JSONException {
 		ObjectMapper om = new ObjectMapper();
 		Iterator<Settings> it = settings.findAll().iterator();
+		HashSet<Settings> settingsSet = new HashSet<>();
+		settingsSet.add(new Settings("test","test1"));
 		try {
 			return om.writeValueAsString(it);
 		}catch (JsonProcessingException e){

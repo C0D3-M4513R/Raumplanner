@@ -84,6 +84,9 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar"/>
+            <column name="no" type="int">
+                <constraints unique="true"/>
+            </column>
         </createTable>
         <createTable tableName="Rooms_Furniture">
             <column name="Roomid" type="int">

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head th:insert="fragments/general :: headerfiles">
+    <!--TEST-->
+</head>
+<body>
+<script>
+    //setTimeout(load,0);
+    window.onload = setTimeout(load, 300);
+
+    function load() {
+        console.log("document.onload fired!");
+        var table = $(".table");
+        console.log(table);
+        table.editableTableWidget();
+        table.on('change', function (evt, newValue) {
+            const nodes = evt.target.parentNode.childNodes;
+            var column = null;
+
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i] === evt.target) {
+                    column = i;
+                }
+            }
+            //Ensure to not edit the link
+            if (column === 2) return false;
+
+            /**
+             * Tell the server about the Name change
+             */
+            {
+                let token = $("meta[name='_csrf']").attr("content");
+                let header = $("meta[name='_csrf_header']").attr("content");
+                let params = "?name=" + column + "&value=" + newValue + "&id=" + nodes[2].childNodes[0].pathname.slice(6, -1);
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", document.URL.concat(params), true);
+                xhr.withCredentials = true;
+                xhr.setRequestHeader(header, token);
+                xhr.send();
+                xhr.onload = function () {
+                }
+            }
+            //Just refresh to make sure the change is also server side
+            table.bootstrapTable('refresh');
+
+        });
+    }
+</script>
+<nav th:insert="fragments/general :: navbar"></nav>
+<div class="container">
+    <div class="col-lg-12 text-center">
+        <div id="alert"></div>
+        <table data-pagination="true"
+               data-search="true"
+               data-toggle="table"
+               data-url="?type=data"
+        >
+            <thead>
+            <tr>
+                <th:block th:each="header : ${headers}">
+                    <th th:data-field="${header.getDbName()}" th:data-sortable="${header.isDataSortable}"
+                        th:text="${header.name}"></th>
+                </th:block>
+                <!-- <th data-field="Name" data-sortable="true">Setting</th>
+                 <th data-field="Value">Value</th>
+                 -->
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,23 +1,29 @@
 package com.piinfo.service;
 
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NonNull;
-import org.springframework.stereotype.Service;
+import lombok.Setter;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 
 @Data
 public class Header {
 	
 	@NonNull
-	private String name;
+	public String name;
 	
 	@NonNull
-	private String dbName;
-	
-	private LinkedList<String[]> attrList;
-	
-	public String getAttr() {
+	public String dbName;
+
+	@NonNull
+	public boolean isDataSortable;
+
+	@Setter(AccessLevel.NONE)
+	public HashMap<String,String> attrList=new HashMap<>();
+
+	/*
+	private String getAttr() {
 		String attr = "";
 		setAttr("data-field",dbName);
 		for (String[] next : attrList) {
@@ -27,12 +33,17 @@ public class Header {
 		
 		return attr;
 	}
-	
+	*/
+
 	public Header setAttr(String name, String value){
-		String[] attrBuild = {name,value};
-		if (attrList == null)
-			attrList=new LinkedList<>();
-		attrList.add(attrBuild);
+		attrList.put(name,value);
 		return this;
 	}
+
+	/*
+	public Header build(){
+		this.attr=getAttr();
+		return this;
+	}
+	*/
 }
