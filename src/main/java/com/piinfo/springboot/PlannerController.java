@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
@@ -31,12 +32,13 @@ public class PlannerController {
         };
 
         model.addAttribute("username", HtmlUtils.htmlEscape(auth.getName()));
-        String[] scripts = {"webjars/bootstrap-table/1.14.1/dist/bootstrap-table.js"
+        String[] scripts = {"/webjars/bootstrap-table/1.14.1/dist/bootstrap-table.js"
                 , "/mindmup-editabletable.js", "/numeric-input-example.js"};
-        String[] links = {"webjars/bootstrap-table/1.14.1/dist/bootstrap-table.css"};
+        String[] links = {"/webjars/bootstrap-table/1.14.1/dist/bootstrap-table.css"};
 
 
         model.addAttribute("scripts", scripts);
+        model.addAttribute("links",links);
         model.addAttribute("headers", headers);
         model.addAttribute("username", HtmlUtils.htmlEscape(auth.getName()));
 
@@ -94,10 +96,14 @@ public class PlannerController {
     }
 
     @PostMapping(value = "/room/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void addRoom(@RequestParam String name, @RequestParam int width, @RequestParam int height){
-        long no = rooms.findAll(Sort.by("no").descending()).get(0).no +1;
-        rooms.saveAndFlush(new Room(name,no,width,height));
+    public RedirectView addRoom(@RequestParam String name, @RequestParam int width, @RequestParam int height){
+        try {
+            long no = rooms.findAll(Sort.by("no").descending()).get(0).no + 1;
+            rooms.saveAndFlush(new Room(name, no, width, height));
+        }catch (IndexOutOfBoundsException e){
+            rooms.saveAndFlush(new Room(name, 1, width, height));
+        }
+        return new RedirectView("/room");
     }
 
     @GetMapping(value = "/room/{id}")
@@ -105,6 +111,17 @@ public class PlannerController {
         //Todo: Show the actual room editor
         return rooms.findById(id).toJson().toString();
     }
+
+    @GetMapping(value = "/room/{id}/delete")
+    public RedirectView deleteRoom(@PathVariable("id") long id,Model model,Authentication auth){
+        Room room = rooms.findById(id);
+        if (room!=null){
+            rooms.delete(room);
+            return new RedirectView("/room");
+        }
+        return null;
+    }
+
 
 
 

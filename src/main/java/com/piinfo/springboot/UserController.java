@@ -57,26 +57,26 @@ public class UserController {
 	                      Model model){
 
 		User user = userRepository.findByUsername(auth.getName());
-		final String error ="alert alert-danger alert-dismissible fade in show";
+
 		HashSet<Alert> alerts = new HashSet<>();
 		if(passwordEncoder.matches(oldPasswd,user.getPassword())) {//check if passwords are the same
 			if(!newPasswd.equals(newPasswd1)){
-				alerts.add(new Alert("Passwords don't match",error));
+				alerts.add(new Alert("Passwords don't match",Alert.error));
 			}
 			if(newPasswd.length()<=8){
-				alerts.add(new Alert("Password is too short. <br>It has to be longer than 8 characters.",error));
+				alerts.add(new Alert("Password is too short. <br>It has to be longer than 8 characters.",Alert.error));
 			}
 			if (!newPasswd.matches("[A-Z]")){
-				alerts.add(new Alert("Add at least one Uppercase letter",error));
+				alerts.add(new Alert("Add at least one Uppercase letter",Alert.error));
 			}
 			if(newPasswd.matches("[a-z]")){
-				alerts.add(new Alert("Add at least one Lowercase letter",error));
+				alerts.add(new Alert("Add at least one Lowercase letter",Alert.error));
 			}
 			if(!newPasswd.matches("[0-9]")){
-				alerts.add(new Alert("Add at least one number",error));
+				alerts.add(new Alert("Add at least one number",Alert.error));
 			}
 			if(!newPasswd.matches("\\S")){
-				alerts.add(new Alert("Add at least one special character",error));
+				alerts.add(new Alert("Add at least one special character",Alert.error));
 			}
 			if(alerts.size()==0){
 				user.setPassword(passwordEncoder.encode(newPasswd));
@@ -87,7 +87,7 @@ public class UserController {
 				return this.user(model,auth);
 			}
 		} else {
-			alerts.add(new Alert("The old password is wrong. <br>Please try again.",error));
+			alerts.add(new Alert("The old password is wrong. <br>Please try again.",oldPasswd));
 		}
 
 

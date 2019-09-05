@@ -48,6 +48,8 @@
 </script>
 <nav th:insert="fragments/general :: navbar"></nav>
 <div class="container">
+    <th:block th:insert="fragments/general :: alert">
+    </th:block>
     <div class="col-lg-12 text-center">
         <div id="alert"></div>
         <table data-pagination="true"

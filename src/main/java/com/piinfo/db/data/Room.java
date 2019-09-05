@@ -14,8 +14,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class Room {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,updatable = false)
 	private long id;
+	//TODO: Fix id not being the right one!!!!!!!!!!!!
 
 	@NonNull
 	@Column
@@ -26,7 +28,7 @@ public class Room {
 	public long no;
 
 	@Transient
-	private String Link=String.format("<a href='room/%d/'>Zum Raum</a>",id);
+	private String Link=String.format("<a href='/room/%d/'>Zum Raum</a><br><a href='/room/%d/delete'>Delete</a>",id,id);
 
 	@Column
 	private int width;
