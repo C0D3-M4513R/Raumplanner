@@ -2,8 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.min.css'}"/>
-    <link rel="stylesheet" th:href="@{general.css}"/>
+    <link rel="stylesheet" th:href="${'/' + @environment.getProperty('bootstrap.link') + 'css/bootstrap.min.css'}"/>
+    <link rel="stylesheet" th:href="'/' + @{general.css}"/>
     <title th:text="|${status} - ${error}|"></title>
 </head>
 <body>

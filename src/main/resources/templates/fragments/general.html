@@ -6,15 +6,15 @@
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
     <title th:text="${title}"></title>
-    <link as="style" rel="preload" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
-    <link as="style" rel="preload" th:href="@{general.css}"/>
-    <link as="script" rel="preload" th:href="${@environment.getProperty('jquery.link')}"/>
-    <link as="script" rel="preload" th:href="${@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"/>
+    <link as="style" rel="preload" th:href="${'/' +@environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
+    <link as="style" rel="preload" th:href="'/' + @{general.css}"/>
+    <link as="script" rel="preload" th:href="${'/' +@environment.getProperty('jquery.link')}"/>
+    <link as="script" rel="preload" th:href="${'/' +@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"/>
 
-    <link rel="stylesheet" th:href="${@environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
-    <link rel="stylesheet" th:href="@{general.css}"/>
-    <script th:src="${@environment.getProperty('jquery.link')}"></script>
-    <script th:src="${@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"></script>
+    <link rel="stylesheet" th:href="${'/' + @environment.getProperty('bootstrap.link') + 'css/bootstrap.css'}"/>
+    <link rel="stylesheet" th:href="'/' + @{general.css}"/>
+    <script th:src="${'/' +@environment.getProperty('jquery.link')}"></script>
+    <script th:src="${'/' +@environment.getProperty('bootstrap.link') + 'js/bootstrap.bundle.js'}"></script>
 
     <th:block th:each="src : ${scripts}">
         <script th:src="${src}"></script>

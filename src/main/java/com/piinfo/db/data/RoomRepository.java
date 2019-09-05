@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room,Integer> {
+public interface RoomRepository extends JpaRepository<Room,Long> {
     Room findById(long id);
     Set<Room> findAllByName(String name);
     Set<Room> findByNo(long no);

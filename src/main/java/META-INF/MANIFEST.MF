@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Main-Class: com.piinfo.Application
+Class-Path: tomcat-embed-core-9.0.17.jar spring-boot-starter-aop-2.1.4.R
+ ELEASE.jar jackson-datatype-jdk8-2.9.8.jar spring-boot-starter-tomcat-2
+ .1.4.RELEASE.jar dom4j-2.1.1.jar LatencyUtils-2.0.3.jar spring-jdbc-5.1
+ .6.RELEASE.jar spring-boot-starter-web-2.1.4.RELEASE.jar javax.persiste
+ nce-api-2.2.jar spring-webmvc-5.1.6.RELEASE.jar jackson-core-2.9.8.jar 
+ hibernate-core-5.3.9.Final.jar jul-to-slf4j-1.7.26.jar tomcat-embed-el-
+ 9.0.17.jar hibernate-validator-6.0.16.Final.jar jackson-module-paramete
+ r-names-2.9.8.jar jboss-logging-3.3.2.Final.jar spring-orm-5.1.6.RELEAS
+ E.jar spring-security-config-5.1.5.RELEASE.jar spring-aspects-5.1.6.REL
+ EASE.jar logback-core-1.2.3.jar h2-1.4.199.jar hibernate-commons-annota
+ tions-5.0.4.Final.jar logback-classic-1.2.3.jar maven-plugin-api-2.0.ja
+ r tomcat-embed-websocket-9.0.17.jar slf4j-api-1.7.26.jar antlr-2.7.7.ja
+ r spring-core-5.1.6.RELEASE.jar spring-security-core-5.1.5.RELEASE.jar 
+ spring-boot-2.1.4.RELEASE.jar liquibase-core-3.6.3.jar javax.transactio
+ n-api-1.3.jar spring-jcl-5.1.6.RELEASE.jar byte-buddy-1.9.12.jar maven-
+ model-2.0.jar spring-data-commons-2.1.6.RELEASE.jar hamcrest-core-1.3.j
+ ar spring-boot-starter-actuator-2.1.4.RELEASE.jar spring-boot-autoconfi
+ gure-2.1.4.RELEASE.jar javax.activation-api-1.2.0.jar jquery-3.0.0.jar 
+ plexus-utils-1.0.4.jar liquibase-maven-plugin-3.6.3.jar aspectjweaver-1
+ .9.2.jar validation-api-2.0.1.Final.jar maven-profile-2.0.jar popper.js
+ -1.14.3.jar javax.annotation-api-1.3.2.jar junit-4.12.jar jandex-2.0.5.
+ Final.jar snakeyaml-1.23.jar spring-data-jpa-2.1.6.RELEASE.jar log4j-ap
+ i-2.11.2.jar spring-boot-starter-security-2.1.4.RELEASE.jar log4j-to-sl
+ f4j-2.11.2.jar spring-boot-starter-data-jpa-2.1.4.RELEASE.jar jackson-d
+ atatype-jsr310-2.9.8.jar thymeleaf-3.0.11.RELEASE.jar classworlds-1.1-a
+ lpha-2.jar unbescape-1.1.6.RELEASE.jar spring-web-5.1.6.RELEASE.jar spr
+ ing-expression-5.1.6.RELEASE.jar plexus-container-default-1.0-alpha-8.j
+ ar spring-boot-starter-thymeleaf-2.1.4.RELEASE.jar spring-boot-devtools
+ -2.1.4.RELEASE.jar HdrHistogram-2.1.9.jar maven-artifact-manager-2.0.ja
+ r spring-boot-configuration-processor-2.1.4.RELEASE.jar spring-aop-5.1.
+ 6.RELEASE.jar attoparser-2.0.5.RELEASE.jar javassist-3.23.1-GA.jar jack
+ son-databind-2.9.9.3.jar spring-beans-5.1.6.RELEASE.jar spring-boot-sta
+ rter-logging-2.1.4.RELEASE.jar thymeleaf-extras-java8time-3.0.4.RELEASE
+ .jar maven-repository-metadata-2.0.jar spring-security-web-5.1.5.RELEAS
+ E.jar classmate-1.4.0.jar spring-boot-actuator-2.1.4.RELEASE.jar maven-
+ artifact-2.0.jar spring-boot-starter-jdbc-2.1.4.RELEASE.jar maven-proje
+ ct-2.0.jar thymeleaf-spring5-3.0.11.RELEASE.jar jackson-annotations-2.9
+ .0.jar HikariCP-3.2.0.jar wagon-provider-api-1.0-alpha-5.jar bootstrap-
+ 4.3.1.jar spring-boot-starter-json-2.1.4.RELEASE.jar micrometer-core-1.
+ 1.4.jar spring-context-5.1.6.RELEASE.jar spring-context-indexer-5.1.6.R
+ ELEASE.jar jaxb-api-2.3.1.jar spring-boot-actuator-autoconfigure-2.1.4.
+ RELEASE.jar spring-tx-5.1.6.RELEASE.jar spring-boot-starter-2.1.4.RELEA
+ SE.jar
+

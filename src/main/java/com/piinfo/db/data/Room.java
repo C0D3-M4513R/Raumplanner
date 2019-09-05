@@ -26,7 +26,25 @@ public class Room {
 	public long no;
 
 	@Transient
-	public String Link=String.format("<a href='room/%d/'>Zum Raum</a>",id);
+	private String Link=String.format("<a href='room/%d/'>Zum Raum</a>",id);
+
+	@Column
+	private int width;
+
+	@Column
+	private int height;
+
+	public Room(String name, long no, int width, int height){
+		this.name = name;
+		this.no = no;
+		this.width = width;
+		this.height = height;
+	}
+
+	public Room setLinkCreate(boolean create){
+		this.Link="<a href='room/create/'>Zum Raum</a>";
+		return this;
+	}
 
 	public JSONObject toJson(){
 		try {

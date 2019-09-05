@@ -5,6 +5,7 @@ import com.piinfo.db.data.RoomRepository;
 import com.piinfo.service.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -51,7 +52,7 @@ public class PlannerController {
                 List<Room> roomList = rooms.findAll();
                 //Allow for new Room creation
                 //Could be a static db entry to have less update() code
-                roomList.add(new Room(0, "New Room", 0, "<a href='room/create/'>Zum Raum</a>", null));
+                roomList.add(new Room(0, "New Room", 0, "<a href='room/create/'>Zum Raum</a>",0,0, null));
 
                 JSONArray arr = new JSONArray();
                 roomList.forEach(room->{
@@ -88,9 +89,15 @@ public class PlannerController {
     }
 
     @GetMapping(value = "/room/create")
-    public @ResponseBody String createRoom(){
-        //TODO: Add a proper form
-        return "This is still a stub!";
+    public String createRoom(){
+        return "roomCreate";
+    }
+
+    @PostMapping(value = "/room/create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void addRoom(@RequestParam String name, @RequestParam int width, @RequestParam int height){
+        long no = rooms.findAll(Sort.by("no").descending()).get(0).no +1;
+        rooms.saveAndFlush(new Room(name,no,width,height));
     }
 
     @GetMapping(value = "/room/{id}")

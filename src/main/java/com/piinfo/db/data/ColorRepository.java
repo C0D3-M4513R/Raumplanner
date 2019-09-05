@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
  *
 **/
 @Repository
-public interface ColorRepository extends JpaRepository<Color,Integer> {
+public interface ColorRepository extends JpaRepository<Color,Long> {
 	/**
 	 *
 	 * @param Color Value of the color you want
