@@ -52,13 +52,14 @@ public class PlannerController {
         switch (type) {
             case "data":
                 List<Room> roomList = rooms.findAll();
+                roomList.forEach(Room -> { Room.setLink(String.format("<a href='/room/%d/'>Zum Raum</a><br><a href='/room/%d/delete'>Delete</a>",Room.getId(),Room.getId())); });
                 //Allow for new Room creation
                 //Could be a static db entry to have less update() code
                 roomList.add(new Room(0, "New Room", 0, "<a href='room/create/'>Zum Raum</a>",0,0, null));
 
                 JSONArray arr = new JSONArray();
                 roomList.forEach(room->{
-                    arr.put(room.toJson());
+                    arr.put(room.toString());
                 });
                 return arr.toString();
             default:
@@ -109,7 +110,7 @@ public class PlannerController {
     @GetMapping(value = "/room/{id}")
     public @ResponseBody String showRoom(@PathVariable("id") long id){
         //Todo: Show the actual room editor
-        return rooms.findById(id).toJson().toString();
+        return rooms.findById(id).toString().toString();
     }
 
     @GetMapping(value = "/room/{id}/delete")

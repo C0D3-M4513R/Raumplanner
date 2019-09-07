@@ -17,7 +17,6 @@ public class Room {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false,updatable = false)
 	private long id;
-	//TODO: Fix id not being the right one!!!!!!!!!!!!
 
 	@NonNull
 	@Column
@@ -28,7 +27,7 @@ public class Room {
 	public long no;
 
 	@Transient
-	private String Link=String.format("<a href='/room/%d/'>Zum Raum</a><br><a href='/room/%d/delete'>Delete</a>",id,id);
+	private String Link;
 
 	@Column
 	private int width;
@@ -48,9 +47,10 @@ public class Room {
 		return this;
 	}
 
-	public JSONObject toJson(){
+	@Override
+	public String toString(){
 		try {
-			return new JSONObject().put("id",id).put("name",name).put("no",no).put("Link",Link);
+			return new JSONObject().put("id",id).put("name",name).put("no",no).put("Link",Link).toString();
 		} catch (JSONException e) {
 			e.printStackTrace();
 			return null;
