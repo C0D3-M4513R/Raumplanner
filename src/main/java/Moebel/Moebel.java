@@ -1,20 +1,13 @@
 package Moebel;
 
-abstract class Moebel {
+public abstract class Moebel {
 
-    private String Name = "";
-    private int Breite;
-    private int Laenge;
-    private int x;
-    private int y;
-    private int rotation;
-
-    public Moebel(String name, int laenge, int breite) {
-        Name = name;
-        Laenge = laenge;
-        Breite = breite;
-    }
-
+    String Name = "";
+    int Breite;
+    int Laenge;
+    int x;
+    int y;
+    int rotation;
 
     public String getName() {
         return Name;
@@ -64,4 +57,13 @@ abstract class Moebel {
         this.rotation = rotation;
     }
 
+    public Moebel(String name, int laenge, int breite) {
+        Name = name;
+        Laenge = laenge;
+        Breite = breite;
+    }
+
+    public Moebel() {
+
+    }
 }

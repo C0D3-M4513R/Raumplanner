@@ -1,26 +1,49 @@
-import Reader.DataReader;
+import Moebel.Stuhl;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.util.ArrayList;
-
-import static javafx.application.Application.launch;
 
 public class Main extends Application {
 
-    public static void main(String[] args)
-    { launch(args); }
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception {
+
+        /*
         DataReader dr = new DataReader("test.txt");
         ArrayList<String> st = dr.getContent();
         st.forEach(System.out::println);
         System.out.println("-------------------------------------------------------");
-        st.add(""+(Math.random()*1000));
+        st.add("" + (Math.random() * 1000));
         dr.setContent(st);
         dr.getContent().forEach(System.out::println);
-        System.exit(0);
+        */
+
+
+       /* MoebelList.setCellFactory(param -> new ListCell<? extends Moebel>() {
+            @Override
+            protected void updateItem( ?<Moebel> extends Moebel item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null || item.getWord() == null) {
+                    setText(null);
+                } else {
+                    setText(item.getWord());
+                }
+            }
+        });
+        MoebelList*/
+
+
+        Parent root = FXMLLoader.load(getClass().getResource("app.fxml"));
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
     }
 
 }
