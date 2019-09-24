@@ -39,9 +39,6 @@ public class UI {
     @FXML
     public void initialize() throws IOException {
         populate();
-        Label label = new Label("test");
-        dragNode(label);
-        room.getChildren().add(label);
     }
 
     //Populate the ListView and other stuff on startup

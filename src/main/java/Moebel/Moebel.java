@@ -3,8 +3,8 @@ package Moebel;
 public abstract class Moebel {
 
     String Name = "";
-    int Breite;
-    int Laenge;
+    double Breite;
+    double Laenge;
     int x;
     int y;
     int rotation;
@@ -17,19 +17,19 @@ public abstract class Moebel {
         Name = name;
     }
 
-    public int getLaenge() {
+    public double getLaenge() {
         return Laenge;
     }
 
-    public void setLaenge(int laenge) {
+    public void setLaenge(double laenge) {
         Laenge = laenge;
     }
 
-    public int getBreite() {
+    public double getBreite() {
         return Breite;
     }
 
-    public void setBreite(int breite) {
+    public void setBreite(double breite) {
         Breite = breite;
     }
 
@@ -57,7 +57,7 @@ public abstract class Moebel {
         this.rotation = rotation;
     }
 
-    public Moebel(String name, int laenge, int breite) {
+    public Moebel(String name, double laenge, double breite) {
         Name = name;
         Laenge = laenge;
         Breite = breite;
