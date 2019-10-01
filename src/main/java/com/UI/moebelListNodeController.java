@@ -20,7 +20,7 @@ public class moebelListNodeController extends GridPane {
         this.tit=title;
         this.desc=description;
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("moebelListNode.fxml"));
+            FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("moebelListNode.fxml"));
             loader.setController(this);
             loader.setRoot(this);
             loader.load();

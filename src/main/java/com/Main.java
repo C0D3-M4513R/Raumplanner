@@ -40,7 +40,7 @@ public class Main extends Application {
         MoebelList*/
 
 
-        Parent root = FXMLLoader.load(getClass().getResource("app.fxml"));
+        Parent root = new FXMLLoader(this.getClass().getClassLoader().getResource("app.fxml")).load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
