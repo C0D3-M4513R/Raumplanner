@@ -1,4 +1,4 @@
-package Reader;
+package com.Reader;
 
 import java.io.*;
 import java.net.URISyntaxException;

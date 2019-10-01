@@ -1,20 +1,14 @@
-import Moebel.Moebel;
-import com.sun.javafx.geom.BaseBounds;
-import com.sun.javafx.geom.transform.BaseTransform;
-import com.sun.javafx.jmx.MXNodeAlgorithm;
-import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
+package com.UI;
+
+import com.Moebel.Moebel;
+import com.Repository;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
@@ -34,7 +28,7 @@ public class UI {
     private AnchorPane room;
 
     private final List<Moebel> list = Repository.getAll();
-    private List<moebelListNodeController> display = new LinkedList<>();
+    private List<com.UI.moebelListNodeController> display = new LinkedList<>();
 
     @FXML
     public void initialize() throws IOException {
@@ -47,7 +41,7 @@ public class UI {
         list.forEach(Moebel-> {
             String title = Moebel.getName().concat(":").concat(Moebel.getClass().getSimpleName());
             String desc = ""+Moebel.getBreite()+"x"+Moebel.getLaenge();
-            display.add(new moebelListNodeController(title,desc));
+            display.add(new com.UI.moebelListNodeController(title,desc));
         });
         display.forEach(this::dragNode);
         moebelList.setItems(FXCollections.observableList(display));

@@ -1,5 +1,6 @@
-import Moebel.*;
+package com;
 
+import com.Moebel.*;
 import java.util.LinkedList;
 import java.util.List;
 

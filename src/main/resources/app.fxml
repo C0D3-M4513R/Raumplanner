@@ -4,7 +4,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<SplitPane fx:controller="UI" fx:id="divider" dividerPositions="0.25" maxHeight="-Infinity" maxWidth="-Infinity"
+<SplitPane fx:controller="com.UI.UI" fx:id="divider" dividerPositions="0.25" maxHeight="-Infinity" maxWidth="-Infinity"
            minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
            xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1">
     <items>

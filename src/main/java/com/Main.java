@@ -1,4 +1,5 @@
-import Moebel.Stuhl;
+package com;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -25,9 +26,9 @@ public class Main extends Application {
         */
 
 
-       /* MoebelList.setCellFactory(param -> new ListCell<? extends Moebel>() {
+       /* MoebelList.setCellFactory(param -> new ListCell<? extends com.Moebel>() {
             @Override
-            protected void updateItem( ?<Moebel> extends Moebel item, boolean empty) {
+            protected void updateItem( ?<com.Moebel> extends com.Moebel item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null || item.getWord() == null) {
                     setText(null);
