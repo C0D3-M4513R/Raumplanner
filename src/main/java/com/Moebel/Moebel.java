@@ -1,13 +1,17 @@
 package com.Moebel;
 
+
+import javafx.scene.image.Image;
+
 public abstract class Moebel {
 
-    String Name = "";
-    double Breite;
-    double Laenge;
-    int x;
-    int y;
-    int rotation;
+    private String Name = "";
+    private double Breite; //Breite = Höhe
+    private double Laenge; //Länge = Länge
+    private int x;
+    private int y;
+    private int rotation;
+    private Image display;
 
     public String getName() {
         return Name;
@@ -57,10 +61,19 @@ public abstract class Moebel {
         this.rotation = rotation;
     }
 
-    public Moebel(String name, double laenge, double breite) {
+    public Image getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Image display) {
+        this.display = display;
+    }
+
+    public Moebel(String name, double laenge, double breite, Image display) {
         Name = name;
         Laenge = laenge;
         Breite = breite;
+        this.display=display;
     }
 
     public Moebel() {
