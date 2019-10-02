@@ -5,3 +5,4 @@
 .gitignore export-ignore
 pom.xml export-ignore
 Raumplanner.iml export-ignore
+bitbucket-pipelines.yml export-ignore
