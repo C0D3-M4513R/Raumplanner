@@ -63,9 +63,10 @@ public class UI {
 	//Populate the ListView and other stuff on startup
 	private void populate() {
 		list.forEach(Moebel -> {
-			String title = Moebel.getName().concat(":").concat(Moebel.getClass().getSimpleName());
+			String title = Moebel.getName();
 			String desc = "" + Moebel.getBreite() + "x" + Moebel.getLaenge();
-			displayList.add(new com.UI.moebelListNodeController(title, desc, Moebel.getDisplay(), Moebel.getBreite()));
+			String type = Moebel.getClass().getSimpleName();
+			displayList.add(new com.UI.moebelListNodeController(title, desc,type, Moebel.getDisplay(), Moebel.getBreite()));
 		});
 		displayList.forEach(this::dragNode);
 		moebelList.setItems(displayList);

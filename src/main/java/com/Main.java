@@ -49,8 +49,8 @@ public class Main extends Application {
 		primaryStage.fullScreenProperty().addListener(ChangeListener->{
 			if(!primaryStage.isFullScreen()) primaryStage.setMaximized(false);
 		});
+		primaryStage.setTitle("Raumplanner");
 		primaryStage.show();
-
 	}
 
 }
