@@ -6,7 +6,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.geometry.Side;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
@@ -46,7 +45,7 @@ public class UI {
 			delete.setOnAction(EventHandler -> {
 				EventHandler.consume();
 				System.out.println("Delete");
-				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY()).add(-25.0, 0.0);
+				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY());
 				System.out.printf("%10.1f,%10.1f%n", pos.getX(), pos.getY());
 
 				room.getChildren().removeIf(Predicate ->
@@ -156,7 +155,9 @@ public class UI {
 			System.out.println("Create Menu");
 			System.out.printf("%10.1f,%10.1f%n", node.getLayoutX(), node.getLayoutY());
 
-			imgContext.show(node, Side.RIGHT, 0, 0);
+			Point2D pos = room.localToScreen(node.getLayoutX(),node.getLayoutY());
+
+			imgContext.show(node,pos.getX(),pos.getY());
 		});
 
 		node.setOnMouseEntered(event -> node.setCursor(Cursor.HAND));
