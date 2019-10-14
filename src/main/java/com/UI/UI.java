@@ -74,38 +74,41 @@ public class UI {
 	/**
 	 * Handles all dragging EventHandlers for a list object
 	 *
-	 * @param node Node to apply the ability to drag to
+	 * @param node
+	 * 		Node to apply the ability to drag to
 	 */
 	private void dragNode(moebelListNodeController node) {
-		node.setOnMouseReleased(mouseEvent -> node.setCursor(Cursor.HAND));
-		node.setOnMouseEntered(event -> node.setCursor(Cursor.HAND));
-
-		node.setOnMouseDragged(mouseEvent -> {
-			if (mouseEvent.getSceneX() > divider.getScene().getX()) {
-				populate();
+		node.setOnMousePressed(mouseEvent -> {
+			boolean created = false;
+			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
+				//populate();
 				ImageView img = new ImageView(node.display);
 
-				img.setFitWidth(node.breite * 50);
+				img.setFitWidth(node.width * 50);
 				img.setPreserveRatio(true);
 				img.setSmooth(true);
 
 				room.getChildren().add(img);
-				img.relocate(mouseEvent.getX(),mouseEvent.getY());
+				img.relocate(mouseEvent.getX(), mouseEvent.getY());
 				dragNode(img);
+				created = true;
 			}
+			mouseEvent.consume();
 		});
 	}
 
 	/**
 	 * Handles all dragging EventHandlers for any node object
 	 *
-	 * @param node Node to apply the ability to drag to
+	 * @param node
+	 * 		Node to apply the ability to drag to
 	 */
 	private void dragNode(ImageView node) {
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
 		node.setOnMousePressed(mouseEvent -> {
+			imgContext.hide();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
 		});
@@ -117,27 +120,34 @@ public class UI {
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
 
-			double imgHeight=node.getFitHeight()<=0?node.getFitWidth():node.getFitHeight();
-			double imgWidth=node.getFitWidth()<=0?node.getFitHeight():node.getFitWidth();
+			double imgHeight = node.getFitHeight() <= 0 ? node.getFitWidth() : node.getFitHeight();
+			double imgWidth = node.getFitWidth() <= 0 ? node.getFitHeight() : node.getFitWidth();
+
+			double y;
+			double x;
 
 
-			if (node.getLayoutY() >= room.getHeight()-imgHeight) {
+			if (node.getLayoutY() >= room.getHeight() - imgHeight) {
 				node.setRotate(180);
-				node.relocate(Math.min(mouseEvent.getSceneX() + dragDelta.x,room.getWidth()-imgWidth),room.getHeight()-imgHeight);
+				y = room.getHeight() - imgHeight;
 
-			}
-			if (node.getLayoutX() >= room.getWidth()-imgWidth) {
-				node.setRotate(90);
-				node.relocate(room.getWidth()-imgWidth, Math.min(mouseEvent.getSceneY() + dragDelta.y, room.getHeight()-imgHeight));
-			}
-			if (node.getLayoutY() <= 0) {
+			} else if (node.getLayoutY() <= 0) {
 				node.setRotate(0);
-				node.relocate(Math.max(mouseEvent.getSceneX() + dragDelta.x ,0),0);
+				y = 0;
+			} else {
+				y = node.getLayoutY();
 			}
-			if (node.getLayoutX() <= 0) {
+
+			if (node.getLayoutX() >= room.getWidth() - imgWidth) {
+				node.setRotate(90);
+				x = room.getWidth() - imgWidth;
+			} else if (node.getLayoutX() <= 0) {
 				node.setRotate(270);
-				node.relocate(0, Math.max(mouseEvent.getSceneY() + dragDelta.y,0));
+				x = 0;
+			} else {
+				x = node.getLayoutX();
 			}
+			node.relocate(x, y);
 		});
 
 		node.setOnContextMenuRequested(ContextMenuEvent -> {
