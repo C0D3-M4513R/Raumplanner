@@ -3,15 +3,21 @@ package com.UI;
 import com.Moebel.Moebel;
 import com.Repository;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.geometry.Side;
 import javafx.scene.Cursor;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
 import java.util.LinkedList;
 import java.util.List;
+
 
 /**
  * Handles all of the User-Interface interactions and Processes them
@@ -27,24 +33,42 @@ public class UI {
 	private AnchorPane room;
 
 	private final List<Moebel> list = Repository.getAll();
-	private List<moebelListNodeController> displayList = new LinkedList<>();
+	private ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
+
+	private ContextMenu imgContext = new ContextMenu();
 
 	@FXML
 	public void initialize() {
 		populate();
-	}
+		{
+			MenuItem delete = new MenuItem("Delete");
+			imgContext.getItems().add(delete);
+			delete.setOnAction(EventHandler -> {
+				EventHandler.consume();
+				System.out.println("Delete");
+				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY()).add(-25.0, 0.0);
+				System.out.printf("%10.1f,%10.1f%n", pos.getX(), pos.getY());
 
+				room.getChildren().removeIf(Predicate ->
+					pos.getX() >= Predicate.getLayoutX()-1 &&
+					pos.getX() <= Predicate.getLayoutX()+((ImageView) Predicate).getX()+1&&
+					pos.getY() >= Predicate.getLayoutY()-1 &&
+					pos.getY() <= Predicate.getLayoutY()+((ImageView) Predicate).getY()+1);
+
+				room.getChildren().forEach(Node -> System.out.printf("%10.1f,%10.1f%n", Node.getLayoutX(), Node.getLayoutY()));
+			});
+		}
+	}
 
 	//Populate the ListView and other stuff on startup
 	private void populate() {
-		displayList = new LinkedList<>();
 		list.forEach(Moebel -> {
 			String title = Moebel.getName().concat(":").concat(Moebel.getClass().getSimpleName());
 			String desc = "" + Moebel.getBreite() + "x" + Moebel.getLaenge();
 			displayList.add(new com.UI.moebelListNodeController(title, desc, Moebel.getDisplay(), Moebel.getBreite()));
 		});
 		displayList.forEach(this::dragNode);
-		moebelList.setItems(FXCollections.observableList(displayList));
+		moebelList.setItems(displayList);
 	}
 
 	/**
@@ -115,6 +139,15 @@ public class UI {
 				node.relocate(0, Math.max(mouseEvent.getSceneY() + dragDelta.y,0));
 			}
 		});
+
+		node.setOnContextMenuRequested(ContextMenuEvent -> {
+			ContextMenuEvent.consume();
+			System.out.println("Create Menu");
+			System.out.printf("%10.1f,%10.1f%n", node.getLayoutX(), node.getLayoutY());
+
+			imgContext.show(node, Side.RIGHT, 0, 0);
+		});
+
 		node.setOnMouseEntered(event -> node.setCursor(Cursor.HAND));
 	}
 
