@@ -12,9 +12,11 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class UI {
 	@FXML
 	public void initialize() {
 		populate();
+		//Begin making context menu for furniture
 		{
 			MenuItem delete = new MenuItem("Delete"); //creating delete menu item
 			imgContext.getItems().add(delete); //adding delete Menu item
@@ -52,6 +55,7 @@ public class UI {
 				//Getting coordinates
 				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY());
 				System.out.printf("%10.1f,%10.1f%n", pos.getX(), pos.getY());
+
 
 				//Deleting all nodes, intersecting that point
 				// +1 and -1 for compensating the conversion from double to int
@@ -71,6 +75,45 @@ public class UI {
 				});
 				room.getChildren().forEach(Node -> System.out.printf("%10.1f,%10.1f%n", Node.getLayoutX(), Node.getLayoutY()));
 			});
+		}
+		//Begin handling selections
+		{
+			selection.setVisible(false);
+			final Point2D[] pos = {null,null,null};
+			room.setOnMousePressed(MouseEvent -> {
+				if (pos[0] == null) {
+					pos[0] = room.sceneToLocal(MouseEvent.getSceneX(),MouseEvent.getSceneY());
+				}
+				MouseEvent.consume();
+			});
+			room.setOnMouseDragged(MouseEvent -> {
+				System.out.println("Creating Region");
+				selection.relocate(pos[0].getX(),pos[0].getY());
+				//selection.setLayoutX(initial.x);
+				//selection.setLayoutY(initial.y);
+				pos[1] = room.sceneToLocal(MouseEvent.getSceneX(),MouseEvent.getSceneY());
+				pos[2] =pos[1].subtract(pos[0]);
+				if(pos[2].getX()<0 && pos[2].getY()<0){
+					pos[2].multiply(-1);
+				}
+				System.out.printf("%10.1f , %10.1f %n",pos[0].getX(),pos[0].getY());
+				System.out.printf("%10.1f , %10.1f %n",pos[1].getX(),pos[1].getY());
+				System.out.printf("%10.1f , %10.1f %n",pos[2].getX(),pos[2].getY());
+				selection.setMinWidth(pos[2].getX());
+				selection.setMinHeight(pos[2].getY());
+				selection.setMaxWidth(pos[2].getX());
+				selection.setMaxHeight(pos[2].getY());
+				selection.setPrefHeight(pos[2].getY());
+				selection.setPrefWidth(pos[2].getX());
+				selection.setVisible(true);
+				System.out.println("Done");
+			});
+			room.setOnMouseReleased(MouseEvent->{
+				Arrays.fill(pos, null);
+			});
+			//TODO: Add detection of moebel inside the selection
+			//TODO: Add a Group to encapsulate the grouped items
+			//TODO: Add a context menu to that group
 		}
 	}
 
@@ -131,6 +174,7 @@ public class UI {
 			imgContext.hide();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
+			mouseEvent.consume();
 		});
 
 		node.setOnMouseEntered(mouseEvent -> node.setCursor(Cursor.HAND));
@@ -188,7 +232,7 @@ public class UI {
 		});
 
 		node.setOnMouseEntered(event -> node.setCursor(Cursor.HAND));
-	}
+    }
 
 	private class Delta {
 		double x, y;
