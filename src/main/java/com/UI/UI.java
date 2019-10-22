@@ -13,6 +13,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class UI {
 	private ListView<moebelListNodeController> moebelList;
 	@FXML
 	private AnchorPane room;
+	@FXML
+	private Region selection;
 
 	private final List<Moebel> list = Repository.getAll();
 	private ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
@@ -40,20 +43,32 @@ public class UI {
 	public void initialize() {
 		populate();
 		{
-			MenuItem delete = new MenuItem("Delete");
-			imgContext.getItems().add(delete);
+			MenuItem delete = new MenuItem("Delete"); //creating delete menu item
+			imgContext.getItems().add(delete); //adding delete Menu item
+			//Defining delete handler
 			delete.setOnAction(EventHandler -> {
 				EventHandler.consume();
 				System.out.println("Delete");
+				//Getting coordinates
 				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY());
 				System.out.printf("%10.1f,%10.1f%n", pos.getX(), pos.getY());
 
-				room.getChildren().removeIf(Predicate ->
-					pos.getX() >= Predicate.getLayoutX()-1 &&
-					pos.getX() <= Predicate.getLayoutX()+((ImageView) Predicate).getX()+1&&
-					pos.getY() >= Predicate.getLayoutY()-1 &&
-					pos.getY() <= Predicate.getLayoutY()+((ImageView) Predicate).getY()+1);
-
+				//Deleting all nodes, intersecting that point
+				// +1 and -1 for compensating the conversion from double to int
+				room.getChildren().removeIf(Predicate -> {
+					try {
+						System.out.println("Deleting");
+						return pos.getX() >= Predicate.getLayoutX() - 1 &&
+								pos.getX() <= Predicate.getLayoutX() + ((ImageView) Predicate).getX() + 1 &&
+								pos.getY() >= Predicate.getLayoutY() - 1 &&
+								pos.getY() <= Predicate.getLayoutY() + ((ImageView) Predicate).getY() + 1;
+					} catch (Throwable t) {
+						//probably not a moebel, might be a selection.
+						//TODO: add a more concrete handler
+						t.printStackTrace();
+						return false;
+					}
+				});
 				room.getChildren().forEach(Node -> System.out.printf("%10.1f,%10.1f%n", Node.getLayoutX(), Node.getLayoutY()));
 			});
 		}
@@ -65,9 +80,9 @@ public class UI {
 			String title = Moebel.getName();
 			String desc = "" + Moebel.getBreite() + "x" + Moebel.getLaenge();
 			String type = Moebel.getClass().getSimpleName();
-			displayList.add(new com.UI.moebelListNodeController(title, desc,type, Moebel.getDisplay(), Moebel.getBreite()));
+			displayList.add(new com.UI.moebelListNodeController(title, desc, type, Moebel.getDisplay(), Moebel.getBreite()));
 		});
-		displayList.forEach(this::dragNode);
+		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
 
@@ -77,19 +92,23 @@ public class UI {
 	 * @param node
 	 * 		Node to apply the ability to drag to
 	 */
-	private void dragNode(moebelListNodeController node) {
+	private void moebelSpawn(moebelListNodeController node) {
 		node.setOnMousePressed(mouseEvent -> {
 			boolean created = false;
 			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
-				//populate();
+				//Creating Moebel
+				System.out.println("Creating moebel");
 				ImageView img = new ImageView(node.display);
 
+				//Set width, and make it visible
 				img.setFitWidth(node.width * 50);
 				img.setPreserveRatio(true);
 				img.setSmooth(true);
-
 				room.getChildren().add(img);
+				img.setVisible(true);
 				img.relocate(mouseEvent.getX(), mouseEvent.getY());
+
+				//applying all event handlers
 				dragNode(img);
 				created = true;
 			}
@@ -107,15 +126,19 @@ public class UI {
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
+		//Calculate the amount dragged
 		node.setOnMousePressed(mouseEvent -> {
 			imgContext.hide();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
 		});
 
+		node.setOnMouseEntered(mouseEvent -> node.setCursor(Cursor.HAND));
 		node.setOnMouseReleased(mouseEvent -> node.setCursor(Cursor.HAND));
 
+
 		node.setOnMouseDragged(mouseEvent -> {
+			//Move node, like it was dragged
 			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
@@ -126,7 +149,7 @@ public class UI {
 			double y;
 			double x;
 
-
+			//Collision detection with programm bounds
 			if (node.getLayoutY() >= room.getHeight() - imgHeight) {
 				node.setRotate(180);
 				y = room.getHeight() - imgHeight;
@@ -147,17 +170,21 @@ public class UI {
 			} else {
 				x = node.getLayoutX();
 			}
+
+			//move node appropriately after accounting for collisions
 			node.relocate(x, y);
+			mouseEvent.consume();
 		});
 
+		//when right clicked, create context menu
 		node.setOnContextMenuRequested(ContextMenuEvent -> {
 			ContextMenuEvent.consume();
 			System.out.println("Create Menu");
 			System.out.printf("%10.1f,%10.1f%n", node.getLayoutX(), node.getLayoutY());
 
-			Point2D pos = room.localToScreen(node.getLayoutX(),node.getLayoutY());
+			Point2D pos = room.localToScreen(node.getLayoutX(), node.getLayoutY());
 
-			imgContext.show(node,pos.getX(),pos.getY());
+			imgContext.show(node, pos.getX(), pos.getY());
 		});
 
 		node.setOnMouseEntered(event -> node.setCursor(Cursor.HAND));
@@ -166,6 +193,4 @@ public class UI {
 	private class Delta {
 		double x, y;
 	}
-
-
 }
