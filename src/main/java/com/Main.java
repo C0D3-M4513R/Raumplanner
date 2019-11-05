@@ -15,6 +15,19 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+
+
+		//TODO: Fix the Group to allow right and left clicks
+		//TODO: Add BigBilly
+
+		//TODO: Migrate moebelView to Moebel
+		//TODO: Adapt Moebel to allow for multipile Colors
+		//TODO: Add Preferences popup
+
+
+		//TODO: MINOR Walls
+
+
         /*
         DataReader dr = new DataReader("test.txt");
         ArrayList<String> st = dr.getContent();
