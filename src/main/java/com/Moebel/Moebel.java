@@ -11,7 +11,17 @@ public abstract class Moebel {
     private int x;
     private int y;
     private int rotation;
+
+    public Image getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(Image display) {
+        this.display = display;
+    }
+
     private Image display;
+
 
     public String getName() {
         return Name;
@@ -61,15 +71,7 @@ public abstract class Moebel {
         this.rotation = rotation;
     }
 
-    public Image getDisplay() {
-        return display;
-    }
-
-    public void setDisplay(Image display) {
-        this.display = display;
-    }
-
-    public Moebel(String name, double laenge, double breite, Image display) {
+    public Moebel(String name, double laenge, double breite, Image display ) {
         Name = name;
         Laenge = laenge;
         Breite = breite;
