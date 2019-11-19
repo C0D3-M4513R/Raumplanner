@@ -8,24 +8,23 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-
-
-		//TODO: Fix the Group to allow right and left clicks
-		//TODO: Add BigBilly
-
-		//TODO: Migrate moebelView to Moebel
-		//TODO: Adapt Moebel to allow for multipile Colors
-		//TODO: Add Preferences popup
+    @Override
+    public void start(Stage primaryStage) throws Exception {
 
 
-		//TODO: MINOR Walls
+        //TODO: Fix the Group to allow right and left clicks
+        //TODO: Add BigBilly
+
+        //TODO: Migrate moebelView to Moebel
+        //TODO: Adapt Moebel to allow for multipile Colors
+        //TODO: Add Preferences popup
+
+
+        //TODO: MINOR Walls
 
 
         /*
@@ -52,18 +51,17 @@ public class Main extends Application {
         });
         MoebelList*/
 
-
-		Parent root = new FXMLLoader(this.getClass().getClassLoader().getResource("app.fxml")).load();
-		Scene scene = new Scene(root);
-		primaryStage.setScene(scene);
-		primaryStage.maximizedProperty().addListener(ChangeListener->{
-			if(primaryStage.isMaximized()) primaryStage.setFullScreen(true);
-		});
-		primaryStage.fullScreenProperty().addListener(ChangeListener->{
-			if(!primaryStage.isFullScreen()) primaryStage.setMaximized(false);
-		});
-		primaryStage.setTitle("Raumplanner");
-		primaryStage.show();
-	}
+        Parent root = new FXMLLoader(this.getClass().getClassLoader().getResource("app.fxml")).load();
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.maximizedProperty().addListener(ChangeListener -> {
+            if (primaryStage.isMaximized()) primaryStage.setFullScreen(true);
+        });
+        primaryStage.fullScreenProperty().addListener(ChangeListener -> {
+            if (!primaryStage.isFullScreen()) primaryStage.setMaximized(false);
+        });
+        primaryStage.setTitle("Raumplanner");
+        primaryStage.show();
+    }
 
 }

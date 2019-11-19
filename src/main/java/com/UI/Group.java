@@ -18,15 +18,26 @@ public class Group extends javafx.scene.Group {
 	 * @return returns an array with the max point and the min point, where a Node/Element resides
 	 */
 	public Point2D[] getPoints() {
+
 		Point2D[] pos = {null, new Point2D(0, 0), null};
-		for (Node node : this.getChildrenUnmodifiable()) {
+		for (Node node : getChildrenUnmodifiable()) {
+
+			//determine top left point of all children
 			if (pos[0] == null) pos[0] = new Point2D(node.getLayoutX(), node.getLayoutY());
-			else
-				pos[0] = new Point2D(Math.min(node.getLayoutX(), pos[0].getX()), Math.min(node.getLayoutX(), pos[0].getY()));
-			pos[1] = new Point2D(Math.max(pos[1].getX(), node.getLayoutX()), Math.max(pos[1].getY(), node.getLayoutY()));
-			if ((node.getLayoutX() == pos[1].getX() || node.getLayoutY() == pos[1].getY())
-					&& node instanceof ImageView) {
-				pos[1] = pos[1].add(((ImageView) node).getFitWidth(), ((ImageView) node).getFitHeight());
+			else {
+				pos[0] = new Point2D(
+						Math.min(node.getLayoutX(), pos[0].getX()), //left
+						Math.min(node.getLayoutY(), pos[0].getY())); //top
+			}
+
+			//determine bottom right point
+			if (node instanceof ImageView) {
+				pos[1] = new Point2D(Math.max(pos[1].getX(), node.getLayoutX() + ((ImageView)node).getX() + ((ImageView)node).getFitWidth()), //right
+						Math.max(pos[1].getY(), node.getLayoutY() + ((ImageView)node).getY() + ((ImageView)node).getFitHeight() )); //bottom
+			} else {
+				pos[1] = new Point2D(Math.max(pos[1].getX(), node.getLayoutX()), //right
+						Math.max(pos[1].getY(), node.getLayoutY())); //bottom
+				System.out.println("Else?!?! What??");
 			}
 		}
 		if (pos[0] == null) pos[0] = new Point2D(0, 0);
@@ -36,7 +47,7 @@ public class Group extends javafx.scene.Group {
 
 	public void recursiveRelocate(double x, double y) {
 		System.out.println("Recursive Relcoate run ");
-		this.relocate(x, y);
+		relocate(x, y);
 		for (Node node : this.getChildren()) {
 			node.relocate(x, y);
 		}
