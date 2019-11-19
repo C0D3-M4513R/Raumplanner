@@ -7,7 +7,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -144,8 +146,7 @@ public class UI {
                 MenuItem group1 = new MenuItem("Group");
                 group1.setOnAction(EventHandler -> {
                     //setup a Region, that will later be the boarder
-                    Region groupParent = new Region();
-                    groupParent.setMouseTransparent(true);
+                    Tools groupParent = new Tools();
 
                     //prevent recursion
                     group.getChildren().remove(group);
@@ -175,13 +176,16 @@ public class UI {
                         return;
                     }
 
-                    //all edge points of used space in the selection
-                    Point2D[] points = group.getPoints();
-                    System.out.println(Arrays.deepToString(points));
+                    final Double[] poss = {null,null};
+                    group.getChildrenUnmodifiable().forEach(Node->{
+                        poss[0]=Math.min(poss[0]!=null?poss[0]:Node.getLayoutX(), Node.getLayoutX());
+                        poss[1]=Math.min(poss[1]!=null?poss[1]:Node.getLayoutY(), Node.getLayoutY());
+                    });
 
                     //set all edge-points
-                    groupParent.relocate(points[0].getX(), points[0].getY());
-                    setMinMax(groupParent, points[2].getX(), points[2].getY());
+                    groupParent.relocate(poss[0],poss[1]);
+                    setMinMax(groupParent, group.prefWidth(0.0), group.prefHeight(0.0));
+                    dragNode(groupParent,groupParent.getHeight(),groupParent.getWidth());
 
                     groupParent.setStyle("-fx-background-color:cyan; " +
                             "-fx-border-style: solid; " +
@@ -338,8 +342,7 @@ public class UI {
     }
 
     private void groupDrag(Group group) {
-        Point2D[] pos = group.getPoints();
-        dragNode(group, pos[2].getX(), pos[2].getY());
+        dragNode(group, group.prefWidth(0.0), group.prefHeight(0.0));
     }
 
     /**
@@ -394,7 +397,7 @@ public class UI {
             }
 
             //move node appropriately after accounting for collisions
-            if (node instanceof Group) ((Group) node).recursiveRelocate(x, y);
+            if (node instanceof Tools) ((Tools)node).recursiveRelocate(x,y);
             else node.relocate(x, y);
             mouseEvent.consume();
         });
