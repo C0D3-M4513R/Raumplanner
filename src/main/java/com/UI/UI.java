@@ -7,9 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -83,10 +81,6 @@ public class UI {
         }
         //Begin handling selections
         {
-
-            Group group = new Group();
-            room.getChildren().add(group);
-
             selection.setVisible(false);
             //array for storing initial, final, delta
             final Point2D[] pos = {null, null};
@@ -145,8 +139,11 @@ public class UI {
             {
                 MenuItem group1 = new MenuItem("Group");
                 group1.setOnAction(EventHandler -> {
-                    //setup a Region, that will later be the boarder
-                    Tools groupParent = new Tools();
+
+                    //setup everything for the drag
+                    Group group = new Group();
+                    room.getChildren().add(group);
+                    Region groupParent = new Region();
 
                     //prevent recursion
                     group.getChildren().remove(group);
@@ -211,6 +208,14 @@ public class UI {
                     //move all children to the right parent
                     room.getChildren().removeAll(group.getChildren());
                     group.getChildren().add(groupParent);
+
+                    group.getChildren().forEach(Node->{
+                        double x = Node.getLayoutX() - group.getLayoutX();
+                        double y = Node.getLayoutY() - group.getLayoutY();
+                        Node.relocate(group.getLayoutX(),group.getLayoutY());
+                        Node.setTranslateX(x);
+                        Node.setTranslateY(y);
+                    });
 
                     //selection is done
                     selection.setVisible(false);
@@ -397,7 +402,9 @@ public class UI {
             }
 
             //move node appropriately after accounting for collisions
-            if (node instanceof Tools) ((Tools)node).recursiveRelocate(x,y);
+            if (node instanceof Region){
+                ((com.UI.Group)(node).getParent()).recursiveRelocate(x,y);
+            }
             else node.relocate(x, y);
             mouseEvent.consume();
         });

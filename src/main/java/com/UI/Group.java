@@ -1,12 +1,10 @@
 package com.UI;
 
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.layout.Region;
+public class Group extends javafx.scene.Group {
 
-public class Tools extends Region {
+	public Group(Group group){super(group);}
 
-	public Tools(){super();}
+	public Group(){super();}
 
 	public void recursiveRelocate(double x, double y) {
 		System.out.println("Recursive Relcoate run ");
