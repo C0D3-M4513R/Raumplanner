@@ -12,11 +12,13 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -30,17 +32,17 @@ public class UI {
 	@FXML
 	private ListView<moebelListNodeController> moebelList;
 	@FXML
-	private AnchorPane room;
+	AnchorPane room;
 	@FXML
-	private Region selection;
-	private ObservableList<AnchorPane> groups = FXCollections.observableList(new LinkedList<>());
+	Region selection;
+	static ObservableList<AnchorPane> groups = FXCollections.observableList(new LinkedList<>());
 
 
-	private final List<Moebel> list = Repository.getAll();
-	private ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
+	private static final List<Moebel> list = Repository.getAll();
+	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
-	private ContextMenu imgContext = new ContextMenu(); //for Furniture
-	private ContextMenu selContext = new ContextMenu(); //for selections
+	static ContextMenu imgContext = new ContextMenu(); //for Furniture
+	static ContextMenu selContext = new ContextMenu(); //for selections
 
 	@FXML
 	public void initialize() {
@@ -60,23 +62,9 @@ public class UI {
 
 				//Deleting all nodes, intersecting that point
 				// +1 and -1 for compensating the conversion from double to int
-				room.getChildren().removeIf(Predicate -> {
-					ImageView ImageView;
-					try {
-						ImageView = (ImageView) Predicate;
-					} catch (ClassCastException t) {
-						ImageView = new ImageView();
-						ImageView.setX(0.0);
-						ImageView.setY(0.0);
-						//probably not a moebel, might be a selection.
-					}
-					System.out.println("Deleting");
-					return pos.getX() >= Predicate.getLayoutX() - 1 &&
-							pos.getX() <= Predicate.getLayoutX() + ImageView.getX() + 1 &&
-							pos.getY() >= Predicate.getLayoutY() - 1 &&
-							pos.getY() <= Predicate.getLayoutY() + ImageView.getY() + 1;
-				});
+				delete(room, pos, Optional.of(true));
 				room.getChildren().forEach(Node -> System.out.printf("%10.1f,%10.1f%n", Node.getLayoutX(), Node.getLayoutY()));
+
 			});
 		}
 		//Begin handling selections
@@ -147,81 +135,18 @@ public class UI {
 				group1.setOnAction(EventHandler -> {
 
 					//setup everything for the drag
-					AnchorPane region = new AnchorPane();
+					Group region = new Group();
 					room.getChildren().add(region);
 
 					//prevent recursion
 					region.getChildren().remove(region);
-					//Adds all selected Nodes to be in the Group
-					region.getChildren().addAll(
-							//Get all nodes in the selection
-							room.getChildren().filtered(
-									(Node) -> Node.getLayoutX() > selection.getLayoutX()
-											&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
-											&& Node.getLayoutY() > selection.getLayoutY()
-											&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
-											&& !Node.getClass().isInstance(Region.class)
-							)
-					);
-
-					//Check if we selected something
-					if (region.getChildren().size() <= 0) {
-						//if we selected nothing display an error and abort
-						Alert noSelected = new Alert(Alert.AlertType.ERROR, "Keine Möbel ausgewählt. \n " +
-								"Ein Möebel in kann nicht in mehreren Gruppen sein!", ButtonType.CANCEL);
-						noSelected.show();
-						//selection is done
-						selection.setVisible(false);
-						selContext.hide();
-						return;
-					}
-
-					//get the min locations
-					final Double[] pos = {null, null};
-					region.getChildrenUnmodifiable().forEach(Node -> {
-						pos[0] = Math.min(pos[0] != null ? pos[0] : Node.getLayoutX(), Node.getLayoutX());
-						pos[1] = Math.min(pos[1] != null ? pos[1] : Node.getLayoutY(), Node.getLayoutY());
-					});
-
-					//set all edge-points
-					region.relocate(pos[0], pos[1]);
 					dragNode(region, region.getWidth(), region.getHeight());
-
-					//make nodes location relative to the new Pane/Scene for them to stay in the same place
-					//Only now do the transform, because we needed the coordinates for the pos array
-					region.getChildren().forEach(Node -> {
-						Point2D poi = region.parentToLocal(Node.getLayoutX(),Node.getLayoutY());
-						Node.relocate(poi.getX(), poi.getY());
-					});
-
-					region.setStyle("-fx-background-color: rgba(0,255,255,0.25); " +
-							"-fx-border-style: solid; " +
-							"-fx-border-radius: 2px ;" +
-							"-fx-border-color: black;" +
-							"-fx-border-width: 2px;");
-
-					//groupDrag(group);
-
-					groups.add(region);
-
-					region.setOnContextMenuRequested(ContextMenuEvent -> {
-						System.out.println("Region Context menu event fired");
-						ContextMenuEvent.consume();
-					});
-
-
-					//move all children to the right parent
-					room.getChildren().removeAll(region.getChildren());
-
-					//selection is done
-					selection.setVisible(false);
-					selContext.hide();
 				});
 
 
 				//Configure the delete button
-				MenuItem delete = new MenuItem("Delete");
-				delete.setOnAction(EventHandler -> {
+				MenuItem massDelete = new MenuItem("Delete");
+				massDelete.setOnAction(EventHandler -> {
 					//Remove all selected nodes
 					room.getChildren().removeIf(
 							(Node) -> Node.getLayoutX() > selection.getLayoutX()
@@ -235,23 +160,15 @@ public class UI {
 				});
 
 				//Add both actions
-				selContext.getItems().addAll(group1, delete);
+				selContext.getItems().addAll(group1, massDelete);
 
-				//Node to serve as an anchor point
-				Node anchorNode = new Label();
-				room.getChildren().add(anchorNode);
-				anchorNode.setVisible(false);
 
-				selContext.setOnHiding(WindowEvent -> {
 
-				});
 
 				selection.setOnContextMenuRequested(ContextMenuEvent -> {
 					System.out.println("selection context requested");
-					anchorNode.relocate(selection.getLayoutX(), selection.getLayoutY());
-
-					Point2D anchor = anchorNode.localToScreen(selection.getLayoutX(), selection.getLayoutY());
-					selContext.show(anchorNode, anchor.getX(), anchor.getY());
+					Point2D anchor = room.localToScreen(selection.getLayoutX(), selection.getLayoutY());
+					selContext.show(selection, anchor.getX(), anchor.getY());
 					ContextMenuEvent.consume();
 				});
 
@@ -259,6 +176,50 @@ public class UI {
 
 			//TODO: Add a context menu to that group
 		}
+	}
+
+	/**
+	 *
+	 * @param room Node with the Children, where you wanna delete the element from
+	 * @param pos Position, where you would like someting deleted
+	 * @return to be ignored, output is not reliable
+	 */
+	private boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
+		boolean loop = loopOp.orElse(true);
+
+		boolean deleted = false;
+		for (Node node : room.getChildrenUnmodifiable()) {
+			ImageView ImageView;
+			try {
+				ImageView = (ImageView) node;
+				if (pos.getX() >= node.getLayoutX() - 1 &&
+						pos.getX() <= node.getLayoutX() + ImageView.getX() + 1 &&
+						pos.getY() >= node.getLayoutY() - 1 &&
+						pos.getY() <= node.getLayoutY() + ImageView.getY() + 1) {
+					if(node instanceof Pane){
+						Alert sure = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure, that you want to delete this Group and EVERYTHING inside it?",ButtonType.NO,ButtonType.YES);
+						sure.show();
+						sure.setOnCloseRequest(DialogEvent->{
+							if(sure.getResult().equals(ButtonType.YES)){
+								room.getChildren().remove(node);
+							}
+						});
+						return true;
+
+					}
+					room.getChildren().remove(node);
+					System.out.println("Successfully deleted the Element");
+				}
+			} catch (ClassCastException t) {
+				//probably not a moebel, might be a selection.
+				if (node instanceof Pane && loop) {
+					return delete(((Pane) node), pos, loopOp);
+				} else if (node instanceof Region) {
+					//just our selection... not throwing an error, because this is somewhat expected
+				} else throw t;
+			}
+		}
+		return false;
 	}
 
 	//Populate the ListView and other stuff on startup
@@ -271,7 +232,9 @@ public class UI {
 			displayList.add(new com.UI.moebelListNodeController(title, desc, type, Moebel.getDisplay(), Moebel.getBreite()));
 		});
 		displayList.forEach(this::moebelSpawn);
-		moebelList.setItems(displayList);
+		moebelList
+				.setItems(
+						displayList);
 	}
 
 	/**
@@ -355,6 +318,7 @@ public class UI {
 		//Calculate the amount dragged
 		node.setOnMousePressed(mouseEvent -> {
 			imgContext.hide();
+			selContext.hide();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
 			mouseEvent.consume();
@@ -369,29 +333,36 @@ public class UI {
 			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
-			double y;
-			double x;
+			double y = node.getLayoutY();
+			double x = node.getLayoutX();
 
-			//Collision detection with programm bounds
-			if (node.getLayoutY() >= room.getHeight() - height) {
-				node.setRotate(180);
-				y = room.getHeight() - height;
+			if(node.getParent().equals(room)) {
+				//Collision detection with programm bounds
+				if (node.getLayoutY() >= room.getHeight() - height) {
+					node.setRotate(180);
+					y = room.getHeight() - height;
 
-			} else if (node.getLayoutY() <= 0) {
-				node.setRotate(0);
-				y = 0;
+				} else if (node.getLayoutY() <= 0) {
+					node.setRotate(0);
+					y = 0;
+				} else {
+					y = node.getLayoutY();
+				}
+
+				if (node.getLayoutX() >= room.getWidth() - width) {
+					node.setRotate(90);
+					x = room.getWidth() - width;
+				} else if (node.getLayoutX() <= 0) {
+					node.setRotate(270);
+					x = 0;
+				} else {
+					x = node.getLayoutX();
+				}
 			} else {
-				y = node.getLayoutY();
-			}
+				if(node.getLayoutY()<node.getParent().getLayoutY())
+				{
 
-			if (node.getLayoutX() >= room.getWidth() - width) {
-				node.setRotate(90);
-				x = room.getWidth() - width;
-			} else if (node.getLayoutX() <= 0) {
-				node.setRotate(270);
-				x = 0;
-			} else {
-				x = node.getLayoutX();
+				}
 			}
 
 			//move node appropriately after accounting for collisions

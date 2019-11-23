@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    public static final FXMLLoader fxml = new FXMLLoader(Main.class.getClassLoader().getResource("app.fxml"));
+
 
     public static void main(String[] args) {
         launch(args);
@@ -51,9 +53,10 @@ public class Main extends Application {
                 }
             }
         });
-        MoebelList*/
+        MoebelList
+        */
 
-        Parent root = new FXMLLoader(this.getClass().getClassLoader().getResource("app.fxml")).load();
+       Parent root=fxml.load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.maximizedProperty().addListener(ChangeListener -> {
