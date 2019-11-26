@@ -1,17 +1,24 @@
 package com.UI;
 
 import com.Main;
+import com.Repository;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
+import sun.util.logging.PlatformLogger;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * This class handles everything, that has to do with Grouping multiple Furniture pieces together
@@ -20,6 +27,8 @@ import java.io.IOException;
  */
 public class Group extends AnchorPane {
 
+	private static Comparator<Node> x = (n1,n2) -> (int) (n1.getLayoutX()-n2.getLayoutX());
+	private static Comparator<Node> y = (n1, n2) -> (int) (n1.getLayoutY()-n2.getLayoutY());
 	AnchorPane room = ((UI) Main.fxml.getController()).room;
 	Region selection = ((UI) Main.fxml.getController()).selection;
 
@@ -101,14 +110,10 @@ public class Group extends AnchorPane {
 			}
 
 			//get the min locations
-			final Double[] pos = {null, null};
-			getChildrenUnmodifiable().forEach(Node -> {
-				pos[0] = Math.min(pos[0] != null ? pos[0] : Node.getLayoutX(), Node.getLayoutX());
-				pos[1] = Math.min(pos[1] != null ? pos[1] : Node.getLayoutY(), Node.getLayoutY());
-			});
+			final Point2D pos = getMinPos();
 
 			//set all edge-points
-			relocate(pos[0], pos[1]);
+			relocate(pos.getX(), pos.getY());
 
 
 			//make nodes location relative to the new Pane/Scene for them to stay in the same place
@@ -133,10 +138,65 @@ public class Group extends AnchorPane {
 
 
 	@Override public void requestLayout(){
-		//if(Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER)) Main.layoutLogger.finer("Recomputing Layout of Group");
+		if(Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER)) Main.layoutLogger.finer("Recomputing Layout of Group");
 		//todo: validate height and width, resize, if necessary
 		super.requestLayout();
 	}
 
+	/**
+	 * Intercept method for the object's width
+	 * @param width Width of the object to be set
+	 */
+	@Override protected void setWidth(double width){
+		if(Main.layoutLogger.isLoggable(PlatformLogger.Level.FINEST)) Main.layoutLogger.fine("Intercepting call to width: new width is:"+ width);
+		Repository.setx(this.toString(), width);
+		super.setWidth(width);
+	}
 
+	/**
+	 * Intercept method for the object's height
+	 * @param height Height of the object to be set
+	 */
+	@Override protected void setHeight(double height){
+		if(Main.layoutLogger.isLoggable(PlatformLogger.Level.FINEST)) Main.layoutLogger.fine("Intercepting call to width: new height is:"+ height);
+		System.out.println(this.toString());
+		Repository.sety(this.toString(), height);
+
+		super.setHeight(height);
+	}
+
+
+	/**
+	 *
+	 * @param width This param is ignored. ALWAYS
+	 * @return Returns the object's width
+	 */
+	public double getWidth(double width){
+		return Repository.getx(this.toString());
+	}
+
+	/**
+	 *
+	 * @param height This param is ignored. ALWAYS
+	 * @return Returns the object's height
+	 */
+	public double getHeight(double height){
+		return Repository.gety(this.toString());
+	}
+
+	public Point2D getMinPos(Collection<Node> col) {
+		return new Point2D(Collections.min(col,x).getLayoutX(),Collections.min(col,y).getLayoutY());
+	}
+	public Point2D getMaxPos(Collection<Node> col) {
+		Node x = Collections.max(col,Group.x);
+		Node y = Collections.max(col,Group.y);
+		return new Point2D(x.getLayoutX() + ((x instanceof ImageView)?((ImageView) x).getFitWidth():0.0),y.getLayoutX() + ((y instanceof ImageView)?((ImageView) y).getFitHeight():0.0) );
+	}
+	public Point2D getDelta(Collection<Node> col){
+		return getMaxPos(col).subtract(getMinPos(col));
+	}
+
+	public Point2D getMinPos(){return getMinPos(getChildrenUnmodifiable());}
+	public Point2D getMaxPos(){return getMaxPos(getChildrenUnmodifiable());}
+	public Point2D getDelta(){return getDelta(getChildrenUnmodifiable());}
 }

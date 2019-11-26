@@ -1,6 +1,7 @@
 package com.UI;
 
 import com.Moebel.Moebel;
+import com.Operators;
 import com.Repository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 
 /**
@@ -135,12 +137,11 @@ public class UI {
 				group1.setOnAction(EventHandler -> {
 
 					//setup everything for the drag
-					Group region = new Group();
-					room.getChildren().add(region);
-
+					Group group = new Group();
+					room.getChildren().add(group);
 					//prevent recursion
-					region.getChildren().remove(region);
-					dragNode(region, region.getWidth(), region.getHeight());
+					group.getChildren().remove(group);
+					dragNode(group, ()->group.getHeight(12345.6789), ()->group.getWidth(12345.6789));
 				});
 
 
@@ -163,8 +164,6 @@ public class UI {
 				selContext.getItems().addAll(group1, massDelete);
 
 
-
-
 				selection.setOnContextMenuRequested(ContextMenuEvent -> {
 					System.out.println("selection context requested");
 					Point2D anchor = room.localToScreen(selection.getLayoutX(), selection.getLayoutY());
@@ -179,9 +178,11 @@ public class UI {
 	}
 
 	/**
+	 * @param room
+	 * 		Node with the Children, where you wanna delete the element from
+	 * @param pos
+	 * 		Position, where you would like someting deleted
 	 *
-	 * @param room Node with the Children, where you wanna delete the element from
-	 * @param pos Position, where you would like someting deleted
 	 * @return to be ignored, output is not reliable
 	 */
 	private boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
@@ -196,11 +197,11 @@ public class UI {
 						pos.getX() <= node.getLayoutX() + ImageView.getX() + 1 &&
 						pos.getY() >= node.getLayoutY() - 1 &&
 						pos.getY() <= node.getLayoutY() + ImageView.getY() + 1) {
-					if(node instanceof Pane){
-						Alert sure = new Alert(Alert.AlertType.CONFIRMATION,"Are you sure, that you want to delete this Group and EVERYTHING inside it?",ButtonType.NO,ButtonType.YES);
+					if (node instanceof Pane) {
+						Alert sure = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure, that you want to delete this Group and EVERYTHING inside it?", ButtonType.NO, ButtonType.YES);
 						sure.show();
-						sure.setOnCloseRequest(DialogEvent->{
-							if(sure.getResult().equals(ButtonType.YES)){
+						sure.setOnCloseRequest(DialogEvent -> {
+							if (sure.getResult().equals(ButtonType.YES)) {
 								room.getChildren().remove(node);
 							}
 						});
@@ -305,13 +306,17 @@ public class UI {
 		return node;
 	}
 
+	private void dragNode(Node node, double height, double width) {
+		dragNode(node, () -> height, () -> width);
+	}
+
 	/**
 	 * Handles all dragging EventHandlers for any node object
 	 *
 	 * @param node
 	 * 		Node to apply the ability to drag to
 	 */
-	private void dragNode(Node node, double height, double width) {
+	private void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
@@ -329,48 +334,78 @@ public class UI {
 
 
 		node.setOnMouseDragged(mouseEvent -> {
+
 			//Move node, like it was dragged
 			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
-			double y = node.getLayoutY();
-			double x = node.getLayoutX();
+			if (node.getLayoutY() < node.getParent().getLayoutY() || node.getLayoutX() < node.getParent().getLayoutX() && !node.getParent().equals(room)) {
+				node.getParent().relocate(node.getLayoutX(), node.getLayoutY());
+			} else if (!node.getParent().equals(room)) {
 
-			if(node.getParent().equals(room)) {
-				//Collision detection with programm bounds
-				if (node.getLayoutY() >= room.getHeight() - height) {
-					node.setRotate(180);
-					y = room.getHeight() - height;
-
-				} else if (node.getLayoutY() <= 0) {
-					node.setRotate(0);
-					y = 0;
-				} else {
-					y = node.getLayoutY();
-				}
-
-				if (node.getLayoutX() >= room.getWidth() - width) {
-					node.setRotate(90);
-					x = room.getWidth() - width;
-				} else if (node.getLayoutX() <= 0) {
-					node.setRotate(270);
-					x = 0;
-				} else {
-					x = node.getLayoutX();
-				}
-			} else {
-				if(node.getLayoutY()<node.getParent().getLayoutY())
-				{
-
-				}
 			}
 
+			double localHeight = Operators.ifNullRet(height.get(),0.0);
+			double localWidth = Operators.ifNullRet(width.get(),0.0);
+
+			System.out.println("height = " + localHeight);
+			System.out.println("width = " + localWidth);
+
+
 			//move node appropriately after accounting for collisions
-			node.relocate(x, y);
+			node.setLayoutX(colX(node, localWidth, localHeight));
+			node.setLayoutY(colY(node, localHeight, localWidth));
 			mouseEvent.consume();
 		});
 	}
 
+	/**
+	 * Checks collision between program bounds in the y direction
+	 * Also sets the Rotation variable
+	 *
+	 * @param node
+	 * 		Node to be checked
+	 * @param height
+	 * 		height of the node
+	 *
+	 * @return Returns the appropriate y value
+	 */
+	private double colY(Node node, double height, double width) {
+
+		if (node.getBoundsInParent().getMaxY() >= room.getHeight()) {
+			System.out.println("bottom");
+			node.setRotate(180);
+			return room.getHeight() - 2 * height;
+		} else if (node.getBoundsInParent().getMinY() < 0) {
+			node.setRotate(0);
+			return 0;
+		}
+
+		return node.getLayoutY();
+	}
+
+	/**
+	 * Checks collision between program bounds in the x direction
+	 * Also sets the Rotation variable
+	 *
+	 * @param node
+	 * 		Node to be checked
+	 * @param width
+	 * 		width of the node
+	 *
+	 * @return Returns the appropriate x value
+	 */
+	private double colX(Node node, double width, double height) {
+
+		if (node.getBoundsInParent().getMaxX() >= room.getWidth()) { //bottom
+			node.setRotate(90);
+			return room.getWidth() - width;
+		} else if (node.getBoundsInParent().getMinX() < 0.0) {
+			node.setRotate(270);
+			return -width;
+		}
+		return node.getLayoutX();
+	}
 
 	private class Delta {
 		double x, y;

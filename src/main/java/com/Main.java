@@ -1,13 +1,16 @@
 package com;
 
+import com.sun.javafx.util.Logging;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sun.util.logging.PlatformLogger;
 
 public class Main extends Application {
     public static final FXMLLoader fxml = new FXMLLoader(Main.class.getClassLoader().getResource("app.fxml"));
+    public static final PlatformLogger layoutLogger = Logging.getLayoutLogger();
 
 
     public static void main(String[] args) {
@@ -54,8 +57,10 @@ public class Main extends Application {
         });
         MoebelList
         */
+        layoutLogger.setLevel(PlatformLogger.Level.FINE);
 
-       Parent root=fxml.load();
+
+        Parent root=fxml.load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.maximizedProperty().addListener(ChangeListener -> {
