@@ -22,6 +22,7 @@ public class moebelListNodeController extends SplitPane {
     String tit ="lol";
     String desc ="lol";
     String type = null;
+    //TODO: remove all temporary labels
 
 
     public moebelListNodeController(String title, String description, String type, Image display,double width) {

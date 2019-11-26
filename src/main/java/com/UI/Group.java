@@ -13,6 +13,11 @@ import javafx.scene.layout.Region;
 
 import java.io.IOException;
 
+/**
+ * This class handles everything, that has to do with Grouping multiple Furniture pieces together
+ *
+ * @author Timon Kayser
+ */
 public class Group extends AnchorPane {
 
 	AnchorPane room = ((UI) Main.fxml.getController()).room;
@@ -69,7 +74,7 @@ public class Group extends AnchorPane {
 				ContextMenuEvent.consume();
 			});
 		}
-		//Get everything from the main UI class and get all Children
+		//get all Children, and reposition them correctly
 		{
 			//Adds all selected Nodes to be in the Group
 			getChildren().addAll(
@@ -123,6 +128,14 @@ public class Group extends AnchorPane {
 			selection.setVisible(false);
 			UI.selContext.hide();
 		}
+		setManaged(false);
+	}
+
+
+	@Override public void requestLayout(){
+		//if(Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER)) Main.layoutLogger.finer("Recomputing Layout of Group");
+		//todo: validate height and width, resize, if necessary
+		super.requestLayout();
 	}
 
 

@@ -18,7 +18,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
 
-        //TODO: Fix the Group to allow right and left clicks
         //TODO: Add BigBilly
 
         //TODO: Migrate moebelView to Moebel
