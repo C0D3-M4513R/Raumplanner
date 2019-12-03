@@ -1,13 +1,20 @@
 package com;
 
-import com.Moebel.*;
-import javafx.scene.image.Image;
+import com.Moebel.Moebel;
 import sun.util.logging.PlatformLogger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
+
+import static com.Moebel.Bett.LEFRANCE;
+import static com.Moebel.Bett.LEPETITFRANCE;
+import static com.Moebel.Esstisch.WIKINGER;
+import static com.Moebel.Sessel.DELUXE;
+import static com.Moebel.Sofa.KOMFORT;
+import static com.Moebel.Sofatisch.ADMIRAL;
+import static com.Moebel.Sofatisch.MONTECARLO;
+import static com.Moebel.Stuhl.NOMADE;
 
 /**
  * Misc class for holding information
@@ -23,22 +30,17 @@ public class Repository {
      */
     private static HashMap<String, Double> y = new HashMap<>();
 
-    public static List<Moebel> getAll(){
+    public static List<? extends Moebel> getAll(){
         List<Moebel> list = new LinkedList<>();
-        /**for (int i = 0; i < 1000 ; i++) {
-            list.add(new Stuhl("gvz"+i,i,i/10));
-         }**/
-        String img = Objects.requireNonNull(Repository.class.getClassLoader().getResource("chair.png")).toExternalForm();
-        Image chair = new Image(img,true);
 
-        list.add(new Stuhl("Nomade",0.5,0.5,chair));
-        list.add(new Sofa("Komfort",2,1,chair));
-        list.add(new Sessel("deLuxe",1,1,chair));
-        list.add(new Sofatisch("Admiral",1,1,chair));
-        list.add(new Sofatisch("Monte Carlo",1,1,chair));
-        list.add(new Bett("Le France",2,2,chair));
-        list.add(new Bett("Le Petit France",1,2,chair));
-        list.add(new Esstisch("Wikinger",1.2,1.2,chair));
+        list.add(NOMADE);
+        list.add(KOMFORT);
+        list.add(DELUXE);
+        list.add(ADMIRAL);
+        list.add(MONTECARLO);
+        list.add(LEFRANCE);
+        list.add(LEPETITFRANCE);
+        list.add(WIKINGER);
 
         return list;
     }

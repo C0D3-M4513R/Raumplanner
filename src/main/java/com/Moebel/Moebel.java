@@ -1,27 +1,42 @@
 package com.Moebel;
 
 
+import com.UI.moebelListNodeController;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
-public abstract class Moebel {
+import java.util.Objects;
 
+public abstract class Moebel extends ImageView {
+
+//    This is all handled by our superclass. We don't need these anymore
+//    private double Breite; //Breite = Höhe
+//    private double Laenge; //Länge = Länge
+//    private int x;
+//    private int y;
+//    private int rotation;
+
+    private final double height,width;
     private String Name = "";
-    private double Breite; //Breite = Höhe
-    private double Laenge; //Länge = Länge
-    private int x;
-    private int y;
-    private int rotation;
+    boolean fallbackImg=false;
+    moebelListNodeController listController;
 
-    public Image getDisplay() {
-        return display;
+    public Image getImage(boolean overridden){
+        Image img = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResource("chair.png")).toExternalForm(),true);
+        if(getImage()==null){
+            fallbackImg=true;
+            setImage(img);
+        } else if(getImage().equals(img)) {
+            fallbackImg=true; //still on fallback
+        } else {
+            fallbackImg=false; //not on fallback anymore
+        }
+        return getImage();
     }
 
-    public void setDisplay(Image display) {
-        this.display = display;
+    public moebelListNodeController getListController() {
+        return listController;
     }
-
-    private Image display;
-
 
     public String getName() {
         return Name;
@@ -29,9 +44,10 @@ public abstract class Moebel {
 
     public void setName(String name) {
         Name = name;
+        listController = new moebelListNodeController(this,width,height); //Update the listController
     }
 
-    public double getLaenge() {
+/*    public double getLaenge() {
         return Laenge;
     }
 
@@ -70,15 +86,21 @@ public abstract class Moebel {
     public void setRotation(int rotation) {
         this.rotation = rotation;
     }
+    */
 
-    public Moebel(String name, double laenge, double breite, Image display ) {
-        Name = name;
-        Laenge = laenge;
-        Breite = breite;
-        this.display=display;
+    public Moebel(String name,double width,double height) {
+        this(width,height);
+        setName(name);
     }
 
-    public Moebel() {
-
+    private Moebel(double width,double height) {
+        super();
+        this.height=height;
+        this.width=width;
+        listController = new moebelListNodeController(this,width,height);
+        setFitHeight(height * 50);
+        setFitWidth(width * 50);
+        setPreserveRatio(true);
+        setSmooth(true);
     }
 }

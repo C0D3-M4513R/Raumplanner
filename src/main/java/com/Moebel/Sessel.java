@@ -1,12 +1,10 @@
 package com.Moebel;
 
 
-import javafx.scene.image.Image;
-
 public class Sessel extends Moebel {
 
-    public Sessel(String name, double breite, double laenge, Image display) {
-        super(name,breite,laenge,display);
+    public Sessel(String name, double width, double height) {
+        super(name,width,height);
     }
-
+    public static final Sessel DELUXE = new Sessel("deLuxe",1,1);
 }

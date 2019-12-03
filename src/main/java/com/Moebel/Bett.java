@@ -1,12 +1,14 @@
 package com.Moebel;
 
 
-import javafx.scene.image.Image;
-
 public class Bett extends Moebel {
 
-    public Bett(String name, double breite, double laenge, Image display) {
-        super(name,breite,laenge,display);
+    public final int PERSONS;
+    public static final Bett LEFRANCE = new Bett("Le France",2,2,2);
+    public static final Bett LEPETITFRANCE = new Bett("Le Petit France",1,1,2);
+    public Bett(String name,int persons, double width, double height) {
+        super(name,width,height);
+        PERSONS=persons;
     }
 
 }

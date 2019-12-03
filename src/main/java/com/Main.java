@@ -59,7 +59,7 @@ public class Main extends Application {
         */
 
 
-        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
+//        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
 
 
         Parent root=fxml.load();

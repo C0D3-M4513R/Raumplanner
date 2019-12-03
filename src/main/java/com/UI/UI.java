@@ -40,7 +40,7 @@ public class UI {
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 
 
-	private static final List<Moebel> list = Repository.getAll();
+	private static final List<? extends Moebel> list = Repository.getAll();
 	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
 	static ContextMenu imgContext = new ContextMenu(); //for Furniture
@@ -176,6 +176,12 @@ public class UI {
 		}
 	}
 
+	public void populate() {
+		list.forEach(moebel -> displayList.add(moebel.getListController()));
+		displayList.forEach(this::moebelSpawn);
+		moebelList.setItems(displayList);
+	}
+
 	/**
 	 * @param room
 	 * 		Node with the Children, where you wanna delete the element from
@@ -224,19 +230,6 @@ public class UI {
 
 	//Populate the ListView and other stuff on startup
 
-	private void populate() {
-		list.forEach(Moebel -> {
-			String title = Moebel.getName();
-			String desc = "" + Moebel.getBreite() + "x" + Moebel.getLaenge();
-			String type = Moebel.getClass().getSimpleName();
-			displayList.add(new com.UI.moebelListNodeController(title, desc, type, Moebel.getDisplay(), Moebel.getBreite()));
-		});
-		displayList.forEach(this::moebelSpawn);
-		moebelList
-				.setItems(
-						displayList);
-	}
-
 	/**
 	 * Makes moebels be able to spawn on the room
 	 *
@@ -249,13 +242,18 @@ public class UI {
 			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
 				//Creating Moebel
 				System.out.println("Creating moebel");
-				ImageView img = new ImageView(node.display);
+				ImageView img = null; //Not unique, need to create a new instance here
+				try {
+					img = (ImageView) node.getMoebel().getClass().getField(node.getName().toUpperCase().replace(" ","")).get(node.getMoebel().getClass());
+				} catch (NoSuchFieldException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+
 
 				//Set width, and make it visible
-				img.setFitWidth(node.width * 50);
-				img.setFitHeight(node.width * 50);
-				img.setPreserveRatio(true);
-				img.setSmooth(true);
+				//No need to do this anymore, because it has already been set by Moebel
+//				img.setFitWidth(node.get * 50);
+//				img.setFitHeight(node.width * 50);
 				room.getChildren().add(img);
 				img.setVisible(true);
 				img.relocate(mouseEvent.getX(), mouseEvent.getY());

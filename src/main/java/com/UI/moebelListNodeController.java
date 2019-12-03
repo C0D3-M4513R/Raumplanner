@@ -1,36 +1,25 @@
 package com.UI;
 
+import com.Moebel.Moebel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 
 public class moebelListNodeController extends SplitPane {
     @FXML
-    Label title;
+    Label title = new Label();
     @FXML
-    Label description;
+    Label description = new Label();
     @FXML
-	ImageView img;
-    Image display;
-    double width;
-    String tit ="lol";
-    String desc ="lol";
-    String type = null;
-    //TODO: remove all temporary labels
+    ImageView img = new ImageView();
+    Moebel moebel;
 
-
-    public moebelListNodeController(String title, String description, String type, Image display,double width) {
-        this.tit=title;
-        this.desc=description;
-        this.display=display;
-        this.width =width;
-        this.type=type;
+    public moebelListNodeController(Moebel moebel,double width, double height){
         try {
             FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource("moebelListNode.fxml"));
             loader.setController(this);
@@ -39,23 +28,29 @@ public class moebelListNodeController extends SplitPane {
         }catch (IOException e){
             e.printStackTrace();
         }
+        this.moebel = moebel;
+        moebel.getImage(true);  //sets fallback
+        img.imageProperty().bindBidirectional(moebel.imageProperty());
+        title.setText(moebel.getName());
+        title.setTooltip(new Tooltip(moebel.getClass().getSimpleName()));
+        description.setText(""+height+"x"+width);
     }
 
-    public void recalculate(double width){
-        title.resize(width,title.getHeight());
-        description.resize(width,description.getHeight());
+    public String getTitle() {
+        return title.getText();
     }
 
-    @FXML
-    public void initialize(){
-        title.setText(tit);
-        description.setText(desc);
-        img.setImage(display);
-        if(type!=null){
-        	Tooltip tip = new Tooltip(type);
-        	tip.setOpacity(0.5);
-        	title.setTooltip(tip);
-        }
+    public Label getDescription() {
+        return description;
     }
 
+    public Class<? extends Moebel> getType() {
+        return moebel.getClass();
+    }
+
+    public String getName() {
+        return moebel.getName();
+    }
+
+    public Moebel getMoebel(){return moebel;}
 }
