@@ -57,7 +57,9 @@ public class Main extends Application {
         });
         MoebelList
         */
-        layoutLogger.setLevel(PlatformLogger.Level.FINE);
+
+
+        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
 
 
         Parent root=fxml.load();

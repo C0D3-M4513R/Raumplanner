@@ -37,7 +37,7 @@ public class UI {
 	AnchorPane room;
 	@FXML
 	Region selection;
-	static ObservableList<AnchorPane> groups = FXCollections.observableList(new LinkedList<>());
+	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 
 
 	private static final List<Moebel> list = Repository.getAll();
@@ -120,7 +120,7 @@ public class UI {
 					System.out.printf("%10.1f , %10.1f %n", pos[0].getX(), pos[0].getY());
 					System.out.printf("%10.1f , %10.1f %n", pos[1].getX(), pos[1].getY());
 					//setting the width and height just right, to point to the mouse
-					setMinMax(selection, xD, yD);
+					UI.setMinMax(selection, xD, yD);
 
 					selection.setVisible(true);
 					System.out.println("Done");
@@ -138,10 +138,9 @@ public class UI {
 
 					//setup everything for the drag
 					Group group = new Group();
-					room.getChildren().add(group);
-					//prevent recursion
-					group.getChildren().remove(group);
-					dragNode(group, ()->group.getHeight(12345.6789), ()->group.getWidth(12345.6789));
+					//dragNode(group, ()->group.getHeight(12345.6789), ()->group.getWidth(12345.6789));
+					selection.setVisible(false);
+					EventHandler.consume();
 				});
 
 
@@ -296,13 +295,13 @@ public class UI {
 	 * @param height
 	 * 		height to be set
 	 */
-	private Region setMinMax(Region node, double width, double height) {
-		node.setMinWidth(width);
-		node.setMinHeight(height);
-		node.setMaxWidth(width);
-		node.setMaxHeight(height);
-		node.setPrefHeight(height);
-		node.setPrefWidth(width);
+	public static Region setMinMax(Region node, double width, double height) {
+		if(node.getMinWidth()!=width)node.setMinWidth(width);
+		if(node.getMaxWidth()!=width)node.setMaxWidth(width);
+		if(node.getPrefWidth()!=width)node.setPrefWidth(width);
+		if(node.getMinHeight()!=height)node.setMinHeight(height);
+		if(node.getMaxHeight()!=height)node.setMaxHeight(height);
+		if(node.getPrefHeight()!=height)node.setPrefHeight(height);
 		return node;
 	}
 
@@ -316,7 +315,10 @@ public class UI {
 	 * @param node
 	 * 		Node to apply the ability to drag to
 	 */
-	private void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
+	   void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
+		//TODO: Something is fishy about this. Just wrong
+		// Groups move double
+
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
@@ -339,22 +341,13 @@ public class UI {
 			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
-			if (node.getLayoutY() < node.getParent().getLayoutY() || node.getLayoutX() < node.getParent().getLayoutX() && !node.getParent().equals(room)) {
-				node.getParent().relocate(node.getLayoutX(), node.getLayoutY());
-			} else if (!node.getParent().equals(room)) {
-
-			}
-
 			double localHeight = Operators.ifNullRet(height.get(),0.0);
 			double localWidth = Operators.ifNullRet(width.get(),0.0);
 
-			System.out.println("height = " + localHeight);
-			System.out.println("width = " + localWidth);
-
-
 			//move node appropriately after accounting for collisions
-			node.setLayoutX(colX(node, localWidth, localHeight));
-			node.setLayoutY(colY(node, localHeight, localWidth));
+			double x=(colX(node, localWidth, localHeight));
+			double y=(colY(node, localHeight, localWidth));
+			node.relocate(x,y);
 			mouseEvent.consume();
 		});
 	}
@@ -371,14 +364,13 @@ public class UI {
 	 * @return Returns the appropriate y value
 	 */
 	private double colY(Node node, double height, double width) {
-
-		if (node.getBoundsInParent().getMaxY() >= room.getHeight()) {
+		if (node.getLayoutY() + height >= room.getHeight()) {
 			System.out.println("bottom");
 			node.setRotate(180);
-			return room.getHeight() - 2 * height;
-		} else if (node.getBoundsInParent().getMinY() < 0) {
+			return room.getHeight() -  height;
+		} else if (node.getLayoutY() < 0) {
 			node.setRotate(0);
-			return 0;
+			return 0.0;
 		}
 
 		return node.getLayoutY();
@@ -397,17 +389,20 @@ public class UI {
 	 */
 	private double colX(Node node, double width, double height) {
 
-		if (node.getBoundsInParent().getMaxX() >= room.getWidth()) { //bottom
+		if(node.getLayoutX()>= room.getWidth() && node.getRotate()==270) {
 			node.setRotate(90);
 			return room.getWidth() - width;
-		} else if (node.getBoundsInParent().getMinX() < 0.0) {
+		}else if (node.getLayoutX() + width >= room.getWidth()) {
+			node.setRotate(90);
+			return room.getWidth() - width;
+		} else if (node.getLayoutX() < 0.0) {
 			node.setRotate(270);
-			return -width;
+			return 0.0;
 		}
 		return node.getLayoutX();
 	}
 
-	private class Delta {
+	private static class Delta {
 		double x, y;
 	}
 }
