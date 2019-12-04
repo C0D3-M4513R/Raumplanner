@@ -1,11 +1,14 @@
 package com.Moebel;
 
 
-import com.UI.moebelListNodeController;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.util.HashMap;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public abstract class Moebel extends ImageView {
 
@@ -15,18 +18,78 @@ public abstract class Moebel extends ImageView {
 //    private int x;
 //    private int y;
 //    private int rotation;
-
+    /**
+     * Indicates how many Objects of this class have already been created
+     */
+    private static int no = 0;
+    /**
+     * just a random unique id
+     */
+    public final int id = (++no); //Unique id for all members of this class, to make identifying of duplicates easier
+    /**
+     * Stores the original height and width values of the object for later use
+     */
     private final double height,width;
-    private String Name = "";
+    /**
+     * The name of the current Moebel
+     */
+    private String name = "";
+
+    /**
+     * Indicates if we are on a fallback image
+     */
     boolean fallbackImg=false;
-    moebelListNodeController listController;
+    /**
+     * An image to use, if no other exists
+     */
+    public final static Image fallback = new Image(Objects.requireNonNull(Moebel.class.getClassLoader().getResource("chair.png")).toExternalForm(),true);
+
+    /**
+     * Holds all Furniture presets defined
+     */
+    private static HashMap<String,Supplier<? extends Moebel>> PRESETS = new HashMap<>();
+
+
+    /**
+     * @return Returns all Furniture presets of that type
+     */
+    protected abstract HashMap<String, Supplier<? extends Moebel>> getPreset();
+
+
+    /**
+     * @return Returns a list, that holds all Furniture Presets
+     */
+    public static HashMap<String, Supplier<? extends Moebel>> getPRESETS() {
+        return PRESETS;
+    }
+    /**
+     * @return Returns the original height value
+     */
+    public double getHeight() {
+        return height;
+    }
+
+    /**
+     * @return Returns the original width value
+     */
+    public double getWidth() {
+        return width;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj instanceof Moebel)
+            return ((Moebel)obj).id == id;
+        else
+            return super.equals(obj);
+    }
 
     public Image getImage(boolean overridden){
-        Image img = new Image(Objects.requireNonNull(this.getClass().getClassLoader().getResource("chair.png")).toExternalForm(),true);
         if(getImage()==null){
             fallbackImg=true;
-            setImage(img);
-        } else if(getImage().equals(img)) {
+            setImage(fallback);
+        } else if(getImage().equals(fallback)) {
             fallbackImg=true; //still on fallback
         } else {
             fallbackImg=false; //not on fallback anymore
@@ -34,17 +97,16 @@ public abstract class Moebel extends ImageView {
         return getImage();
     }
 
-    public moebelListNodeController getListController() {
-        return listController;
+    public String getName() {
+        return name;
     }
 
-    public String getName() {
-        return Name;
+    public ObjectProperty<String> nameProperty(){
+        return new ReadOnlyObjectWrapper<>(name);
     }
 
     public void setName(String name) {
-        Name = name;
-        listController = new moebelListNodeController(this,width,height); //Update the listController
+        this.name = name;
     }
 
 /*    public double getLaenge() {
@@ -95,12 +157,20 @@ public abstract class Moebel extends ImageView {
 
     private Moebel(double width,double height) {
         super();
-        this.height=height;
-        this.width=width;
-        listController = new moebelListNodeController(this,width,height);
-        setFitHeight(height * 50);
-        setFitWidth(width * 50);
+        //generic Settings
         setPreserveRatio(true);
         setSmooth(true);
+        setVisible(true);
+        //set height and width
+        this.height=height;
+        this.width=width;
+        setFitHeight(height * 50);
+        setFitWidth(width * 50);
+        //add all chairs
+        PRESETS.putAll(getPreset());
+        //actually have an image to display
+        getImage(true);
     }
+
+
 }

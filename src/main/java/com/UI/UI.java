@@ -18,7 +18,6 @@ import javafx.scene.layout.Region;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -39,8 +38,6 @@ public class UI {
 	Region selection;
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 
-
-	private static final List<? extends Moebel> list = Repository.getAll();
 	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
 	static ContextMenu imgContext = new ContextMenu(); //for Furniture
@@ -138,7 +135,6 @@ public class UI {
 
 					//setup everything for the drag
 					Group group = new Group();
-					//dragNode(group, ()->group.getHeight(12345.6789), ()->group.getWidth(12345.6789));
 					selection.setVisible(false);
 					EventHandler.consume();
 				});
@@ -177,7 +173,7 @@ public class UI {
 	}
 
 	public void populate() {
-		list.forEach(moebel -> displayList.add(moebel.getListController()));
+		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getWidth(),moebel.getHeight())));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
@@ -242,25 +238,24 @@ public class UI {
 			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
 				//Creating Moebel
 				System.out.println("Creating moebel");
-				ImageView img = null; //Not unique, need to create a new instance here
-				try {
-					img = (ImageView) node.getMoebel().getClass().getField(node.getName().toUpperCase().replace(" ","")).get(node.getMoebel().getClass());
-				} catch (NoSuchFieldException | IllegalAccessException e) {
-					e.printStackTrace();
-				}
-
+				Moebel img = Moebel.getPRESETS().get(node.getName()).get();
 
 				//Set width, and make it visible
 				//No need to do this anymore, because it has already been set by Moebel
-//				img.setFitWidth(node.get * 50);
-//				img.setFitHeight(node.width * 50);
+//				img.setFitWidth(img.getWidth() * 50);
+//				img.setFitHeight(img.getHeight() * 50);
+//				img.setVisible(true);
+
 				room.getChildren().add(img);
-				img.setVisible(true);
-				img.relocate(mouseEvent.getX(), mouseEvent.getY());
+				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+				img.setLayoutX(colX(img,img.getFitWidth(),img.getFitHeight()));
+				img.setLayoutY(colY(img,img.getFitHeight(),img.getFitWidth()));
 
 				//applying all event handlers
 				mouseHandlers(img);
 				created = true;
+				System.out.println("Done");
+				if(!room.getChildrenUnmodifiable().contains(img)) System.out.println("But doesn't contain the newly generated Image");
 			}
 			mouseEvent.consume();
 		});

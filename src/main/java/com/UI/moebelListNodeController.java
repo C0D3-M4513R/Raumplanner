@@ -12,6 +12,9 @@ import java.io.IOException;
 
 public class moebelListNodeController extends SplitPane {
     @FXML
+    /**
+     * The title in the List, this node is displayed in
+     */
     Label title = new Label();
     @FXML
     Label description = new Label();
@@ -31,7 +34,7 @@ public class moebelListNodeController extends SplitPane {
         this.moebel = moebel;
         moebel.getImage(true);  //sets fallback
         img.imageProperty().bindBidirectional(moebel.imageProperty());
-        title.setText(moebel.getName());
+        title.textProperty().bindBidirectional(moebel.nameProperty());
         title.setTooltip(new Tooltip(moebel.getClass().getSimpleName()));
         description.setText(""+height+"x"+width);
     }

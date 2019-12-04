@@ -1,21 +1,35 @@
 package com.Moebel;
 
 
-public class Sofatisch  extends Moebel {
+import java.util.HashMap;
+import java.util.function.Supplier;
 
-    public final boolean ROUND;
-    public static final Sofatisch ADMIRAL = new Sofatisch("Admiral",1,1);
-    public static final Sofatisch MONTECARLO = new Sofatisch("Monte Carlo",1);
+public class Sofatisch extends Moebel {
 
-    public Sofatisch(String name, double width, double height) {
-        super(name,width,height);
-        ROUND=false;
-    }
-    public Sofatisch(String name, double radius) {
-        super(name,radius*2,radius*2);
-        ROUND=true;
-    }
+	public static final Supplier<Sofatisch> ADMIRAL = () -> new Sofatisch("Admiral", 1, 1);
+	public static final Supplier<Sofatisch> MONTECARLO = () -> new Sofatisch("Monte Carlo", 1);
+	public final boolean ROUND;
 
+	public Sofatisch(String name, double width, double height) {
+		super(name, width, height);
+		ROUND = false;
+	}
+
+	public Sofatisch(String name, double radius) {
+		super(name, radius * 2, radius * 2);
+		ROUND = true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected HashMap<String, Supplier<? extends Moebel>> getPreset() {
+		HashMap<String, Supplier<? extends Moebel>> presets = new HashMap<>();
+		presets.put("Admiral", ADMIRAL);
+		presets.put("Monte Carlo", MONTECARLO);
+		return presets;
+	}
 
 
 }

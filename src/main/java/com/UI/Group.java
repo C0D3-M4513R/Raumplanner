@@ -1,7 +1,6 @@
 package com.UI;
 
 import com.Main;
-import com.Repository;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -47,7 +46,7 @@ public class Group extends javafx.scene.Group {
 		getChildren().add(root);
 		root.layoutXProperty().bindBidirectional(layoutXProperty());
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
-		ui.dragNode(root,()->getHeight(0.0),()->getWidth(0.0));
+		ui.dragNode(root, this::getHeight, this::getWidth);
 		setMenu();
 		//get all Children, and reposition them correctly
 		{
@@ -72,6 +71,8 @@ public class Group extends javafx.scene.Group {
 				//selection is done
 				selection.setVisible(false);
 				UI.selContext.hide();
+				room.getChildren().remove(this);
+				throw new IllegalStateException("We shoudln't have no Items here!");
 			} else {
 
 				//get the min locations
@@ -159,67 +160,24 @@ public class Group extends javafx.scene.Group {
 		setLayoutX(getMinNodeX().getLayoutX());
 		setLayoutY(getMinNodeY().getLayoutY());
 
-		resize(getWidth(0.0),getHeight(0.0));
+		resize(getWidth(),getHeight());
 
 		super.requestLayout();
 	}
 
-
-//	/**
-//	 * Intercept method for the object's width
-//	 *
-//	 * @param width
-//	 * 		Width of the object to be set
-//	 */
-//	//TODO: Broken?
-//	protected void setWidth(double width) {
-//		if (Main.layoutLogger.isLoggable(PlatformLogger.Level.FINEST))
-//			Main.layoutLogger.fine("Intercepting call to width: new width is:" + width);
-//		if(width<0.0) setWidth(-width);
-//		if(width==0.0) return;
-//		if(getMaxNodeX().getRotate()!=90)getMaxNodeX().setRotate(90);
-//		UI.setMinMax(root,width,root.getHeight());
-//		Repository.setx(this.toString(), width);
-//	}
-//
-//	/**
-//	 * Intercept method for the object's height
-//	 *
-//	 * @param height
-//	 * 		Height of the object to be set
-//	 */
-//	//never called, when managed
-//	protected void setHeight(double height) {
-//		if (Main.layoutLogger.isLoggable(PlatformLogger.Level.FINEST))
-//			Main.layoutLogger.fine("Intercepting call to width: new height is:" + height);
-//		if(height<0.0) setWidth(-height);
-//		if(height==0.0) return;
-//		if(getMaxNodeY().getRotate()!=180)getMaxNodeY().setRotate(180);
-//		UI.setMinMax(root,root.getWidth(),height);
-//		Repository.sety(this.toString(), height);
-//	}
-
-
 	/**
-	 * @param width
-	 * 		This param is ignored. ALWAYS
 	 *
 	 * @return Returns the object's width
 	 */
-	public double getWidth(double width) {
-//		return getWidth();
-		return Repository.getx(this.toString());
+	public double getWidth() {
+		return getMaxNodeX().getLayoutX()-getMinNodeX().getLayoutX();
 	}
 
 	/**
-	 * @param height
-	 * 		This param is ignored. ALWAYS
-	 *
 	 * @return Returns the object's height
 	 */
-	public double getHeight(double height) {
-//		return getHeight();
-		return Repository.gety(this.toString());
+	public double getHeight() {
+		return getMaxNodeY().getLayoutY()-getMinNodeY().getLayoutY();
 	}
 
 	private Node getMinNodeX(Collection<Node> col){
