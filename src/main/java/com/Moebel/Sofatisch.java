@@ -1,6 +1,8 @@
 package com.Moebel;
 
 
+import javafx.scene.paint.Color;
+
 import java.util.HashMap;
 import java.util.function.Supplier;
 
@@ -29,6 +31,20 @@ public class Sofatisch extends Moebel {
 		presets.put("Admiral", ADMIRAL);
 		presets.put("Monte Carlo", MONTECARLO);
 		return presets;
+	}
+
+	protected void draw(Color color){
+		switch (name){
+			case "Admiral":
+				//TODO: Vector Draw
+				break;
+			case "Monte Carlo":
+				//TODO: Vector Draw
+				break;
+			default:
+				fallbackDraw(color);
+				break;
+		}
 	}
 
 

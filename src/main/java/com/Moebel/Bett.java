@@ -1,6 +1,8 @@
 package com.Moebel;
 
 
+import javafx.scene.paint.Color;
+
 import java.util.HashMap;
 import java.util.function.Supplier;
 
@@ -24,5 +26,20 @@ public class Bett extends Moebel {
 		presets.put("Le France", LEFRANCE);
 		presets.put("Le Petit France", LEPETITFRANCE);
 		return presets;
+	}
+
+
+	protected void draw(Color color){
+		switch (name){
+			case "Le France":
+				//TODO: Vector Draw
+				break;
+			case "Le Petit France":
+				//TODO: Vector Draw
+				break;
+			default:
+				fallbackDraw(color);
+				break;
+		}
 	}
 }

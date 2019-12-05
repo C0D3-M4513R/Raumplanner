@@ -1,6 +1,8 @@
 package com.Moebel;
 
 
+import javafx.scene.paint.Color;
+
 import java.util.HashMap;
 import java.util.function.Supplier;
 
@@ -20,6 +22,17 @@ public class Stuhl extends Moebel {
         HashMap<String,Supplier<? extends Moebel>> presets = new HashMap<>();
         presets.put("Nomade",NOMADE);
         return presets;
+    }
+
+    protected void draw(Color color){
+        switch (name){
+            case "Nomade":
+                //TODO: Vector Draw
+                break;
+            default:
+                fallbackDraw(color);
+                break;
+        }
     }
 
 }

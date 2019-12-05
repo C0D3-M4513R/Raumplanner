@@ -23,12 +23,9 @@ public class Main extends Application {
 
         //TODO: Add BigBilly
 
-        //TODO: Migrate moebelView to Moebel
+        //TODO: Move Moebel content menus to class moebel
         //TODO: Adapt Moebel to allow for multipile Colors
         //TODO: Add Preferences popup
-
-        //TODO: Make click priorities in groups right
-        //TODO: Make Furniture move with the group
 
         //TODO: MINOR Walls
 

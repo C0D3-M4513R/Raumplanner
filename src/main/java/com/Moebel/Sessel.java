@@ -1,6 +1,8 @@
 package com.Moebel;
 
 
+import javafx.scene.paint.Color;
+
 import java.util.HashMap;
 import java.util.function.Supplier;
 
@@ -20,6 +22,17 @@ public class Sessel extends Moebel {
 		HashMap<String, Supplier<? extends Moebel>> presets = new HashMap<>();
 		presets.put("deLuxe", DELUXE);
 		return presets;
+	}
+
+	protected void draw(Color color){
+		switch (name){
+			case "deLuxe":
+				//TODO: Vector Draw
+				break;
+			default:
+				fallbackDraw(color);
+				break;
+		}
 	}
 
 }

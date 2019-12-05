@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
@@ -173,7 +174,7 @@ public class UI {
 	}
 
 	public void populate() {
-		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getWidth(),moebel.getHeight())));
+		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getOriginalWidth(),moebel.getOriginalHeight())));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
@@ -248,8 +249,8 @@ public class UI {
 
 				room.getChildren().add(img);
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-				img.setLayoutX(colX(img,img.getFitWidth(),img.getFitHeight()));
-				img.setLayoutY(colY(img,img.getFitHeight(),img.getFitWidth()));
+				img.setLayoutX(colX(img,img.getWidth(),img.getHeight()));
+				img.setLayoutY(colY(img,img.getHeight(),img.getWidth()));
 
 				//applying all event handlers
 				mouseHandlers(img);
@@ -262,9 +263,9 @@ public class UI {
 	}
 
 
-	private void mouseHandlers(ImageView node) {
-		double imgHeight = node.getFitHeight() <= 0 ? node.getFitWidth() : node.getFitHeight();
-		double imgWidth = node.getFitWidth() <= 0 ? node.getFitHeight() : node.getFitWidth();
+	private void mouseHandlers(Canvas node) {
+		double imgHeight = node.getHeight();
+		double imgWidth = node.getWidth();
 
 		dragNode(node, imgHeight, imgWidth);
 		//when right clicked, create context menu

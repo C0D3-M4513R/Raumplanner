@@ -3,14 +3,18 @@ package com.Moebel;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-public abstract class Moebel extends ImageView {
+
+//TODO: maybe make this a canvas to draw line elements?
+public abstract class Moebel extends Canvas {
 
 //    This is all handled by our superclass. We don't need these anymore
 //    private double Breite; //Breite = Höhe
@@ -33,12 +37,13 @@ public abstract class Moebel extends ImageView {
     /**
      * The name of the current Moebel
      */
-    private String name = "";
+    protected String name = "";
 
-    /**
-     * Indicates if we are on a fallback image
-     */
-    boolean fallbackImg=false;
+//    /**
+//     * Indicates if we are on a fallback image
+//     */
+//    boolean fallbackImg=false;
+
     /**
      * An image to use, if no other exists
      */
@@ -47,7 +52,7 @@ public abstract class Moebel extends ImageView {
     /**
      * Holds all Furniture presets defined
      */
-    private static HashMap<String,Supplier<? extends Moebel>> PRESETS = new HashMap<>();
+    protected static HashMap<String,Supplier<? extends Moebel>> PRESETS = new HashMap<>();
 
 
     /**
@@ -62,17 +67,24 @@ public abstract class Moebel extends ImageView {
     public static HashMap<String, Supplier<? extends Moebel>> getPRESETS() {
         return PRESETS;
     }
+
+    protected GraphicsContext gc = getGraphicsContext2D();
+    protected abstract void draw(Color color);
+    protected void fallbackDraw(Color color){
+        gc.drawImage(fallback,0,0);
+    }
+
     /**
      * @return Returns the original height value
      */
-    public double getHeight() {
+    public double getOriginalHeight() {
         return height;
     }
 
     /**
      * @return Returns the original width value
      */
-    public double getWidth() {
+    public double getOriginalWidth() {
         return width;
     }
 
@@ -85,7 +97,7 @@ public abstract class Moebel extends ImageView {
             return super.equals(obj);
     }
 
-    public Image getImage(boolean overridden){
+/*    public Image getImage(boolean overridden){
         if(getImage()==null){
             fallbackImg=true;
             setImage(fallback);
@@ -95,7 +107,7 @@ public abstract class Moebel extends ImageView {
             fallbackImg=false; //not on fallback anymore
         }
         return getImage();
-    }
+    }*/
 
     public String getName() {
         return name;
@@ -158,18 +170,20 @@ public abstract class Moebel extends ImageView {
     private Moebel(double width,double height) {
         super();
         //generic Settings
-        setPreserveRatio(true);
-        setSmooth(true);
+//        setPreserveRatio(true);
+//        setSmooth(true);
         setVisible(true);
         //set height and width
         this.height=height;
         this.width=width;
-        setFitHeight(height * 50);
-        setFitWidth(width * 50);
+        setWidth(width * 50);
+        setHeight(height * 50);
+//        setFitHeight(height * 50);
+//        setFitWidth(width * 50);
         //add all chairs
         PRESETS.putAll(getPreset());
         //actually have an image to display
-        getImage(true);
+//        getImage(true);
     }
 
 

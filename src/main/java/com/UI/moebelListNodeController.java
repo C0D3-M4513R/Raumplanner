@@ -3,10 +3,10 @@ package com.UI;
 import com.Moebel.Moebel;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 
@@ -19,8 +19,7 @@ public class moebelListNodeController extends SplitPane {
     @FXML
     Label description = new Label();
     @FXML
-    ImageView img = new ImageView();
-    Moebel moebel;
+    Canvas img;
 
     public moebelListNodeController(Moebel moebel,double width, double height){
         try {
@@ -31,9 +30,9 @@ public class moebelListNodeController extends SplitPane {
         }catch (IOException e){
             e.printStackTrace();
         }
-        this.moebel = moebel;
-        moebel.getImage(true);  //sets fallback
-        img.imageProperty().bindBidirectional(moebel.imageProperty());
+        this.img = moebel;
+//        moebel.getImage(true);  //sets fallback
+//        img.imageProperty().bindBidirectional(moebel.imageProperty());
         title.textProperty().bindBidirectional(moebel.nameProperty());
         title.setTooltip(new Tooltip(moebel.getClass().getSimpleName()));
         description.setText(""+height+"x"+width);
@@ -48,12 +47,12 @@ public class moebelListNodeController extends SplitPane {
     }
 
     public Class<? extends Moebel> getType() {
-        return moebel.getClass();
+        return (Class<? extends Moebel>) img.getClass();
     }
 
     public String getName() {
-        return moebel.getName();
+        return ((Moebel)img).getName();
     }
 
-    public Moebel getMoebel(){return moebel;}
+    public Moebel getMoebel(){return (Moebel) img;}
 }
