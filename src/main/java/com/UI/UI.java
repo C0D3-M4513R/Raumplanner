@@ -11,7 +11,6 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -90,7 +89,7 @@ public class UI {
 					if (!room.getChildren().filtered(Predicate -> {
 						try {
 							if (Predicate.getLayoutX() < MouseEvent.getSceneX() &&
-									((ImageView) Predicate).getX() + Predicate.getLayoutX() > MouseEvent.getSceneX()) {
+									((Canvas) Predicate).getWidth() + Predicate.getLayoutX() > MouseEvent.getSceneX()) {
 								return true;
 							}
 						} catch (ClassCastException E) {
@@ -192,13 +191,13 @@ public class UI {
 
 		boolean deleted = false;
 		for (Node node : room.getChildrenUnmodifiable()) {
-			ImageView ImageView;
+			Canvas Canvas;
 			try {
-				ImageView = (ImageView) node;
+				Canvas = (Canvas) node;
 				if (pos.getX() >= node.getLayoutX() - 1 &&
-						pos.getX() <= node.getLayoutX() + ImageView.getX() + 1 &&
+						pos.getX() <= node.getLayoutX() + Canvas.getWidth() + 1 &&
 						pos.getY() >= node.getLayoutY() - 1 &&
-						pos.getY() <= node.getLayoutY() + ImageView.getY() + 1) {
+						pos.getY() <= node.getLayoutY() + Canvas.getHeight() + 1) {
 					if (node instanceof Pane) {
 						Alert sure = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure, that you want to delete this Group and EVERYTHING inside it?", ButtonType.NO, ButtonType.YES);
 						sure.show();

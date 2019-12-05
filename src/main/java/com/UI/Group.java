@@ -3,11 +3,11 @@ package com.UI;
 import com.Main;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import sun.util.logging.PlatformLogger;
@@ -216,8 +216,8 @@ public class Group extends javafx.scene.Group {
 	public Point2D getMaxPos(Collection<Node> col) {
 		Node xnode= getMaxNodeX();
 		Node ynode= getMaxNodeY();
-		double x = xnode.getLayoutX() + ((xnode instanceof ImageView) ? ((ImageView) xnode).getFitWidth() : 0.0);
-		double y = ynode.getLayoutX() + ((ynode instanceof ImageView) ? ((ImageView) ynode).getFitHeight() : 0.0);
+		double x = xnode.getLayoutX() + ((xnode instanceof Canvas) ? ((Canvas) xnode).getWidth() : 0.0);
+		double y = ynode.getLayoutX() + ((ynode instanceof Canvas) ? ((Canvas) ynode).getHeight() : 0.0);
 		System.out.println("y = " + y);
 		System.out.println("x = " + x);
 		return new Point2D(x,y);
