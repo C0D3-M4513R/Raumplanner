@@ -173,7 +173,7 @@ public class UI {
 	}
 
 	public void populate() {
-		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getOriginalWidth(),moebel.getOriginalHeight())));
+		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getWidth()/Moebel.STRETCH,moebel.getHeight()/Moebel.STRETCH)));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
@@ -238,7 +238,9 @@ public class UI {
 			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
 				//Creating Moebel
 				System.out.println("Creating moebel");
-				Moebel img = Moebel.getPRESETS().get(node.getName()).get();
+				Moebel img;
+				if (!node.isType(SchrankWand.class)) img = Moebel.getPRESETS().get(node.getName()).get();
+				else img = SchrankWandBuilder.SchrankWandBuilder(node.getName());
 
 				//Set width, and make it visible
 				//No need to do this anymore, because it has already been set by Moebel

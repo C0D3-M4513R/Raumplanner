@@ -1,6 +1,7 @@
 package com.Moebel;
 
 
+import com.Operators;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.canvas.Canvas;
@@ -30,10 +31,7 @@ public abstract class Moebel extends Canvas {
      * just a random unique id
      */
     public final int id = (++no); //Unique id for all members of this class, to make identifying of duplicates easier
-    /**
-     * Stores the original height and width values of the object for later use
-     */
-    private final double height,width;
+    public final static double STRETCH = 50.0;
     /**
      * The name of the current Moebel
      */
@@ -69,23 +67,14 @@ public abstract class Moebel extends Canvas {
     }
 
     protected GraphicsContext gc = getGraphicsContext2D();
+
     protected abstract void draw(Color color);
     protected void fallbackDraw(Color color){
         gc.drawImage(fallback,0,0);
     }
 
-    /**
-     * @return Returns the original height value
-     */
-    public double getOriginalHeight() {
-        return height;
-    }
+        gc.drawImage(fallback,0,0,getWidth(),getHeight());
 
-    /**
-     * @return Returns the original width value
-     */
-    public double getOriginalWidth() {
-        return width;
     }
 
     @Override
@@ -162,26 +151,25 @@ public abstract class Moebel extends Canvas {
     }
     */
 
-    public Moebel(String name,double width,double height) {
+    public Moebel(String name,Double width,Double height) {
         this(width,height);
         setName(name);
     }
 
-    private Moebel(double width,double height) {
-        super();
+    private Moebel(Double width,Double height) {
+        super(Operators.ifNullRet(width,0.0) *STRETCH,Operators.ifNullRet(height,0.0)*STRETCH);
+        draw(Color.BLACK);
         //generic Settings
 //        setPreserveRatio(true);
 //        setSmooth(true);
         setVisible(true);
         //set height and width
-        this.height=height;
-        this.width=width;
-        setWidth(width * 50);
-        setHeight(height * 50);
+        if(width!=null) setWidth(width * STRETCH);
+        if(height!=null) setHeight(height * STRETCH);
 //        setFitHeight(height * 50);
 //        setFitWidth(width * 50);
         //add all chairs
-        PRESETS.putAll(getPreset());
+        if(getPreset()!= null) PRESETS.putAll(getPreset());
         //actually have an image to display
 //        getImage(true);
     }
