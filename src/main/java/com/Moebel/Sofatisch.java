@@ -3,13 +3,12 @@ package com.Moebel;
 
 import javafx.scene.paint.Color;
 
-import java.util.HashMap;
 import java.util.function.Supplier;
 
 public class Sofatisch extends Moebel {
 
-	public static final Supplier<Sofatisch> ADMIRAL = () -> new Sofatisch("Admiral", 1, 1);
-	public static final Supplier<Sofatisch> MONTECARLO = () -> new Sofatisch("Monte Carlo", 1);
+	public static final Supplier<Sofatisch> ADMIRAL = (Supplier<Sofatisch>) PRESETS.put("Admiral",() -> new Sofatisch("Admiral", 1, 1));
+	public static final Supplier<Sofatisch> MONTECARLO = (Supplier<Sofatisch>) PRESETS.put("Monte Carlo",() -> new Sofatisch("Monte Carlo", 1));
 	public final boolean ROUND;
 
 	public Sofatisch(String name, double width, double height) {
@@ -22,25 +21,15 @@ public class Sofatisch extends Moebel {
 		ROUND = true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected HashMap<String, Supplier<? extends Moebel>> getPreset() {
-		HashMap<String, Supplier<? extends Moebel>> presets = new HashMap<>();
-		presets.put("Admiral", ADMIRAL);
-		presets.put("Monte Carlo", MONTECARLO);
-		return presets;
-	}
 
 	protected void draw(Color color){
 		switch (name){
 			case "Admiral":
 				//TODO: Vector Draw
-				break;
+//				break;
 			case "Monte Carlo":
 				//TODO: Vector Draw
-				break;
+//				break;
 			default:
 				fallbackDraw(color);
 				break;

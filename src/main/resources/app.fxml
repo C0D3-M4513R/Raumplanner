@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Region?>
 <SplitPane fx:id="divider" dividerPositions="0.25" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.221" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.UI.UI">
     <items>
-        <ListView fx:id="moebelList" maxWidth="400.0" />
+        <ListView fx:id="moebelList" maxWidth="200.0" minWidth="150.0" minHeight="50.0" />
         <AnchorPane fx:id="room" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
             <Region fx:id="selection" prefHeight="0.0" prefWidth="0.0" mouseTransparent="false" style="-fx-background-color: cyan; -fx-border-style: solid; -fx-border-width: 5px; -fx-border-color: black;" />

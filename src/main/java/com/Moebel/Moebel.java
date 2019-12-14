@@ -2,6 +2,7 @@ package com.Moebel;
 
 
 import com.Operators;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +10,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -50,14 +52,13 @@ public abstract class Moebel extends Canvas {
     /**
      * Holds all Furniture presets defined
      */
-    protected static HashMap<String,Supplier<? extends Moebel>> PRESETS = new HashMap<>();
-
-
-    /**
-     * @return Returns all Furniture presets of that type
-     */
-    protected abstract HashMap<String, Supplier<? extends Moebel>> getPreset();
-
+    protected static HashMap<String,Supplier<? extends Moebel>> PRESETS = new HashMap<String, Supplier<? extends Moebel>>(){
+        @Override
+        public Supplier<? extends Moebel> put(String key, Supplier<? extends Moebel> value) {
+            super.put(key,value);
+            return value;
+        }
+    };
 
     /**
      * @return Returns a list, that holds all Furniture Presets
@@ -70,8 +71,18 @@ public abstract class Moebel extends Canvas {
 
     protected abstract void draw(Color color);
     protected void fallbackDraw(Color color){
-        gc.drawImage(fallback,0,0);
-    }
+        System.out.println("Fallback draw");
+//        int arcCurve = 10;
+//        gc.setStroke(color);
+//        gc.setLineWidth(10);
+//        gc.beginPath();
+//        gc.moveTo(0,0);
+//        gc.lineTo(0,height*STRETCH-arcCurve);
+//        gc.bezierCurveTo(0,height*STRETCH-arcCurve,arcCurve/2.0,height*STRETCH-(arcCurve/2.0),arcCurve,height*STRETCH);
+//        gc.lineTo(width*STRETCH,height*STRETCH);
+//        gc.closePath();
+//
+//        gc.fillRect(0,0,width*STRETCH,height*STRETCH);
 
         gc.drawImage(fallback,0,0,getWidth(),getHeight());
 
@@ -158,7 +169,12 @@ public abstract class Moebel extends Canvas {
 
     private Moebel(Double width,Double height) {
         super(Operators.ifNullRet(width,0.0) *STRETCH,Operators.ifNullRet(height,0.0)*STRETCH);
-        draw(Color.BLACK);
+        try {
+        	draw(Color.BLACK);
+        }catch (ConcurrentModificationException e){
+	        System.out.println("Deferring execution to later, since object isn't fully set-up yet");
+	        Platform.runLater(()->draw(Color.BLACK));
+        }
         //generic Settings
 //        setPreserveRatio(true);
 //        setSmooth(true);
@@ -168,8 +184,6 @@ public abstract class Moebel extends Canvas {
         if(height!=null) setHeight(height * STRETCH);
 //        setFitHeight(height * 50);
 //        setFitWidth(width * 50);
-        //add all chairs
-        if(getPreset()!= null) PRESETS.putAll(getPreset());
         //actually have an image to display
 //        getImage(true);
     }

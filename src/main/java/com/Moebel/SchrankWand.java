@@ -3,7 +3,7 @@ package com.Moebel;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -12,11 +12,15 @@ import static com.Moebel.Schrank.BILLY;
 
 public class SchrankWand extends Moebel {
 
+	public static final Supplier<SchrankWand> BIGBILLY = (Supplier<SchrankWand>) PRESETS.put("BigBilly",()->SchrankWandBuilder.SchrankWandBuilder("BigBilly"));
+
     private List<Schrank> schraenke = new LinkedList<>();
     private boolean inList = false;
+    private boolean finished = false;
 
     public SchrankWand(String name, int no) {
         super(name, null, null);
+	    System.out.println(""+no);
         if (no != 0) {
             for (int i = no; i > 0; i--) {
                 schraenke.add(BILLY.get());
@@ -26,6 +30,7 @@ public class SchrankWand extends Moebel {
         } else {
             inList = true;
         }
+        finished = true;
     }
 
     public SchrankWand(String name, Schrank... schranks) {
@@ -36,21 +41,20 @@ public class SchrankWand extends Moebel {
     }
 
     @Override
-    protected HashMap<String, Supplier<? extends Moebel>> getPreset() {
-        return null;
-    }
-
-    @Override
-    protected void draw(Color color) {
-        if (inList) {
+    protected void draw(Color color) throws ConcurrentModificationException {
+    	if(!finished) throw new ConcurrentModificationException("The constructor hasn't finished yet!"); //Halt execution, and wait for the constructor to finish
+        if (!inList) {
+	        System.out.println("Drawing BigBillyc");
             for (Schrank schrank : schraenke) {
                 int no = schraenke.indexOf(schrank);
                 schrank.draw(color);
-                gc.translate(schrank.getWidth(), 0.0);
+                gc.translate(schrank.getWidth()*no, 0.0);
             }
         }else {
+	        System.out.println("Drawing fallback");
             Schrank schrank=new Schrank("",0,0);
             schrank.draw(color);
+//            throw new NullPointerException("test, not a real exeption");
         }
 
     }
