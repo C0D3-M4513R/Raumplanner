@@ -1,10 +1,9 @@
 package com;
 
+/**
+ This is just a random assortment of random things, that are always needed
+ */
 public final class Operators {
-	private Operators() {
-		throw new AssertionError("No Operators instances for you!");
-	}
-
 	/**
 	 * Basically adds the ?? operator from php
 	 *

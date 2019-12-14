@@ -21,8 +21,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
 
-        //TODO: Add BigBilly
-
         //TODO: Move Moebel content menus to class moebel
         //TODO: Adapt Moebel to allow for multipile Colors
         //TODO: Add Preferences popup

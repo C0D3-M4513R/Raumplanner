@@ -13,15 +13,22 @@ import javafx.scene.control.Tooltip;
 import java.io.IOException;
 
 public class moebelListNodeController extends SplitPane {
-	@FXML
+
 	/**
-	 * The title in the List, this node is displayed in
+	 The title in the List, this node is displayed in
 	 */
-	Label title = new Label();
 	@FXML
-	Label description = new Label();
+	private Label title = new Label();
+	/**
+	 A description, to be put below the title
+	 */
 	@FXML
-	Canvas img = new Canvas();
+	private Label description = new Label();
+	/**
+	 A preview of what a Moebel is gonna look like
+	 */
+	@FXML
+	private Canvas img = new Canvas();
 
 	public moebelListNodeController(Moebel moebel, double width, double height) {
 		try {
@@ -60,19 +67,20 @@ public class moebelListNodeController extends SplitPane {
 		return title.getText();
 	}
 
-	public Label getDescription() {
-		return description;
+	public String getDescription() {
+		return description.getText();
 	}
 
+	/**
+	 @param type Type to be checked
+	 @param <T> Type to be checked
+	 @return Returns true, if {@link #img} is of the type, that is being put in
+	 */
 	public <T> boolean isType(Class<T> type) {
 		return type.isInstance(img);
 	}
 
 	public String getName() {
 		return ((Moebel) img).getName();
-	}
-
-	public Moebel getMoebel() {
-		return (Moebel) img;
 	}
 }

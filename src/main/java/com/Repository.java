@@ -17,6 +17,11 @@ import static com.Moebel.Sofatisch.MONTECARLO;
 import static com.Moebel.Stuhl.NOMADE;
 
 public class Repository {
+	/**
+	 This method is a dirty way of forcing java to load all classes once, so we can use {@link Moebel#getPRESETS()} later
+
+	 @return Returns a List of Furniture Presets
+	 */
 	public static List<? extends Moebel> getAll(){
 		List<Moebel> list = new LinkedList<>();
 

@@ -17,22 +17,32 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * This class handles everything, that has to do with Grouping multiple Furniture pieces together
- *
- * @author Timon Kayser
+ This class handles everything, that has to do with Grouping multiple Furniture pieces together
+
+ @author Timon Kayser
  */
 public class Group extends javafx.scene.Group {
 
 	private static Comparator<Node> x = (n1, n2) -> (int) (n1.getLayoutX() - n2.getLayoutX());
 	private static Comparator<Node> y = (n1, n2) -> (int) (n1.getLayoutY() - n2.getLayoutY());
+	/**
+	 *
+	 */
 	private UI ui = Main.fxml.getController();
 	AnchorPane room = ui.room;
 	Region selection = ui.selection;
+
+	/**
+	 * <p>
+	 * A level below the Group node, to allow for styling.
+	 * </p>
+	 * This holds all the information, however a group is in some cases easier to work with.
+	 */
 	private AnchorPane root = new AnchorPane();
 
 	Group() {
 		super();
-		setManaged(false);
+		setManaged(false); //This means, that we are not influenced by our Parent. So basically this is another layout root. See javadoc for more info
 //		root.setMouseTransparent(true);
 		root.setStyle("-fx-background-color: rgba(0,255,255,0.25);" +
 				" -fx-border-style: solid;" +
@@ -43,6 +53,7 @@ public class Group extends javafx.scene.Group {
 		setVisible(true);
 		root.setVisible(true);
 		room.getChildren().add(this);
+
 		getChildren().add(root);
 		root.layoutXProperty().bindBidirectional(layoutXProperty());
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
@@ -106,7 +117,7 @@ public class Group extends javafx.scene.Group {
 	}
 
 	/**
-	 * Adds the right-click functionality
+	 * Adds a menu on a right-click
 	 */
 	private void setMenu(){
 		ContextMenu menu = new ContextMenu();
@@ -153,6 +164,9 @@ public class Group extends javafx.scene.Group {
 		super.relocate(x,y);
 	}
 
+	/**
+	 * Because this Node is unmanaged, we have to do this ourselves
+	 */
 	@Override
 	public void requestLayout() {
 		if (Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER))

@@ -16,7 +16,9 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 
-//TODO: maybe make this a canvas to draw line elements?
+/**
+ This class handels most of the features related to Displaying Moebel instances
+ */
 public abstract class Moebel extends Canvas {
 
 //    This is all handled by our superclass. We don't need these anymore

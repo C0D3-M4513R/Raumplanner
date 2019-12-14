@@ -1,6 +1,8 @@
 package com.UI;
 
 import com.Moebel.Moebel;
+import com.Moebel.SchrankWand;
+import com.Moebel.SchrankWandBuilder;
 import com.Operators;
 import com.Repository;
 import javafx.collections.FXCollections;
@@ -23,26 +25,39 @@ import java.util.function.Supplier;
 
 
 /**
- * Handles all of the User-Interface interactions and Processes them
- *
- * @author Timon Kayser
+ Handles all of the User-Interface interactions and Processes them.
+
+ This is the class piecing everything together, as it is the root of the Scene, that is being displayed.<br>
+ Therefore, basically all things end up linking to here.
+
+ @author Timon Kayser
  */
 public class UI {
+	/** This is a divider (and first element), to make a view on the side, of all the elements on the side */
 	@FXML
 	private SplitPane divider;
+	/**
+	 This list is displaying everything, that can be used, to create new furniture in the {@link #room}<br>
+	 All elements in this list are of the type {@link moebelListNodeController}
+	 @see moebelListNodeController
+	 */
 	@FXML
 	private ListView<moebelListNodeController> moebelList;
+	/** This is the equivalent of the room, you are trying to place your Furniture into */
 	@FXML
 	AnchorPane room;
+	/** This element is used to implement a drag-type of select to the {@link #room} */
 	@FXML
 	Region selection;
+	/** Keeps track of all groups currently in use */
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
-
+	/** The list, that is being displayed by {@link #moebelList} */
 	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
 	static ContextMenu imgContext = new ContextMenu(); //for Furniture
-	static ContextMenu selContext = new ContextMenu(); //for selections
+	static ContextMenu selContext = new ContextMenu(); //for selection
 
+	/** First method to be run after this Object has been created from javafx */
 	@FXML
 	public void initialize() {
 		populate();
@@ -167,24 +182,26 @@ public class UI {
 				});
 
 			}
-
-			//TODO: Add a context menu to that group
 		}
 	}
 
-	public void populate() {
-		Repository.getAll().forEach((moebel)->displayList.add(new moebelListNodeController(moebel,moebel.getWidth()/Moebel.STRETCH,moebel.getHeight()/Moebel.STRETCH)));
+	/** This method initializes all Furniture elements, that are visible in the {@link #moebelList} */
+	private void populate() {
+		Repository.getAll().forEach((moebel)-> displayList.add(new moebelListNodeController(moebel,moebel.getWidth()/Moebel.STRETCH,moebel.getHeight()/Moebel.STRETCH)));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
 
 	/**
-	 * @param room
-	 * 		Node with the Children, where you wanna delete the element from
-	 * @param pos
-	 * 		Position, where you would like someting deleted
-	 *
-	 * @return to be ignored, output is not reliable
+	 This method looks for nodes at a specific location and deletes the first one it finds
+
+	 @param room
+	 		Node with the Children, where you wanna delete the element from
+	 @param pos
+	 		Position, where you would like someting deleted
+	 @param loopOp decides,
+
+	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for verification and Groups might therefore get found, but not deleted
 	 */
 	private boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
 		boolean loop = loopOp.orElse(true);
@@ -215,10 +232,12 @@ public class UI {
 			} catch (ClassCastException t) {
 				//probably not a moebel, might be a selection.
 				if (node instanceof Pane && loop) {
+					//This is actually a group or another element with children
+					//Thus I am searching this as well
 					return delete(((Pane) node), pos, loopOp);
 				} else if (node instanceof Region) {
 					//just our selection... not throwing an error, because this is somewhat expected
-				} else throw t;
+				} else throw t; //Okay, here something clearly has gone wrong
 			}
 		}
 		return false;
@@ -227,10 +246,10 @@ public class UI {
 	//Populate the ListView and other stuff on startup
 
 	/**
-	 * Makes moebels be able to spawn on the room
-	 *
-	 * @param node
-	 * 		Node to apply the ability to drag to
+	 Makes moebels be able to spawn on the room
+
+	 @param node
+	 		Node to apply the ability to drag to
 	 */
 	private void moebelSpawn(moebelListNodeController node) {
 		node.setOnMousePressed(mouseEvent -> {
@@ -250,8 +269,8 @@ public class UI {
 
 				room.getChildren().add(img);
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-				img.setLayoutX(colX(img,img.getWidth(),img.getHeight()));
-				img.setLayoutY(colY(img,img.getHeight(),img.getWidth()));
+				img.setLayoutX(colX(img,img.getWidth()));
+				img.setLayoutY(colY(img,img.getHeight()));
 
 				//applying all event handlers
 				mouseHandlers(img);
@@ -264,7 +283,11 @@ public class UI {
 	}
 
 
-	private void mouseHandlers(Canvas node) {
+	/**
+	 This method applies dragging handlers and a right-click menu to the nodes being displayed
+	 @param node node to apply handlers to
+	 */
+	public void mouseHandlers(Canvas node) {
 		double imgHeight = node.getHeight();
 		double imgWidth = node.getWidth();
 
@@ -283,12 +306,15 @@ public class UI {
 
 
 	/**
-	 * Set min,preferred and max height to the specified {@code width} and {@code height}
-	 *
-	 * @param width
-	 * 		width to be set
-	 * @param height
-	 * 		height to be set
+	 Set min,preferred and max height to the specified parameters.
+
+	 Essentially this is a method to add the setters for width and height back in
+	 @param node Node to set the width and height to
+	 @param width
+	 		width to be set
+	 @param height
+	 		height to be set
+	 @return Returns the node, that was passed in
 	 */
 	public static Region setMinMax(Region node, double width, double height) {
 		if(node.getMinWidth()!=width)node.setMinWidth(width);
@@ -300,17 +326,30 @@ public class UI {
 		return node;
 	}
 
+
+	/**
+	 This method is a wrapper to {@link #dragNode(Node, Supplier, Supplier)} method, but instead of passing in dynamic values, they are static
+	 Rest copied from {@link #dragNode(Node, Supplier, Supplier)}:
+
+	 Handles all EventHandlers related to dragging any displayed object
+
+	 @param node Node to apply the ability to drag to
+	 @param height a static height value, that will be used to calculate collision
+	 @param width a static width value, that will be used to calculate collision
+
+	 */
 	private void dragNode(Node node, double height, double width) {
 		dragNode(node, () -> height, () -> width);
 	}
 
 	/**
-	 * Handles all dragging EventHandlers for any node object
-	 *
-	 * @param node
-	 * 		Node to apply the ability to drag to
+	 Handles all EventHandlers related to dragging any displayed object
+
+	 @param node Node to apply the ability to drag to
+	 @param height a dynamic height value, that will be used to calculate collision
+	 @param width a dynamic width value, that will be used to calculate collision
 	 */
-	   void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
+	void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
 		//TODO: Something is fishy about this. Just wrong
 		// Groups move double
 
@@ -340,25 +379,25 @@ public class UI {
 			double localWidth = Operators.ifNullRet(width.get(),0.0);
 
 			//move node appropriately after accounting for collisions
-			double x=(colX(node, localWidth, localHeight));
-			double y=(colY(node, localHeight, localWidth));
+			double x=(colX(node, localWidth));
+			double y=(colY(node, localHeight));
 			node.relocate(x,y);
 			mouseEvent.consume();
 		});
 	}
 
 	/**
-	 * Checks collision between program bounds in the y direction
-	 * Also sets the Rotation variable
-	 *
-	 * @param node
-	 * 		Node to be checked
-	 * @param height
-	 * 		height of the node
-	 *
-	 * @return Returns the appropriate y value
+	 Checks collision between program bounds in the y direction <br>
+	 Also sets the Rotation variable
+
+	 @param node
+	 		Node to be checked
+	 @param height
+	 		height of the node
+
+	 @return Returns the appropriate y value
 	 */
-	private double colY(Node node, double height, double width) {
+	private double colY(Node node, double height) {
 		if (node.getLayoutY() + height >= room.getHeight()) {
 			System.out.println("bottom");
 			node.setRotate(180);
@@ -372,17 +411,17 @@ public class UI {
 	}
 
 	/**
-	 * Checks collision between program bounds in the x direction
-	 * Also sets the Rotation variable
-	 *
-	 * @param node
-	 * 		Node to be checked
-	 * @param width
-	 * 		width of the node
-	 *
-	 * @return Returns the appropriate x value
+	 Checks collision between program bounds in the x direction <br>
+	 Also sets the Rotation variable
+
+	 @param node
+	 		Node to be checked
+	 @param width
+	 		width of the node
+
+	 @return Returns the appropriate x value
 	 */
-	private double colX(Node node, double width, double height) {
+	private double colX(Node node, double width) {
 
 		if(node.getLayoutX()>= room.getWidth() && node.getRotate()==270) {
 			node.setRotate(90);
@@ -397,6 +436,7 @@ public class UI {
 		return node.getLayoutX();
 	}
 
+	/** Simple Class to store a xy position */
 	private static class Delta {
 		double x, y;
 	}
