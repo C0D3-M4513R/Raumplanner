@@ -63,7 +63,9 @@ public class UI {
 	/** The list, that is being displayed by {@link #moebelList} */
 	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
-	/** First method to be run after this Object has been created from javafx */
+	/**
+	 First method to be run after this Object has been created from javafx ()
+	 */
 	@FXML
 	public void initialize() {
 		selection = new Selection(room);
@@ -88,7 +90,7 @@ public class UI {
 	 @param loopOp
 	 decides,
 
-	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for verification and
+	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for user verification and
 	 Groups might therefore get found, but not deleted
 	 */
 	public boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {

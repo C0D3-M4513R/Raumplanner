@@ -20,7 +20,7 @@ public class SchrankWand extends Moebel {
 
     public SchrankWand(String name, int no) {
         super(name, null, null);
-	    System.out.println(""+no);
+        System.out.println(""+no);
         if (no != 0) {
             for (int i = no; i > 0; i--) {
                 schraenke.add(BILLY.get());
@@ -47,8 +47,9 @@ public class SchrankWand extends Moebel {
 	        System.out.println("Drawing BigBillyc");
             for (Schrank schrank : schraenke) {
                 int no = schraenke.indexOf(schrank);
+                schrank.gc=gc;//redirect the draw on us
                 schrank.draw(color);
-                gc.translate(schrank.getWidth()*no, 0.0);
+                gc.translate(schrank.getWidth(), 0.0);//make sure,that we
             }
         }else {
 	        System.out.println("Drawing fallback");

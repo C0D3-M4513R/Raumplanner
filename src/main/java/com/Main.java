@@ -8,20 +8,23 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sun.util.logging.PlatformLogger;
 
+import java.io.IOException;
+
 public class Main extends Application {
     public static final FXMLLoader fxml = new FXMLLoader(Main.class.getClassLoader().getResource("app.fxml"));
     public static final PlatformLogger layoutLogger = Logging.getLayoutLogger();
 
 
+
     public static void main(String[] args) {
-        launch(args);
+        launch(args); //init javafx
     }
 
+    //this is effectively a main method
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) throws IOException {
 
 
-        //TODO: Move Moebel content menus to class moebel
         //TODO: Adapt Moebel to allow for multipile Colors
         //TODO: Add Preferences popup
 
@@ -57,7 +60,7 @@ public class Main extends Application {
 //        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
 
 
-        Parent root=fxml.load();
+        Parent root=fxml.load(); //because the UI class is registered as the Controller and this is the layout root, it is managing everything inside of the Window-frame
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.maximizedProperty().addListener(ChangeListener -> {
