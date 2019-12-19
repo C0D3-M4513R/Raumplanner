@@ -26,12 +26,11 @@ import java.util.function.Supplier;
 
 /**
  Handles all of the User-Interface interactions and Processes them.
-
+ <p>
  This is the class piecing everything together, as it is the root of the Scene, that is being displayed.<br>
  Therefore, basically all things end up linking to here.
 
- @author Timon Kayser
- */
+ @author Timon Kayser */
 public class UI {
 	/** This is a divider (and first element), to make a view on the side, of all the elements on the side */
 	@FXML
@@ -39,13 +38,23 @@ public class UI {
 	/**
 	 This list is displaying everything, that can be used, to create new furniture in the {@link #room}<br>
 	 All elements in this list are of the type {@link moebelListNodeController}
+
 	 @see moebelListNodeController
 	 */
 	@FXML
 	private ListView<moebelListNodeController> moebelList;
 	/** This is the equivalent of the room, you are trying to place your Furniture into */
 	@FXML
-	AnchorPane room;
+	private AnchorPane room;
+
+	AnchorPane getRoom() {
+		return room;
+	}
+
+	Region getSelection() {
+		return selection;
+	}
+
 	/** This element is used to implement a drag-type of select to the {@link #room} */
 	@FXML
 	Region selection;
@@ -61,135 +70,118 @@ public class UI {
 	@FXML
 	public void initialize() {
 		populate();
-		//Begin making context menu for furniture
-		{
-			MenuItem delete = new MenuItem("Delete"); //creating delete menu item
-			imgContext.getItems().add(delete); //adding delete Menu item
-			//Defining delete handler
-			delete.setOnAction(EventHandler -> {
-				EventHandler.consume();
-				System.out.println("Delete");
-				//Getting coordinates
-				final Point2D pos = room.screenToLocal(delete.getParentPopup().getAnchorX(), delete.getParentPopup().getAnchorY());
-				System.out.printf("%10.1f,%10.1f%n", pos.getX(), pos.getY());
 
-
-				//Deleting all nodes, intersecting that point
-				// +1 and -1 for compensating the conversion from double to int
-				delete(room, pos, Optional.of(true));
-				room.getChildren().forEach(Node -> System.out.printf("%10.1f,%10.1f%n", Node.getLayoutX(), Node.getLayoutY()));
-
-			});
-		}
-		//Begin handling selections
-		{
-			//Make blue selection follow mouse
-			{
-				selection.setVisible(false);
-				//array for storing initial, final, delta
-				final Point2D[] pos = {null, null};
-
-				//Blue selection box
-				room.setOnMousePressed(MouseEvent -> {
-					//if still null, we are just entering the drag, so setting the initial coordinates
-					if (pos[0] == null && MouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-						pos[0] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
-						MouseEvent.consume();
-					}
-				});
-				room.setOnMouseDragged(MouseEvent -> {
-
-					//Prevent creating a region, if right clicking
-					if (MouseEvent.getButton().equals(MouseButton.SECONDARY)) return;
-					if (!room.getChildren().filtered(Predicate -> {
-						try {
-							if (Predicate.getLayoutX() < MouseEvent.getSceneX() &&
-									((Canvas) Predicate).getWidth() + Predicate.getLayoutX() > MouseEvent.getSceneX()) {
-								return true;
-							}
-						} catch (ClassCastException E) {
-							return false;
-						}
-						return false;
-					}).isEmpty()) {
-						return;
-					}
-					//Move selection to the initial click point
-					System.out.println("Creating Region");
-					//Get the current mouse position, and calculate the delta
-					pos[1] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
-
-					//Calculate starting x,y , aka min x and y
-					final double xS = Math.min(pos[0].getX(), pos[1].getX());
-					final double yS = Math.min(pos[0].getY(), pos[1].getY());
-					selection.relocate(xS, yS);
-					//Calculate delta x,y aka max x and y
-					final double xE = Math.max(pos[0].getX(), pos[1].getX());
-					final double yE = Math.max(pos[0].getY(), pos[1].getY());
-					final double xD = xE - xS;
-					final double yD = yE - yS;
-					//Print debugger info
-					System.out.printf("%10.1f , %10.1f %n", pos[0].getX(), pos[0].getY());
-					System.out.printf("%10.1f , %10.1f %n", pos[1].getX(), pos[1].getY());
-					//setting the width and height just right, to point to the mouse
-					UI.setMinMax(selection, xD, yD);
-
-					selection.setVisible(true);
-					System.out.println("Done");
-				});
-
-				//reset the drag to the initial state
-				room.setOnMouseReleased(MouseEvent -> Arrays.fill(pos, null));
-				room.setOnContextMenuRequested(ContextMenuEvent -> selection.setVisible(false));
-			}
-
-			//Configure context menu for the selection box
-			{
-				MenuItem group1 = new MenuItem("Group");
-				group1.setOnAction(EventHandler -> {
-
-					//setup everything for the drag
-					Group group = new Group();
-					selection.setVisible(false);
-					EventHandler.consume();
-				});
-
-
-				//Configure the delete button
-				MenuItem massDelete = new MenuItem("Delete");
-				massDelete.setOnAction(EventHandler -> {
-					//Remove all selected nodes
-					room.getChildren().removeIf(
-							(Node) -> Node.getLayoutX() > selection.getLayoutX()
-									&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
-									&& Node.getLayoutY() > selection.getLayoutY()
-									&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
-					);
-					//selection is done
-					selection.setVisible(false);
-					selContext.hide();
-				});
-
-				//Add both actions
-				selContext.getItems().addAll(group1, massDelete);
-
-
-				selection.setOnContextMenuRequested(ContextMenuEvent -> {
-					System.out.println("selection context requested");
-					Point2D anchor = room.localToScreen(selection.getLayoutX(), selection.getLayoutY());
-					selContext.show(selection, anchor.getX(), anchor.getY());
-					ContextMenuEvent.consume();
-				});
-
-			}
-		}
+		setupSelection();
 	}
 
 	/** This method initializes all Furniture elements, that are visible in the {@link #moebelList} */
 	private void populate() {
-		Repository.getAll().forEach((moebel)-> displayList.add(new moebelListNodeController(moebel,moebel.getWidth()/Moebel.STRETCH,moebel.getHeight()/Moebel.STRETCH)));
+		Repository.getAll().forEach((moebel) -> displayList.add(new moebelListNodeController(moebel, moebel.getWidth() / Moebel.STRETCH, moebel.getHeight() / Moebel.STRETCH)));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
+	}
+
+	/**
+	 Sets everything up for a draggable Node
+	 */
+	private void setupSelection() {
+		//Make blue selection follow mouse
+
+		selection.setVisible(false);
+		//array for storing initial, final, delta
+		final Point2D[] pos = {null, null};
+
+		//Blue selection box
+		room.setOnMousePressed(MouseEvent -> {
+			//if still null, we are just entering the drag, so setting the initial coordinates
+			if (pos[0] == null && MouseEvent.getButton().equals(MouseButton.PRIMARY)) {
+				pos[0] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
+				MouseEvent.consume();
+			}
+		});
+		room.setOnMouseDragged(MouseEvent -> {
+
+			//Prevent creating a region, if right clicking
+			if (MouseEvent.getButton().equals(MouseButton.SECONDARY)) return;
+/*			if (!room.getChildren().filtered(Predicate -> {
+				try {
+					if (Predicate.getLayoutX() < MouseEvent.getSceneX() &&
+							((Moebel) Predicate).getWidth() + Predicate.getLayoutX() > MouseEvent.getSceneX()) {
+						return true;
+					}
+				} catch (ClassCastException E) {
+					return false;
+				}
+				return false;
+			}).isEmpty()) {
+				System.out.println("");
+				return;
+			}*/
+			//Move selection to the initial click point
+			System.out.println("Creating Region");
+			//Get the current mouse position, and calculate the delta
+			pos[1] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
+
+			//Calculate starting x,y , aka min x and y
+			final double xS = Math.min(pos[0].getX(), pos[1].getX());
+			final double yS = Math.min(pos[0].getY(), pos[1].getY());
+			selection.relocate(xS, yS);
+			//Calculate delta x,y aka max x and y
+			final double xE = Math.max(pos[0].getX(), pos[1].getX());
+			final double yE = Math.max(pos[0].getY(), pos[1].getY());
+			final double xD = xE - xS;
+			final double yD = yE - yS;
+			//Print debugger info
+			System.out.printf("%10.1f , %10.1f %n", pos[0].getX(), pos[0].getY());
+			System.out.printf("%10.1f , %10.1f %n", pos[1].getX(), pos[1].getY());
+			//setting the width and height just right, to point to the mouse
+			UI.setMinMax(selection, xD, yD);
+
+			selection.setVisible(true);
+			System.out.println("Done");
+		});
+
+		//reset the drag to the initial state
+		room.setOnMouseReleased(MouseEvent -> Arrays.fill(pos, null));
+		room.setOnContextMenuRequested(ContextMenuEvent -> selection.setVisible(false));
+
+
+		MenuItem group1 = new MenuItem("Group");
+		group1.setOnAction(EventHandler -> {
+
+			//setup everything for the drag
+			Group group = new Group();
+			selection.setVisible(false);
+			EventHandler.consume();
+		});
+
+		//Configure context menu for the selection box
+
+		//Configure the delete button
+		MenuItem massDelete = new MenuItem("Delete");
+		massDelete.setOnAction(EventHandler -> {
+			//Remove all selected nodes
+			room.getChildren().removeIf(
+					(Node) -> Node.getLayoutX() > selection.getLayoutX()
+							&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
+							&& Node.getLayoutY() > selection.getLayoutY()
+							&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
+			);
+			//selection is done
+			selection.setVisible(false);
+			selContext.hide();
+		});
+
+		//Add both actions
+		selContext.getItems().addAll(group1, massDelete);
+
+
+		selection.setOnContextMenuRequested(ContextMenuEvent -> {
+			System.out.println("selection context requested");
+			Point2D anchor = room.localToScreen(selection.getLayoutX(), selection.getLayoutY());
+			selContext.show(selection, anchor.getX(), anchor.getY());
+			ContextMenuEvent.consume();
+		});
 	}
 
 	/**
@@ -249,7 +241,7 @@ public class UI {
 	 Makes moebels be able to spawn on the room
 
 	 @param node
-	 		Node to apply the ability to drag to
+	 Node to apply the ability to drag to
 	 */
 	private void moebelSpawn(moebelListNodeController node) {
 		node.setOnMousePressed(mouseEvent -> {
@@ -267,16 +259,22 @@ public class UI {
 //				img.setFitHeight(img.getHeight() * 50);
 //				img.setVisible(true);
 
+				if (!(img instanceof Node) && img == null) {//this would mean, that something in the Schrakwandbuilder failed, or the User aborted
+					return;
+				}
+
+
 				room.getChildren().add(img);
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-				img.setLayoutX(colX(img,img.getWidth()));
-				img.setLayoutY(colY(img,img.getHeight()));
+				img.setLayoutX(colX(img, img.getWidth()));
+				img.setLayoutY(colY(img, img.getHeight()));
 
 				//applying all event handlers
 				mouseHandlers(img);
 				created = true;
 				System.out.println("Done");
-				if(!room.getChildrenUnmodifiable().contains(img)) System.out.println("But doesn't contain the newly generated Image");
+				if (!room.getChildrenUnmodifiable().contains(img))
+					System.out.println("But doesn't contain the newly generated Image");
 			}
 			mouseEvent.consume();
 		});
