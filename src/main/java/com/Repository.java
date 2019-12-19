@@ -2,6 +2,7 @@ package com;
 
 import com.Moebel.Moebel;
 import com.Moebel.SchrankWand;
+import com.UI.UI;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +18,9 @@ import static com.Moebel.Sofatisch.MONTECARLO;
 import static com.Moebel.Stuhl.NOMADE;
 
 public class Repository {
+
+	public static UI UI = Main.fxml.getController();
+
 	/**
 	 This method is a dirty way of forcing java to load all classes once, so we can use {@link Moebel#getPRESETS()} later
 

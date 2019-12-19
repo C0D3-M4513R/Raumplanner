@@ -1,6 +1,8 @@
 package com.UI;
 
 import com.Main;
+import com.Repository;
+import com.UI.Menu.Selection;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -9,6 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import sun.util.logging.PlatformLogger;
 
@@ -21,16 +24,13 @@ import java.util.Comparator;
 
  @author Timon Kayser
  */
-public class Group extends javafx.scene.Group {
+ public class Group extends javafx.scene.Group {
 
 	private static Comparator<Node> x = (n1, n2) -> (int) (n1.getLayoutX() - n2.getLayoutX());
 	private static Comparator<Node> y = (n1, n2) -> (int) (n1.getLayoutY() - n2.getLayoutY());
-	/**
-	 *
-	 */
-	private UI ui = Main.fxml.getController();
-	AnchorPane room = ui.room;
-	Region selection = ui.selection;
+
+	Pane room;
+	Selection selection;
 
 	/**
 	 * <p>
@@ -40,8 +40,10 @@ public class Group extends javafx.scene.Group {
 	 */
 	private AnchorPane root = new AnchorPane();
 
-	Group() {
+	public Group(Pane room, Selection selection) {
 		super();
+		this.room=room;
+		this.selection=selection;
 		setManaged(false); //This means, that we are not influenced by our Parent. So basically this is another layout root. See javadoc for more info
 //		root.setMouseTransparent(true);
 		root.setStyle("-fx-background-color: rgba(0,255,255,0.25);" +
@@ -57,7 +59,7 @@ public class Group extends javafx.scene.Group {
 		getChildren().add(root);
 		root.layoutXProperty().bindBidirectional(layoutXProperty());
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
-		ui.dragNode(root, this::getHeight, this::getWidth);
+		Repository.UI.dragNode(root, this::getHeight, this::getWidth);
 		setMenu();
 		//get all Children, and reposition them correctly
 		{
@@ -81,7 +83,7 @@ public class Group extends javafx.scene.Group {
 				noSelected.show();
 				//selection is done
 				selection.setVisible(false);
-				UI.selContext.hide();
+				selection.hide();
 				room.getChildren().remove(this);
 				throw new IllegalStateException("We shoudln't have no Items here!");
 			} else {
@@ -108,11 +110,11 @@ public class Group extends javafx.scene.Group {
 
 				//selection is done
 				selection.setVisible(false);
-				UI.selContext.hide();
+				selection.hide();
 			}
 		}
 		System.out.println("isVo = " + isVisible());
-		System.out.println("room.getChilden().contains(this) = " + room.getChildren().contains(this));
+		System.out.println(" room.getChilden().contains(this) = " + room.getChildren().contains(this));
 //		throw new NullPointerException("Test");
 	}
 

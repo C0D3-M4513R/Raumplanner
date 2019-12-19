@@ -5,6 +5,7 @@ import com.Moebel.SchrankWand;
 import com.Moebel.SchrankWandBuilder;
 import com.Operators;
 import com.Repository;
+import com.UI.Menu.Selection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -12,14 +13,16 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -47,31 +50,25 @@ public class UI {
 	@FXML
 	private AnchorPane room;
 
-	AnchorPane getRoom() {
+	public AnchorPane getRoom() {
 		return room;
 	}
-
-	Region getSelection() {
-		return selection;
-	}
+//	<T extends Event> void applyHandler(EventType<T> type, EventHandler<? super T> handler){room.addEventHandler(type,handler);}
+//	<T extends Event> void applyFilter(EventType<T> type, EventHandler<? super T> filter){room.addEventFilter(type,filter);}
 
 	/** This element is used to implement a drag-type of select to the {@link #room} */
-	@FXML
-	Region selection;
+	Selection selection;
 	/** Keeps track of all groups currently in use */
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 	/** The list, that is being displayed by {@link #moebelList} */
 	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
-	static ContextMenu imgContext = new ContextMenu(); //for Furniture
-	static ContextMenu selContext = new ContextMenu(); //for selection
-
 	/** First method to be run after this Object has been created from javafx */
 	@FXML
 	public void initialize() {
+		selection = new Selection(room);
+//		room.getChildren().add(selection);
 		populate();
-
-		setupSelection();
 	}
 
 	/** This method initializes all Furniture elements, that are visible in the {@link #moebelList} */
@@ -82,155 +79,58 @@ public class UI {
 	}
 
 	/**
-	 Sets everything up for a draggable Node
-	 */
-	private void setupSelection() {
-		//Make blue selection follow mouse
-
-		selection.setVisible(false);
-		//array for storing initial, final, delta
-		final Point2D[] pos = {null, null};
-
-		//Blue selection box
-		room.setOnMousePressed(MouseEvent -> {
-			//if still null, we are just entering the drag, so setting the initial coordinates
-			if (pos[0] == null && MouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-				pos[0] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
-				MouseEvent.consume();
-			}
-		});
-		room.setOnMouseDragged(MouseEvent -> {
-
-			//Prevent creating a region, if right clicking
-			if (MouseEvent.getButton().equals(MouseButton.SECONDARY)) return;
-/*			if (!room.getChildren().filtered(Predicate -> {
-				try {
-					if (Predicate.getLayoutX() < MouseEvent.getSceneX() &&
-							((Moebel) Predicate).getWidth() + Predicate.getLayoutX() > MouseEvent.getSceneX()) {
-						return true;
-					}
-				} catch (ClassCastException E) {
-					return false;
-				}
-				return false;
-			}).isEmpty()) {
-				System.out.println("");
-				return;
-			}*/
-			//Move selection to the initial click point
-			System.out.println("Creating Region");
-			//Get the current mouse position, and calculate the delta
-			pos[1] = room.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
-
-			//Calculate starting x,y , aka min x and y
-			final double xS = Math.min(pos[0].getX(), pos[1].getX());
-			final double yS = Math.min(pos[0].getY(), pos[1].getY());
-			selection.relocate(xS, yS);
-			//Calculate delta x,y aka max x and y
-			final double xE = Math.max(pos[0].getX(), pos[1].getX());
-			final double yE = Math.max(pos[0].getY(), pos[1].getY());
-			final double xD = xE - xS;
-			final double yD = yE - yS;
-			//Print debugger info
-			System.out.printf("%10.1f , %10.1f %n", pos[0].getX(), pos[0].getY());
-			System.out.printf("%10.1f , %10.1f %n", pos[1].getX(), pos[1].getY());
-			//setting the width and height just right, to point to the mouse
-			UI.setMinMax(selection, xD, yD);
-
-			selection.setVisible(true);
-			System.out.println("Done");
-		});
-
-		//reset the drag to the initial state
-		room.setOnMouseReleased(MouseEvent -> Arrays.fill(pos, null));
-		room.setOnContextMenuRequested(ContextMenuEvent -> selection.setVisible(false));
-
-
-		MenuItem group1 = new MenuItem("Group");
-		group1.setOnAction(EventHandler -> {
-
-			//setup everything for the drag
-			Group group = new Group();
-			selection.setVisible(false);
-			EventHandler.consume();
-		});
-
-		//Configure context menu for the selection box
-
-		//Configure the delete button
-		MenuItem massDelete = new MenuItem("Delete");
-		massDelete.setOnAction(EventHandler -> {
-			//Remove all selected nodes
-			room.getChildren().removeIf(
-					(Node) -> Node.getLayoutX() > selection.getLayoutX()
-							&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
-							&& Node.getLayoutY() > selection.getLayoutY()
-							&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
-			);
-			//selection is done
-			selection.setVisible(false);
-			selContext.hide();
-		});
-
-		//Add both actions
-		selContext.getItems().addAll(group1, massDelete);
-
-
-		selection.setOnContextMenuRequested(ContextMenuEvent -> {
-			System.out.println("selection context requested");
-			Point2D anchor = room.localToScreen(selection.getLayoutX(), selection.getLayoutY());
-			selContext.show(selection, anchor.getX(), anchor.getY());
-			ContextMenuEvent.consume();
-		});
-	}
-
-	/**
 	 This method looks for nodes at a specific location and deletes the first one it finds
 
 	 @param room
-	 		Node with the Children, where you wanna delete the element from
+	 Node with the Children, where you wanna delete the element from
 	 @param pos
-	 		Position, where you would like someting deleted
-	 @param loopOp decides,
+	 Position, where you would like someting deleted
+	 @param loopOp
+	 decides,
 
-	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for verification and Groups might therefore get found, but not deleted
+	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for verification and
+	 Groups might therefore get found, but not deleted
 	 */
-	private boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
+	public boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
 		boolean loop = loopOp.orElse(true);
 
 		boolean deleted = false;
-		for (Node node : room.getChildrenUnmodifiable()) {
-			Canvas Canvas;
-			try {
-				Canvas = (Canvas) node;
-				if (pos.getX() >= node.getLayoutX() - 1 &&
-						pos.getX() <= node.getLayoutX() + Canvas.getWidth() + 1 &&
-						pos.getY() >= node.getLayoutY() - 1 &&
-						pos.getY() <= node.getLayoutY() + Canvas.getHeight() + 1) {
-					if (node instanceof Pane) {
-						Alert sure = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure, that you want to delete this Group and EVERYTHING inside it?", ButtonType.NO, ButtonType.YES);
-						sure.show();
-						sure.setOnCloseRequest(DialogEvent -> {
-							if (sure.getResult().equals(ButtonType.YES)) {
-								room.getChildren().remove(node);
-							}
-						});
-						return true;
+		try {
+			for (Node node : room.getChildrenUnmodifiable()) {
+				Canvas Canvas;
+				try {
+					Canvas = (Canvas) node;
+					if (pos.getX() >= node.getLayoutX() - 1 &&
+							pos.getX() <= node.getLayoutX() + Canvas.getWidth() + 1 &&
+							pos.getY() >= node.getLayoutY() - 1 &&
+							pos.getY() <= node.getLayoutY() + Canvas.getHeight() + 1) {
+						if (node instanceof Pane) {
+							Alert sure = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure, that you want to delete this Group and EVERYTHING inside it?", ButtonType.NO, ButtonType.YES);
+							sure.show();
+							sure.setOnCloseRequest(DialogEvent -> {
+								if (sure.getResult().equals(ButtonType.YES)) {
+									room.getChildren().remove(node);
+								}
+							});
+							return true;
 
+						}
+						room.getChildren().remove(node);
+						System.out.println("Successfully deleted the Element");
 					}
-					room.getChildren().remove(node);
-					System.out.println("Successfully deleted the Element");
+				} catch (ClassCastException t) {
+					//probably not a moebel, might be a selection.
+					if (node instanceof Pane && loop) {
+						//This is actually a group or another element with children
+						//Thus I am searching this as well
+						return delete(((Pane) node), pos, loopOp);
+					} else if (node instanceof Region) {
+						//just our selection... not throwing an error, because this is somewhat expected
+					} else throw t; //Okay, here something clearly has gone wrong
 				}
-			} catch (ClassCastException t) {
-				//probably not a moebel, might be a selection.
-				if (node instanceof Pane && loop) {
-					//This is actually a group or another element with children
-					//Thus I am searching this as well
-					return delete(((Pane) node), pos, loopOp);
-				} else if (node instanceof Region) {
-					//just our selection... not throwing an error, because this is somewhat expected
-				} else throw t; //Okay, here something clearly has gone wrong
 			}
+		} catch (NoSuchElementException ex) {
+			System.err.println("NoSuchElementException means deletion was successful?");
 		}
 		return false;
 	}
@@ -283,7 +183,9 @@ public class UI {
 
 	/**
 	 This method applies dragging handlers and a right-click menu to the nodes being displayed
-	 @param node node to apply handlers to
+
+	 @param node
+	 node to apply handlers to
 	 */
 	public void mouseHandlers(Canvas node) {
 		double imgHeight = node.getHeight();
@@ -291,7 +193,7 @@ public class UI {
 
 		dragNode(node, imgHeight, imgWidth);
 		//when right clicked, create context menu
-		node.setOnContextMenuRequested(ContextMenuEvent -> {
+		/*node.setOnContextMenuRequested(ContextMenuEvent -> {
 			ContextMenuEvent.consume();
 			System.out.println("Create Menu");
 			System.out.printf("%10.1f,%10.1f%n", node.getLayoutX(), node.getLayoutY());
@@ -299,53 +201,62 @@ public class UI {
 			Point2D pos = room.localToScreen(node.getLayoutX(), node.getLayoutY());
 
 			imgContext.show(node, pos.getX(), pos.getY());
-		});
+		});*/
 	}
 
 
 	/**
 	 Set min,preferred and max height to the specified parameters.
-
+	 <p>
 	 Essentially this is a method to add the setters for width and height back in
-	 @param node Node to set the width and height to
+
+	 @param node
+	 Node to set the width and height to
 	 @param width
-	 		width to be set
+	 width to be set
 	 @param height
-	 		height to be set
+	 height to be set
+
 	 @return Returns the node, that was passed in
 	 */
 	public static Region setMinMax(Region node, double width, double height) {
-		if(node.getMinWidth()!=width)node.setMinWidth(width);
-		if(node.getMaxWidth()!=width)node.setMaxWidth(width);
-		if(node.getPrefWidth()!=width)node.setPrefWidth(width);
-		if(node.getMinHeight()!=height)node.setMinHeight(height);
-		if(node.getMaxHeight()!=height)node.setMaxHeight(height);
-		if(node.getPrefHeight()!=height)node.setPrefHeight(height);
+		if (node.getMinWidth() != width) node.setMinWidth(width);
+		if (node.getMaxWidth() != width) node.setMaxWidth(width);
+		if (node.getPrefWidth() != width) node.setPrefWidth(width);
+		if (node.getMinHeight() != height) node.setMinHeight(height);
+		if (node.getMaxHeight() != height) node.setMaxHeight(height);
+		if (node.getPrefHeight() != height) node.setPrefHeight(height);
 		return node;
 	}
 
 
 	/**
-	 This method is a wrapper to {@link #dragNode(Node, Supplier, Supplier)} method, but instead of passing in dynamic values, they are static
+	 This method is a wrapper to {@link #dragNode(Node, Supplier, Supplier)} method, but instead of passing in dynamic
+	 values, they are static
 	 Rest copied from {@link #dragNode(Node, Supplier, Supplier)}:
-
+	 <p>
 	 Handles all EventHandlers related to dragging any displayed object
 
-	 @param node Node to apply the ability to drag to
-	 @param height a static height value, that will be used to calculate collision
-	 @param width a static width value, that will be used to calculate collision
-
+	 @param node
+	 Node to apply the ability to drag to
+	 @param height
+	 a static height value, that will be used to calculate collision
+	 @param width
+	 a static width value, that will be used to calculate collision
 	 */
-	private void dragNode(Node node, double height, double width) {
+	void dragNode(Node node, double height, double width) {
 		dragNode(node, () -> height, () -> width);
 	}
 
 	/**
 	 Handles all EventHandlers related to dragging any displayed object
 
-	 @param node Node to apply the ability to drag to
-	 @param height a dynamic height value, that will be used to calculate collision
-	 @param width a dynamic width value, that will be used to calculate collision
+	 @param node
+	 Node to apply the ability to drag to
+	 @param height
+	 a dynamic height value, that will be used to calculate collision
+	 @param width
+	 a dynamic width value, that will be used to calculate collision
 	 */
 	void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
 		//TODO: Something is fishy about this. Just wrong
@@ -356,8 +267,7 @@ public class UI {
 
 		//Calculate the amount dragged
 		node.setOnMousePressed(mouseEvent -> {
-			imgContext.hide();
-			selContext.hide();
+			selection.hideAll();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
 			mouseEvent.consume();
@@ -373,13 +283,13 @@ public class UI {
 			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
 			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
 
-			double localHeight = Operators.ifNullRet(height.get(),0.0);
-			double localWidth = Operators.ifNullRet(width.get(),0.0);
+			double localHeight = Operators.ifNullRet(height.get(), 0.0);
+			double localWidth = Operators.ifNullRet(width.get(), 0.0);
 
 			//move node appropriately after accounting for collisions
-			double x=(colX(node, localWidth));
-			double y=(colY(node, localHeight));
-			node.relocate(x,y);
+			double x = (colX(node, localWidth));
+			double y = (colY(node, localHeight));
+			node.relocate(x, y);
 			mouseEvent.consume();
 		});
 	}
@@ -389,9 +299,9 @@ public class UI {
 	 Also sets the Rotation variable
 
 	 @param node
-	 		Node to be checked
+	 Node to be checked
 	 @param height
-	 		height of the node
+	 height of the node
 
 	 @return Returns the appropriate y value
 	 */
@@ -399,7 +309,7 @@ public class UI {
 		if (node.getLayoutY() + height >= room.getHeight()) {
 			System.out.println("bottom");
 			node.setRotate(180);
-			return room.getHeight() -  height;
+			return room.getHeight() - height;
 		} else if (node.getLayoutY() < 0) {
 			node.setRotate(0);
 			return 0.0;
@@ -413,18 +323,18 @@ public class UI {
 	 Also sets the Rotation variable
 
 	 @param node
-	 		Node to be checked
+	 Node to be checked
 	 @param width
-	 		width of the node
+	 width of the node
 
 	 @return Returns the appropriate x value
 	 */
 	private double colX(Node node, double width) {
 
-		if(node.getLayoutX()>= room.getWidth() && node.getRotate()==270) {
+		if (node.getLayoutX() >= room.getWidth() && node.getRotate() == 270) {
 			node.setRotate(90);
 			return room.getWidth() - width;
-		}else if (node.getLayoutX() + width >= room.getWidth()) {
+		} else if (node.getLayoutX() + width >= room.getWidth()) {
 			node.setRotate(90);
 			return room.getWidth() - width;
 		} else if (node.getLayoutX() < 0.0) {

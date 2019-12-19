@@ -2,6 +2,7 @@ package com.Moebel;
 
 
 import com.Operators;
+import com.UI.Menu.MoebelMenu;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -21,12 +22,6 @@ import java.util.function.Supplier;
  */
 public abstract class Moebel extends Canvas {
 
-//    This is all handled by our superclass. We don't need these anymore
-//    private double Breite; //Breite = Höhe
-//    private double Laenge; //Länge = Länge
-//    private int x;
-//    private int y;
-//    private int rotation;
     /**
      * Indicates how many Objects of this class have already been created
      */
@@ -40,11 +35,6 @@ public abstract class Moebel extends Canvas {
      * The name of the current Moebel
      */
     protected String name = "";
-
-//    /**
-//     * Indicates if we are on a fallback image
-//     */
-//    boolean fallbackImg=false;
 
     /**
      * An image to use, if no other exists
@@ -69,25 +59,14 @@ public abstract class Moebel extends Canvas {
         return PRESETS;
     }
 
+    protected MoebelMenu menu = new MoebelMenu();
+
     protected GraphicsContext gc = getGraphicsContext2D();
 
     protected abstract void draw(Color color);
     protected void fallbackDraw(Color color){
         System.out.println("Fallback draw");
-//        int arcCurve = 10;
-//        gc.setStroke(color);
-//        gc.setLineWidth(10);
-//        gc.beginPath();
-//        gc.moveTo(0,0);
-//        gc.lineTo(0,height*STRETCH-arcCurve);
-//        gc.bezierCurveTo(0,height*STRETCH-arcCurve,arcCurve/2.0,height*STRETCH-(arcCurve/2.0),arcCurve,height*STRETCH);
-//        gc.lineTo(width*STRETCH,height*STRETCH);
-//        gc.closePath();
-//
-//        gc.fillRect(0,0,width*STRETCH,height*STRETCH);
-
         gc.drawImage(fallback,0,0,getWidth(),getHeight());
-
     }
 
     @Override
@@ -98,18 +77,6 @@ public abstract class Moebel extends Canvas {
         else
             return super.equals(obj);
     }
-
-/*    public Image getImage(boolean overridden){
-        if(getImage()==null){
-            fallbackImg=true;
-            setImage(fallback);
-        } else if(getImage().equals(fallback)) {
-            fallbackImg=true; //still on fallback
-        } else {
-            fallbackImg=false; //not on fallback anymore
-        }
-        return getImage();
-    }*/
 
     public String getName() {
         return name;
@@ -122,47 +89,6 @@ public abstract class Moebel extends Canvas {
     public void setName(String name) {
         this.name = name;
     }
-
-/*    public double getLaenge() {
-        return Laenge;
-    }
-
-    public void setLaenge(double laenge) {
-        Laenge = laenge;
-    }
-
-    public double getBreite() {
-        return Breite;
-    }
-
-    public void setBreite(double breite) {
-        Breite = breite;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(int rotation) {
-        this.rotation = rotation;
-    }
-    */
 
     public Moebel(String name,Double width,Double height) {
         this(width,height);
@@ -178,16 +104,12 @@ public abstract class Moebel extends Canvas {
 	        Platform.runLater(()->draw(Color.BLACK));
         }
         //generic Settings
-//        setPreserveRatio(true);
-//        setSmooth(true);
         setVisible(true);
         //set height and width
         if(width!=null) setWidth(width * STRETCH);
         if(height!=null) setHeight(height * STRETCH);
-//        setFitHeight(height * 50);
-//        setFitWidth(width * 50);
-        //actually have an image to display
-//        getImage(true);
+        //attach menu
+        setOnContextMenuRequested((Event)->{menu.visible(this,Event.getScreenX(),Event.getScreenY());});
     }
 
 
