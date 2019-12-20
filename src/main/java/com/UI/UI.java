@@ -69,6 +69,7 @@ public class UI {
 	@FXML
 	public void initialize() {
 		selection = new Selection(room);
+		moebelList.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, Event::consume);
 //		room.getChildren().add(selection);
 		populate();
 	}

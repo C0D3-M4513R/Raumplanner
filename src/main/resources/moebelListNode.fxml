@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-
-<?import javafx.scene.canvas.Canvas?>
-<fx:root dividerPositions="0.4166666666666667" maxHeight="50.0" maxWidth="200.0" minHeight="20.0" minWidth="150.0" prefHeight="50.0" prefWidth="150.0" type="SplitPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-   <items>
-      <Canvas fx:id="img" height="50.0" width="50.0" pickOnBounds="true" />
-      <GridPane maxHeight="-Infinity" maxWidth="150" minHeight="50.0" minWidth="100" prefHeight="50.0" prefWidth="150.0">
-        <columnConstraints>
-            <ColumnConstraints />
-          <ColumnConstraints />
-            <ColumnConstraints hgrow="SOMETIMES" maxWidth="66.0" minWidth="4.0" prefWidth="62.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints />
-            <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Label fx:id="title" maxHeight="25.0" maxWidth="150.0" minHeight="25.0" minWidth="100.0" prefHeight="25.0" prefWidth="150.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label fx:id="description" maxHeight="25.0" maxWidth="150.0" minHeight="25.0" minWidth="100.0" prefHeight="25.0" prefWidth="100.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-         </children>
-      </GridPane>
-   </items>
+<?import javafx.scene.layout.*?>
+<fx:root maxHeight="50.0" maxWidth="400.0" minHeight="20.0" minWidth="150.0" prefHeight="50.0" prefWidth="150.0"
+         type="GridPane" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="66.0" minWidth="4.0" prefWidth="62.0"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES"/>
+        <RowConstraints maxHeight="30.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES"/>
+    </rowConstraints>
+    <children>
+        <Label fx:id="title" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" prefHeight="25.0"
+               prefWidth="150.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label fx:id="description" maxHeight="25.0" maxWidth="100.0" minHeight="25.0" minWidth="100.0" prefHeight="25.0"
+               prefWidth="100.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    </children>
 </fx:root>

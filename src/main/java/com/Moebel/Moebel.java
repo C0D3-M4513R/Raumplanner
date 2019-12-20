@@ -39,7 +39,7 @@ public abstract class Moebel extends Canvas {
     /**
      * An image to use, if no other exists
      */
-    public final static Image fallback = new Image(Objects.requireNonNull(Moebel.class.getClassLoader().getResource("chair.png")).toExternalForm(),true);
+    public final static Image fallback = new Image(Objects.requireNonNull(Moebel.class.getClassLoader().getResource("chair.png")).toExternalForm());
 
     /**
      * Holds all Furniture presets defined
