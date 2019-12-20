@@ -4,6 +4,8 @@ import com.UI.ExeptionDialog;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 
+import static com.Moebel.Schrank.BILLY;
+
 public class SchrankWandBuilder {
     public static SchrankWand SchrankWandBuilder(String name){
         final SchrankWand[] sw = new SchrankWand[1];
@@ -14,12 +16,16 @@ public class SchrankWandBuilder {
         dialog.showAndWait().ifPresent(input->{
             try {
                 int no = Integer.parseInt(input);
-                sw[0] = new SchrankWand(name,no);
+                sw[0] = builder(name,no);
             }catch (Throwable throwable){
                 ExeptionDialog ex = new ExeptionDialog(Alert.AlertType.ERROR,throwable);
                 ex.show();
             }
         });
         return sw[0];
+    }
+
+    public static SchrankWand<Schrank> builder(String name,int no){
+        return new SchrankWand<>(name,no,BILLY);
     }
 }

@@ -1,7 +1,7 @@
 package com;
 
 import com.Moebel.Moebel;
-import com.Moebel.SchrankWand;
+import com.Moebel.SchrankWandBuilder;
 import com.UI.UI;
 
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ public class Repository {
 		list.add(LEPETITFRANCE.get());
 		list.add(WIKINGER.get());
 		list.add(BILLY.get());
-		list.add(new SchrankWand("BigBilly",0));
+		list.add(SchrankWandBuilder.builder("BigBilly",0));
 
 		return list;
 	}
