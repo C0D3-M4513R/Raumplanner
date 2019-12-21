@@ -59,4 +59,10 @@ public class SchrankWand<T extends Moebel> extends Moebel {
         }
 
     }
+
+
+    @Override
+    public moebelListNodeController getMoebelListNodeController(){
+        return new moebelListNodeController(this,getWidth()/STRETCH,getHeight()/STRETCH);
+    }
 }

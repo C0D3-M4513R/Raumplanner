@@ -9,7 +9,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -44,7 +43,6 @@ public class moebelListNodeController extends GridPane {
 			e.printStackTrace();
 		}
 		moebel.setVisible(true);
-		moebel.changeColor(Color.BLACK);
 		moebel.setWidth(moebel.getHeight() * moebel.getWidth() /50.0);
 		moebel.setHeight(50.0);
 		add(moebel, 2, 2, 1, 2);

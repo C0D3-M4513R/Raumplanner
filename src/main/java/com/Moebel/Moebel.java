@@ -3,6 +3,7 @@ package com.Moebel;
 
 import com.Operators;
 import com.UI.Menu.MoebelMenu;
+import com.UI.moebelListNodeController;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -21,7 +22,6 @@ import java.util.function.Supplier;
  This class handels most of the features related to Displaying Moebel instances
  */
 public abstract class Moebel extends Canvas {
-
     /**
      * Indicates how many Objects of this class have already been created
      */
@@ -31,6 +31,8 @@ public abstract class Moebel extends Canvas {
      */
     public final int id = (++no); //Unique id for all members of this class, to make identifying of duplicates easier
     public final static double STRETCH = 50.0;
+    private final Double width,height;
+
     /**
      * The name of the current Moebel
      */
@@ -90,6 +92,19 @@ public abstract class Moebel extends Canvas {
         this.name = name;
     }
 
+    public moebelListNodeController getMoebelListNodeController(){
+        moebelListNodeController entry = new moebelListNodeController(this,getWidth()/STRETCH,getHeight()/STRETCH);
+        final double ratio = width/height;
+
+
+//        gc.setTransform(xScale,1,1,getWidth()*xScale,0,0);
+        setHeight(entry.getMaxHeight());
+        setWidth(entry.getMaxHeight()*ratio);
+	    draw(Color.BLACK);
+
+        return entry;
+    }
+
     public Moebel(String name,Double width,Double height) {
         this(width,height);
         setName(name);
@@ -108,8 +123,13 @@ public abstract class Moebel extends Canvas {
         //set height and width
         if(width!=null) setWidth(width * STRETCH);
         if(height!=null) setHeight(height * STRETCH);
+        this.width = width;
+        this.height = height;
         //attach menu
-        setOnContextMenuRequested((Event)->{menu.visible(this,Event.getScreenX(),Event.getScreenY());});
+        setOnContextMenuRequested((Event)->{
+            menu.visible(this,Event.getScreenX(),Event.getScreenY());
+            Event.consume();
+        });
     }
 
 

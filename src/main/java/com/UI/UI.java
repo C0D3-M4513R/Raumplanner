@@ -8,6 +8,7 @@ import com.Repository;
 import com.UI.Menu.Selection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -17,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -76,7 +78,7 @@ public class UI {
 
 	/** This method initializes all Furniture elements, that are visible in the {@link #moebelList} */
 	private void populate() {
-		Repository.getAll().forEach((moebel) -> displayList.add(new moebelListNodeController(moebel, moebel.getWidth() / Moebel.STRETCH, moebel.getHeight() / Moebel.STRETCH)));
+		Repository.getAll().forEach((moebel) -> displayList.add(moebel.getMoebelListNodeController()));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
