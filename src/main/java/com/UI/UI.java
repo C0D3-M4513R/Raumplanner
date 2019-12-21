@@ -6,6 +6,7 @@ import com.Moebel.SchrankWandBuilder;
 import com.Operators;
 import com.Repository;
 import com.UI.Menu.Selection;
+import com.sun.istack.internal.NotNull;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -140,7 +141,40 @@ public class UI {
 		return false;
 	}
 
-	//Populate the ListView and other stuff on startup
+	/**
+	 Deletes all nodes, that are in nodes from target.
+	 If there is a Node with children, they will also be deleted from target
+
+	 @param target List of nodes to delete from
+	 @param nodes nodes to delete in target
+	 @return returns true, if at least one element has been deleted
+	 */
+	public static boolean delete(@NotNull ObservableList<Node> target, ObservableList<Node> nodes){
+		boolean rem = target.removeAll(nodes);
+		for (Node pane:target) {
+			if(pane instanceof Pane){
+				rem = delete(((Pane) pane).getChildren(), nodes) || rem;
+			}
+		}
+		for (Node pane:nodes) {
+			if(pane instanceof Pane){
+				rem = delete(target,((Pane) pane).getChildren()) || rem;
+			}
+		}
+		return rem;
+	}
+	/**
+	 Deletes all nodes, that are in nodes from target.
+	 If there is a Node with children, they will also be deleted from target
+
+	 @param target List of nodes to delete from
+	 @param node node to delete in target
+	 @return returns true, if at least one element has been deleted
+	 */
+	public static boolean delete(@NotNull ObservableList<Node> target,Node node){
+		return delete(target,FXCollections.singletonObservableList(node));
+	}
+
 
 	/**
 	 Makes moebels be able to spawn on the room
@@ -215,6 +249,7 @@ public class UI {
 	 <p>
 	 Essentially this is a method to add the setters for width and height back in
 
+	 @param <T> Type of the Node
 	 @param node
 	 Node to set the width and height to
 	 @param width
@@ -224,7 +259,7 @@ public class UI {
 
 	 @return Returns the node, that was passed in
 	 */
-	public static Region setMinMax(Region node, double width, double height) {
+	public static <T extends Region> T setMinMax(T node, double width, double height) {
 		if (node.getMinWidth() != width) node.setMinWidth(width);
 		if (node.getMaxWidth() != width) node.setMaxWidth(width);
 		if (node.getPrefWidth() != width) node.setPrefWidth(width);

@@ -87,6 +87,11 @@ public class Selection extends Region implements Menu {
 			//Move selection to the initial click point
 			System.out.println("Creating Region");
 
+			if(!root.getChildren().contains(this)){
+				UI.delete(root.getChildren(),this);
+				root.getChildren().add(this);
+			}
+
 			//Get the current mouse position, and calculate the delta
 			pos[1] = root.sceneToLocal(MouseEvent.getSceneX(), MouseEvent.getSceneY());
 

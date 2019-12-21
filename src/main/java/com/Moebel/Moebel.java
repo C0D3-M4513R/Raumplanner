@@ -31,6 +31,8 @@ public abstract class Moebel extends Canvas {
      */
     public final int id = (++no); //Unique id for all members of this class, to make identifying of duplicates easier
     public final static double STRETCH = 50.0;
+    public static final Color DEFAULT_COLOR = Color.BLACK;
+    public Color currentColor = DEFAULT_COLOR;
     private final Double width,height;
 
     /**
@@ -66,9 +68,16 @@ public abstract class Moebel extends Canvas {
     protected GraphicsContext gc = getGraphicsContext2D();
 
     protected abstract void draw(Color color);
-    protected void fallbackDraw(Color color){
+    protected final void fallbackDraw(Color color){
         System.out.println("Fallback draw");
+        gc.setFill(color);
+        gc.fillRect(0,0,getWidth(),getHeight());
         gc.drawImage(fallback,0,0,getWidth(),getHeight());
+    }
+
+    public void changeColor(Color color){
+        gc.clearRect(0,0,getWidth(),getHeight());
+        draw(color);
     }
 
     @Override
@@ -100,7 +109,7 @@ public abstract class Moebel extends Canvas {
 //        gc.setTransform(xScale,1,1,getWidth()*xScale,0,0);
         setHeight(entry.getMaxHeight());
         setWidth(entry.getMaxHeight()*ratio);
-	    draw(Color.BLACK);
+        draw(currentColor);
 
         return entry;
     }
@@ -113,10 +122,10 @@ public abstract class Moebel extends Canvas {
     private Moebel(Double width,Double height) {
         super(Operators.ifNullRet(width,0.0) *STRETCH,Operators.ifNullRet(height,0.0)*STRETCH);
         try {
-        	draw(Color.BLACK);
+        	draw(DEFAULT_COLOR);
         }catch (ConcurrentModificationException e){
 	        System.out.println("Deferring execution to later, since object isn't fully set-up yet");
-	        Platform.runLater(()->draw(Color.BLACK));
+	        Platform.runLater(()->draw(DEFAULT_COLOR));
         }
         //generic Settings
         setVisible(true);
