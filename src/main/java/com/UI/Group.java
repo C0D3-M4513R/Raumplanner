@@ -12,11 +12,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import sun.util.logging.PlatformLogger;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -26,6 +24,7 @@ import java.util.Comparator;
 public class Group extends javafx.scene.Group {
 	private static Comparator<Node> x = (n1, n2) -> (int) (n1.getLayoutX() - n2.getLayoutX());
 	private static Comparator<Node> y = (n1, n2) -> (int) (n1.getLayoutY() - n2.getLayoutY());
+	private boolean setup = false;
 	private GroupMenu menu = new GroupMenu(this);
 
 	Pane room;
@@ -68,60 +67,61 @@ public class Group extends javafx.scene.Group {
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
 		Repository.UI.dragNode(this, this::getHeight, this::getWidth);
 		//get all Children, and reposition them correctly
-		{
-			//Adds all selected Nodes to be in the Group
-			root.getChildren().addAll(
-					//Get all nodes in the selection
-					room.getChildren().filtered(
-							(Node) -> Node.getLayoutX() > selection.getLayoutX()
-									&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
-									&& Node.getLayoutY() > selection.getLayoutY()
-									&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
-									&& !Node.getClass().isInstance(Region.class)
-					)
-			);
 
-			//Check if we selected something
-			if (root.getChildren().size() <= 0) {
-				//if we selected nothing display an error and abort
-				Alert noSelected = new Alert(Alert.AlertType.ERROR, "Keine Möbel ausgewählt. \n " +
-						"Ein Möebel in kann nicht in mehreren Gruppen sein!", ButtonType.CANCEL);
-				noSelected.show();
-				//selection is done
-				selection.setVisible(false);
-				selection.hide();
-				room.getChildren().remove(this);
-				throw new IllegalStateException("We shoudln't have no Items here!");
-			} else {
+		//Adds all selected Nodes to be in the Group
+		getChildren().addAll(
+				//Get all nodes in the selection
+				room.getChildren().filtered(
+						(Node) -> selection.getBoundsInParent().intersects(Node.getBoundsInParent()) && !Node.equals(selection)//better to let javafx handle this
+//							(Node) -> Node.getLayoutX() > selection.getLayoutX()
+//									&& Node.getLayoutX() < selection.getLayoutX() + selection.getMinWidth()
+//									&& Node.getLayoutY() > selection.getLayoutY()
+//									&& Node.getLayoutY() < selection.getLayoutY() + selection.getMinHeight()
+//									&& !Node.getClass().isInstance(Region.class)
+				)
+		);
 
-				//get the min locations
-				final Point2D pos = getMinPos();
-
-				//set all edge-points
-				relocate(pos.getX(), pos.getY());
-
-
-				//make nodes location relative to the new Pane/Scene for them to stay in the same place
-				//Only now do the transform, because we needed the coordinates for the pos array
-				getChildren().forEach(Node -> {
-					Point2D poi = parentToLocal(Node.getLayoutX(), Node.getLayoutY());
-					Node.relocate(poi.getX(), poi.getY());
-				});
-
-				UI.groups.add(this);
-
-
-				//move all children to the right parent
-				room.getChildren().removeAll(root.getChildren());
-
-				//selection is done
-				selection.setVisible(false);
-				selection.hide();
-			}
+		//Check if we selected something
+		if (root.getChildren().size() <= 0) {
+			//if we selected nothing display an error and abort
+			Alert noSelected = new Alert(Alert.AlertType.ERROR, "Keine Möbel ausgewählt. \n " +
+					"Ein Möebel in kann nicht in mehreren Gruppen sein!", ButtonType.CANCEL);
+			noSelected.show();
+			//selection is done
+			selection.setVisible(false);
+			selection.hide();
+			room.getChildren().remove(this);
+			throw new IllegalStateException("We shoudln't have no Items here!");
 		}
-		System.out.println("isVo = " + isVisible());
-		System.out.println(" room.getChilden().contains(this) = " + room.getChildren().contains(this));
+
+
+		relocate(getMinPos());
+
+		//make nodes location relative to the new Pane/Scene for them to stay in the same place
+		//Only now do the transform, because we needed the coordinates for the pos array
+		getChildren().forEach(Node -> {
+//			Point2D poi = parentToLocal(Node.getLayoutX(), Node.getLayoutY());
+//			Node.relocate(poi.getX(), poi.getY());
+			Node.setLayoutX(Node.getLayoutX() - getLayoutX());
+			Node.setLayoutY(Node.getLayoutY() - getLayoutY());
+		});
+
+
+		UI.groups.add(this);
+
+
+		//move all children to the right parent
+		room.getChildren().removeAll(root.getChildren());
+
+		//selection is done
+		selection.setVisible(false);
+		selection.hide();
+
+
 //		throw new NullPointerException("Test");
+		setup = true;
+
+		requestLayout();
 	}
 
 	/**
@@ -146,6 +146,44 @@ public class Group extends javafx.scene.Group {
 	 {@inheritDoc}
 	 */
 	@Override
+	public Point2D localToParent(double x, double y) {
+		Point2D pos = root.localToParent(x, y);
+		return super.localToParent(pos.getX(), pos.getY());
+	}
+
+//	/**
+//	 this class essentially contains two layers, so we have to compensate
+//	 <p>
+//	 {@inheritDoc}
+//	 */
+//	@Override
+//	public Point2D localToParent(Point2D pos) {
+//		return super.localToParent(root.localToParent(pos));
+//	}
+
+	/**
+	 this class essentially contains two layers, so we have to compensate
+	 <p>
+	 {@inheritDoc}
+	 */
+	@Override
+	public Point2D parentToLocal(double x, double y) {
+		Point2D pos = root.parentToLocal(x, y);
+		return super.parentToLocal(pos.getX(), pos.getY());
+	}
+
+	//prevent a loop from happening
+	@Override
+	public Point2D parentToLocal(Point2D parentPoint) {
+		return super.parentToLocal(parentPoint.getX(), parentPoint.getY());
+	}
+
+	/**
+	 this class essentially contains two layers, so we have to compensate
+	 <p>
+	 {@inheritDoc}
+	 */
+	@Override
 	public void relocate(double x, double y) {
 		super.relocate(x, y);
 		root.relocate(x, y);
@@ -162,10 +200,19 @@ public class Group extends javafx.scene.Group {
 	public void requestLayout() {
 		if (Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER))
 			Main.layoutLogger.finer("Recomputing Layout of Group");
-		setLayoutX(getMinNodeX().getLayoutX());
-		setLayoutY(getMinNodeY().getLayoutY());
 
-		resize(getWidth(),getHeight());
+		if (!setup) {
+			super.requestLayout();
+			return;
+//			throw new ConcurrentModificationException("The Constructor is still active!");
+		}
+
+		Point2D pos = localToParent(getMinNodeX(), getMinNodeY());
+		if (getLayoutX() - getLayoutBounds().getMinX() != pos.getX())
+			setLayoutX(pos.getX() - getLayoutBounds().getMinX());
+		if (getLayoutY() - getLayoutBounds().getMinY() != pos.getY())
+			setLayoutY(pos.getY() - getLayoutBounds().getMinY());
+		root.resize(getWidth(),getHeight());
 
 		super.requestLayout();
 	}
@@ -174,39 +221,63 @@ public class Group extends javafx.scene.Group {
 	 @return Returns the object's width
 	 */
 	public double getWidth() {
-		return getMaxNodeX().getLayoutX() - getMinNodeX().getLayoutX();
+		return getMaxNodeX().getLayoutX() - getMinNodeX();
 	}
 
 	/**
 	 @return Returns the object's height
 	 */
 	public double getHeight() {
-		return getMaxNodeY().getLayoutY() - getMinNodeY().getLayoutY();
+		return getMaxNodeY().getLayoutY() - getMinNodeY();
 	}
 
-	private Node getMinNodeX(Collection<Node> col){
-		return Collections.min(col, x);
+	private double getMinNodeX(Collection<Node> col) {
+		Node smallest = col.iterator().next();
+		for (Node node : col) {
+			if (node.getLayoutX() < smallest.getLayoutX()) smallest = node;
+		}
+		smallest.setRotate(270);
+		return smallest.getLayoutX();
 	}
-	private Node getMinNodeY(Collection<Node> col){
-		return Collections.min(col, x);
+
+	private double getMinNodeY(Collection<Node> col) {
+		Node smallest = col.iterator().next();
+		for (Node node : col) {
+			if (node.getLayoutY() < smallest.getLayoutY()) smallest = node;
+		}
+		smallest.setRotate(0);
+		return smallest.getLayoutY();
 	}
-	private Node getMinNodeX(){
-		return getMinNodeX(getChildren());
+
+	private double getMinNodeX() {
+		return getMinNodeX(getChildrenUnmodifiable());
 	}
-	private Node getMinNodeY(){
-		return getMinNodeY(getChildren());
+
+	private double getMinNodeY() {
+		return getMinNodeY(getChildrenUnmodifiable());
 	}
 
 	public Point2D getMinPos(Collection<Node> col) {
-		return new Point2D(getMinNodeX(col).getLayoutX(),getMinNodeY(col).getLayoutY());
+		if (col.isEmpty()) return null;
+		return new Point2D(getMinNodeX(col), getMinNodeY(col));
 	}
 
 	private Node getMaxNodeX(Collection<Node> col) {
-		return Collections.max(col, Group.x);
+		Node biggest = col.iterator().next();
+		for (Node node : col) {
+			if (node.getLayoutX() > biggest.getLayoutX()) biggest = node;
+		}
+		biggest.setRotate(90);
+		return biggest;
 	}
 
 	private Node getMaxNodeY(Collection<Node> col) {
-		return Collections.max(col, Group.y);
+		Node biggest = col.iterator().next();
+		for (Node node : col) {
+			if (node.getLayoutY() > biggest.getLayoutY()) biggest = node;
+		}
+		biggest.setRotate(180);
+		return biggest;
 	}
 
 	private Node getMaxNodeX() {
@@ -218,6 +289,7 @@ public class Group extends javafx.scene.Group {
 	}
 
 	public Point2D getMaxPos(Collection<Node> col) {
+		if (col.isEmpty()) return null;
 		Node xnode = getMaxNodeX();
 		Node ynode = getMaxNodeY();
 		double x = xnode.getLayoutX() + ((xnode instanceof Canvas) ? ((Canvas) xnode).getWidth() : 0.0);
@@ -242,5 +314,16 @@ public class Group extends javafx.scene.Group {
 
 	public Point2D getDelta() {
 		return getDelta(getChildrenUnmodifiable());
+	}
+
+	/**
+	 Custom delete handler, to ensure, that this class gets deleted properly
+
+	 @
+	 */
+	protected void finalize() throws Throwable {
+		super.getChildren().remove(root);
+		root = null;
+		super.finalize();
 	}
 }
