@@ -2,14 +2,14 @@ package com.UI;
 
 import com.Main;
 import com.Repository;
+import com.UI.Menu.GroupMenu;
 import com.UI.Menu.Selection;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -22,28 +22,35 @@ import java.util.Comparator;
 /**
  This class handles everything, that has to do with Grouping multiple Furniture pieces together
 
- @author Timon Kayser
- */
- public class Group extends javafx.scene.Group {
-
+ @author Timon Kayser */
+public class Group extends javafx.scene.Group {
 	private static Comparator<Node> x = (n1, n2) -> (int) (n1.getLayoutX() - n2.getLayoutX());
 	private static Comparator<Node> y = (n1, n2) -> (int) (n1.getLayoutY() - n2.getLayoutY());
+	private GroupMenu menu = new GroupMenu(this);
 
 	Pane room;
 	Selection selection;
 
+	public Pane getRoom() {
+		return room;
+	}
+
+	public Selection getSelection() {
+		return selection;
+	}
+
 	/**
-	 * <p>
-	 * A level below the Group node, to allow for styling.
-	 * </p>
-	 * This holds all the information, however a group is in some cases easier to work with.
+	 <p>
+	 A level below the Group node, to allow for styling.
+	 </p>
+	 This holds all the information however.
 	 */
 	private AnchorPane root = new AnchorPane();
 
 	public Group(Pane room, Selection selection) {
 		super();
-		this.room=room;
-		this.selection=selection;
+		this.room = room;
+		this.selection = selection;
 		setManaged(false); //This means, that we are not influenced by our Parent. So basically this is another layout root. See javadoc for more info
 //		root.setMouseTransparent(true);
 		root.setStyle("-fx-background-color: rgba(0,255,255,0.25);" +
@@ -56,11 +63,10 @@ import java.util.Comparator;
 		root.setVisible(true);
 		room.getChildren().add(this);
 
-		getChildren().add(root);
+		super.getChildren().add(root);
 		root.layoutXProperty().bindBidirectional(layoutXProperty());
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
-		Repository.UI.dragNode(root, this::getHeight, this::getWidth);
-		setMenu();
+		Repository.UI.dragNode(this, this::getHeight, this::getWidth);
 		//get all Children, and reposition them correctly
 		{
 			//Adds all selected Nodes to be in the Group
@@ -119,55 +125,38 @@ import java.util.Comparator;
 	}
 
 	/**
-	 * Adds a menu on a right-click
+	 Make this element return it's actual Children, not the "fake" {@link #root} Node
+	 esentially delegate the cll through
+
+	 @return modifiable list of children.
 	 */
-	private void setMenu(){
-		ContextMenu menu = new ContextMenu();
-
-		MenuItem delete = new MenuItem("Delete");
-		delete.setOnAction(evt -> {
-			Alert sure = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure, that you want to delete this Group and EVERYTHING inside it?", ButtonType.NO, ButtonType.YES);
-			sure.show();
-			sure.setOnCloseRequest(DialogEvent -> {
-				if (sure.getResult().equals(ButtonType.YES)) {
-					room.getChildren().remove(this);
-				}
-			});
-
-			evt.consume();
-		});
-
-		MenuItem ungroup = new MenuItem("UnGroup");
-		ungroup.setOnAction(evt -> {
-			//Delete all references and transfer all children, since we are only disbanding the group
-			getChildren().forEach(Node -> {
-				Point2D pos = localToParent(Node.getLayoutX(), Node.getLayoutY());
-				Node.relocate(pos.getX(), pos.getY());
-			});
-			room.getChildren().remove(this);
-			room.getChildren().addAll(root.getChildren());
-			root.getChildren().removeAll(room);
-		});
-
-
-		menu.getItems().addAll(delete, ungroup);
-
-		setOnContextMenuRequested(ContextMenuEvent -> {
-			System.out.println("Region Context menu event fired");
-			menu.show(this, null, 0, 0);
-			ContextMenuEvent.consume();
-		});
+	@Override
+	public ObservableList<Node> getChildren() {
+		return root.getChildren();
 	}
 
-
 	@Override
-	public void relocate(double x,double y){
-		root.relocate(x,y);
-		super.relocate(x,y);
+	public ObservableList<Node> getChildrenUnmodifiable() {
+		return root.getChildrenUnmodifiable();
 	}
 
 	/**
-	 * Because this Node is unmanaged, we have to do this ourselves
+	 this class essentially contains two layers, so we have to compensate
+	 <p>
+	 {@inheritDoc}
+	 */
+	@Override
+	public void relocate(double x, double y) {
+		super.relocate(x, y);
+		root.relocate(x, y);
+	}
+
+	public void relocate(Point2D pos) {
+		relocate(pos.getX(), pos.getY());
+	}
+
+	/**
+	 Because this Node is unmanaged, we have to do this ourselves
 	 */
 	@Override
 	public void requestLayout() {
@@ -182,18 +171,17 @@ import java.util.Comparator;
 	}
 
 	/**
-	 *
-	 * @return Returns the object's width
+	 @return Returns the object's width
 	 */
 	public double getWidth() {
-		return getMaxNodeX().getLayoutX()-getMinNodeX().getLayoutX();
+		return getMaxNodeX().getLayoutX() - getMinNodeX().getLayoutX();
 	}
 
 	/**
-	 * @return Returns the object's height
+	 @return Returns the object's height
 	 */
 	public double getHeight() {
-		return getMaxNodeY().getLayoutY()-getMinNodeY().getLayoutY();
+		return getMaxNodeY().getLayoutY() - getMinNodeY().getLayoutY();
 	}
 
 	private Node getMinNodeX(Collection<Node> col){
@@ -222,21 +210,21 @@ import java.util.Comparator;
 	}
 
 	private Node getMaxNodeX() {
-		return getMaxNodeX(getChildren());
+		return getMaxNodeX(getChildrenUnmodifiable());
 	}
 
 	private Node getMaxNodeY() {
-		return getMaxNodeY(getChildren());
+		return getMaxNodeY(getChildrenUnmodifiable());
 	}
 
 	public Point2D getMaxPos(Collection<Node> col) {
-		Node xnode= getMaxNodeX();
-		Node ynode= getMaxNodeY();
+		Node xnode = getMaxNodeX();
+		Node ynode = getMaxNodeY();
 		double x = xnode.getLayoutX() + ((xnode instanceof Canvas) ? ((Canvas) xnode).getWidth() : 0.0);
 		double y = ynode.getLayoutX() + ((ynode instanceof Canvas) ? ((Canvas) ynode).getHeight() : 0.0);
 		System.out.println("y = " + y);
 		System.out.println("x = " + x);
-		return new Point2D(x,y);
+		return new Point2D(x, y);
 	}
 
 	public Point2D getDelta(Collection<Node> col) {

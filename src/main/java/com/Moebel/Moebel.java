@@ -61,7 +61,7 @@ public abstract class Moebel extends Canvas {
         return PRESETS;
     }
 
-    protected MoebelMenu menu = new MoebelMenu();
+    protected MoebelMenu menu = new MoebelMenu(this);
 
     protected GraphicsContext gc = getGraphicsContext2D();
 

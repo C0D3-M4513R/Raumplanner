@@ -96,7 +96,7 @@ public class UI {
 	 @return returns a value, that stated if a node has been FOUND not deleted, because I am asking for user verification and
 	 Groups might therefore get found, but not deleted
 	 */
-	public boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
+	public static boolean delete(Pane room, Point2D pos, Optional<Boolean> loopOp) {
 		boolean loop = loopOp.orElse(true);
 
 		boolean deleted = false;
