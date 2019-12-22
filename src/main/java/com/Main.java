@@ -25,7 +25,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
 
 
-        //TODO: Adapt Moebel to allow for multipile Colors
         //TODO: Add Preferences popup
 
         //TODO: MINOR Walls

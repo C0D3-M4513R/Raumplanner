@@ -35,7 +35,7 @@ public class GroupMenu implements Menu {
 		});
 
 
-		menu.getItems().addAll(ungroup, MenuItems.deleteHandler(group));
+		menu.getItems().addAll(MenuItems.colorHandler(group), ungroup, MenuItems.deleteHandler(group));
 
 		group.setOnContextMenuRequested(ContextMenuEvent -> {
 			System.out.println("Region Context menu event fired");

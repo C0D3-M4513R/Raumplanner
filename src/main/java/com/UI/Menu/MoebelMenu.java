@@ -11,7 +11,7 @@ public class MoebelMenu implements Menu {
 	public MoebelMenu(Moebel moebel){
 		init();
 		//add to Context menu
-		menu.getItems().addAll(MenuItems.deleteHandler(moebel));
+		menu.getItems().addAll(MenuItems.colorHandler(moebel),MenuItems.deleteHandler(moebel));
 	}
 
 	@Override

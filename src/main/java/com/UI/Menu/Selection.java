@@ -143,7 +143,7 @@ public class Selection extends Region implements Menu {
 		});
 
 		//Add both actions
-		menu.getItems().addAll(group1, MenuItems.deleteHandler(this));
+		menu.getItems().addAll(group1, MenuItems.colorHandler(this), MenuItems.deleteHandler(this));
 
 		setOnContextMenuRequested(ContextMenuEvent -> {
 			System.out.println("selection context requested");
