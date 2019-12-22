@@ -3,7 +3,6 @@ package com.UI;
 import com.Moebel.Moebel;
 import com.Moebel.SchrankWand;
 import com.Moebel.SchrankWandBuilder;
-import com.Operators;
 import com.Repository;
 import com.UI.Menu.Selection;
 import com.sun.istack.internal.NotNull;
@@ -12,7 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
@@ -20,14 +18,12 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 
 /**
@@ -40,7 +36,7 @@ import java.util.function.Supplier;
 public class UI {
 	/** This is a divider (and first element), to make a view on the side, of all the elements on the side */
 	@FXML
-	private SplitPane divider;
+	private SplitPane divider = new SplitPane(){@Override public void relocate(double x, double y){new IllegalAccessException("What? Who?").printStackTrace();}};
 	/**
 	 This list is displaying everything, that can be used, to create new furniture in the {@link #room}<br>
 	 All elements in this list are of the type {@link moebelListNodeController}
@@ -50,10 +46,9 @@ public class UI {
 	@FXML
 	private ListView<moebelListNodeController> moebelList;
 	/** This is the equivalent of the room, you are trying to place your Furniture into */
-	@FXML
-	private AnchorPane room;
+	private RootPane room = new RootPane();
 
-	public AnchorPane getRoom() {
+	public RootPane getRoom() {
 		return room;
 	}
 //	<T extends Event> void applyHandler(EventType<T> type, EventHandler<? super T> handler){room.addEventHandler(type,handler);}
@@ -71,6 +66,7 @@ public class UI {
 	 */
 	@FXML
 	public void initialize() {
+		divider.getItems().add(1,room);
 		selection = new Selection(room);
 		moebelList.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, Event::consume);
 //		room.getChildren().add(selection);
@@ -83,6 +79,50 @@ public class UI {
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
+
+	/**
+	 Makes moebels be able to spawn on the room
+
+	 @param node
+	 Node to apply the ability to drag to
+	 */
+	private void moebelSpawn(moebelListNodeController node) {
+		node.setOnMousePressed(mouseEvent -> {
+			boolean created = false;
+			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
+				//Creating Moebel
+				System.out.println("Creating moebel");
+				Moebel img;
+				if (!node.isType(SchrankWand.class)) img = Moebel.getPRESETS().get(node.getName()).get();
+				else img = SchrankWandBuilder.SchrankWandBuilder(node.getName());
+
+				//Set width, and make it visible
+				//No need to do this anymore, because it has already been set by Moebel
+//				img.setFitWidth(img.getWidth() * 50);
+//				img.setFitHeight(img.getHeight() * 50);
+//				img.setVisible(true);
+
+				if (img == null) {//this would mean, that something in the Schrakwandbuilder failed, or the User aborted
+					return;
+				}
+
+
+				room.getChildren().add(img);
+				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
+				Point2D pos = getRoom().col(img);
+				img.relocate(pos.getX(),pos.getY());
+
+				//applying all event handlers
+				getRoom().dragNode(img);
+				created = true;
+				System.out.println("Done");
+				if (!room.getChildrenUnmodifiable().contains(img))
+					System.out.println("But doesn't contain the newly generated Image");
+			}
+			mouseEvent.consume();
+		});
+	}
+
 
 	/**
 	 This method looks for nodes at a specific location and deletes the first one it finds
@@ -145,102 +185,41 @@ public class UI {
 	 Deletes all nodes, that are in nodes from target.
 	 If there is a Node with children, they will also be deleted from target
 
-	 @param target List of nodes to delete from
-	 @param nodes nodes to delete in target
+	 @param target
+	 List of nodes to delete from
+	 @param nodes
+	 nodes to delete in target
+
 	 @return returns true, if at least one element has been deleted
 	 */
-	public static boolean delete(@NotNull ObservableList<Node> target, ObservableList<Node> nodes){
+	public static boolean delete(@NotNull ObservableList<Node> target, ObservableList<Node> nodes) {
 		boolean rem = target.removeAll(nodes);
-		for (Node pane:target) {
-			if(pane instanceof Pane){
+		for (Node pane : target) {
+			if (pane instanceof Pane) {
 				rem = delete(((Pane) pane).getChildren(), nodes) || rem;
 			}
 		}
-		for (Node pane:nodes) {
-			if(pane instanceof Pane){
-				rem = delete(target,((Pane) pane).getChildren()) || rem;
+		for (Node pane : nodes) {
+			if (pane instanceof Pane) {
+				rem = delete(target, ((Pane) pane).getChildren()) || rem;
 			}
 		}
 		return rem;
 	}
+
 	/**
 	 Deletes all nodes, that are in nodes from target.
 	 If there is a Node with children, they will also be deleted from target
 
-	 @param target List of nodes to delete from
-	 @param node node to delete in target
+	 @param target
+	 List of nodes to delete from
+	 @param node
+	 node to delete in target
+
 	 @return returns true, if at least one element has been deleted
 	 */
-	public static boolean delete(@NotNull ObservableList<Node> target,Node node){
-		return delete(target,FXCollections.singletonObservableList(node));
-	}
-
-
-	/**
-	 Makes moebels be able to spawn on the room
-
-	 @param node
-	 Node to apply the ability to drag to
-	 */
-	private void moebelSpawn(moebelListNodeController node) {
-		node.setOnMousePressed(mouseEvent -> {
-			boolean created = false;
-			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
-				//Creating Moebel
-				System.out.println("Creating moebel");
-				Moebel img;
-				if (!node.isType(SchrankWand.class)) img = Moebel.getPRESETS().get(node.getName()).get();
-				else img = SchrankWandBuilder.SchrankWandBuilder(node.getName());
-
-				//Set width, and make it visible
-				//No need to do this anymore, because it has already been set by Moebel
-//				img.setFitWidth(img.getWidth() * 50);
-//				img.setFitHeight(img.getHeight() * 50);
-//				img.setVisible(true);
-
-				if (!(img instanceof Node) && img == null) {//this would mean, that something in the Schrakwandbuilder failed, or the User aborted
-					return;
-				}
-
-
-				room.getChildren().add(img);
-				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-				img.setLayoutX(colX(img, img.getWidth()));
-				img.setLayoutY(colY(img, img.getHeight()));
-
-				//applying all event handlers
-				mouseHandlers(img);
-				created = true;
-				System.out.println("Done");
-				if (!room.getChildrenUnmodifiable().contains(img))
-					System.out.println("But doesn't contain the newly generated Image");
-			}
-			mouseEvent.consume();
-		});
-	}
-
-
-	/**
-	 This method applies dragging handlers and a right-click menu to the nodes being displayed
-
-	 @param node
-	 node to apply handlers to
-	 */
-	public void mouseHandlers(Canvas node) {
-		double imgHeight = node.getHeight();
-		double imgWidth = node.getWidth();
-
-		dragNode(node, imgHeight, imgWidth);
-		//when right clicked, create context menu
-		/*node.setOnContextMenuRequested(ContextMenuEvent -> {
-			ContextMenuEvent.consume();
-			System.out.println("Create Menu");
-			System.out.printf("%10.1f,%10.1f%n", node.getLayoutX(), node.getLayoutY());
-
-			Point2D pos = room.localToScreen(node.getLayoutX(), node.getLayoutY());
-
-			imgContext.show(node, pos.getX(), pos.getY());
-		});*/
+	public static boolean delete(@NotNull ObservableList<Node> target, Node node) {
+		return delete(target, FXCollections.singletonObservableList(node));
 	}
 
 
@@ -249,7 +228,8 @@ public class UI {
 	 <p>
 	 Essentially this is a method to add the setters for width and height back in
 
-	 @param <T> Type of the Node
+	 @param <T>
+	 Type of the Node
 	 @param node
 	 Node to set the width and height to
 	 @param width
@@ -270,122 +250,4 @@ public class UI {
 	}
 
 
-	/**
-	 This method is a wrapper to {@link #dragNode(Node, Supplier, Supplier)} method, but instead of passing in dynamic
-	 values, they are static
-	 Rest copied from {@link #dragNode(Node, Supplier, Supplier)}:
-	 <p>
-	 Handles all EventHandlers related to dragging any displayed object
-
-	 @param node
-	 Node to apply the ability to drag to
-	 @param height
-	 a static height value, that will be used to calculate collision
-	 @param width
-	 a static width value, that will be used to calculate collision
-	 */
-	void dragNode(Node node, double height, double width) {
-		dragNode(node, () -> height, () -> width);
-	}
-
-	/**
-	 Handles all EventHandlers related to dragging any displayed object
-
-	 @param node
-	 Node to apply the ability to drag to
-	 @param height
-	 a dynamic height value, that will be used to calculate collision
-	 @param width
-	 a dynamic width value, that will be used to calculate collision
-	 */
-	void dragNode(Node node, Supplier<Double> height, Supplier<Double> width) {
-		//TODO: Something is fishy about this. Just wrong
-		// Groups move double
-
-		// Custom object to hold x and y positions
-		final Delta dragDelta = new Delta();
-
-		//Calculate the amount dragged
-		node.setOnMousePressed(mouseEvent -> {
-			selection.hideAll();
-			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
-			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
-			mouseEvent.consume();
-		});
-
-		node.setOnMouseEntered(mouseEvent -> node.setCursor(Cursor.HAND));
-		node.setOnMouseReleased(mouseEvent -> node.setCursor(Cursor.HAND));
-
-
-		node.setOnMouseDragged(mouseEvent -> {
-
-			//Move node, like it was dragged
-			node.setLayoutX(mouseEvent.getSceneX() + dragDelta.x);
-			node.setLayoutY(mouseEvent.getSceneY() + dragDelta.y);
-
-			double localHeight = Operators.ifNullRet(height.get(), 0.0);
-			double localWidth = Operators.ifNullRet(width.get(), 0.0);
-
-			//move node appropriately after accounting for collisions
-			double x = (colX(node, localWidth));
-			double y = (colY(node, localHeight));
-			node.relocate(x, y);
-			mouseEvent.consume();
-		});
-	}
-
-	/**
-	 Checks collision between program bounds in the y direction <br>
-	 Also sets the Rotation variable
-
-	 @param node
-	 Node to be checked
-	 @param height
-	 height of the node
-
-	 @return Returns the appropriate y value
-	 */
-	private double colY(Node node, double height) {
-		if (node.getLayoutY() + height >= room.getHeight()) {
-			System.out.println("bottom");
-			node.setRotate(180);
-			return room.getHeight() - height;
-		} else if (node.getLayoutY() < 0) {
-			node.setRotate(0);
-			return 0.0;
-		}
-
-		return node.getLayoutY();
-	}
-
-	/**
-	 Checks collision between program bounds in the x direction <br>
-	 Also sets the Rotation variable
-
-	 @param node
-	 Node to be checked
-	 @param width
-	 width of the node
-
-	 @return Returns the appropriate x value
-	 */
-	private double colX(Node node, double width) {
-
-		if (node.getLayoutX() >= room.getWidth() && node.getRotate() == 270) {
-			node.setRotate(90);
-			return room.getWidth() - width;
-		} else if (node.getLayoutX() + width >= room.getWidth()) {
-			node.setRotate(90);
-			return room.getWidth() - width;
-		} else if (node.getLayoutX() < 0.0) {
-			node.setRotate(270);
-			return 0.0;
-		}
-		return node.getLayoutX();
-	}
-
-	/** Simple Class to store a xy position */
-	private static class Delta {
-		double x, y;
-	}
 }

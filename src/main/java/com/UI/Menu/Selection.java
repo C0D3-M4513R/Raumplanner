@@ -1,6 +1,7 @@
 package com.UI.Menu;
 
 import com.UI.Group;
+import com.UI.RootPane;
 import com.UI.UI;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -10,7 +11,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
 import java.util.ArrayList;
@@ -26,9 +26,9 @@ public class Selection extends Region implements Menu {
 	/**
 	 Object, where this new Drag-type selection should originate from
 	 */
-	private Pane root;
+	private RootPane root;
 
-	public Pane getRoot() {
+	public RootPane getRoot() {
 		return root;
 	}
 
@@ -37,7 +37,7 @@ public class Selection extends Region implements Menu {
 	 */
 	private ContextMenu menu = new ContextMenu();
 
-	public Selection(Pane root) {
+	public Selection(RootPane root) {
 		super();
 		init();
 		this.root = root;

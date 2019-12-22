@@ -10,10 +10,10 @@ import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import sun.util.logging.PlatformLogger;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -27,10 +27,10 @@ public class Group extends javafx.scene.Group {
 	private boolean setup = false;
 	private GroupMenu menu = new GroupMenu(this);
 
-	Pane room;
+	RootPane room;
 	Selection selection;
 
-	public Pane getRoom() {
+	public RootPane getRoom() {
 		return room;
 	}
 
@@ -44,9 +44,9 @@ public class Group extends javafx.scene.Group {
 	 </p>
 	 This holds all the information however.
 	 */
-	private AnchorPane root = new AnchorPane();
+	private RootPane root = new RootPane();
 
-	public Group(Pane room, Selection selection) {
+	public Group(RootPane room, Selection selection) {
 		super();
 		this.room = room;
 		this.selection = selection;
@@ -65,7 +65,7 @@ public class Group extends javafx.scene.Group {
 		super.getChildren().add(root);
 		root.layoutXProperty().bindBidirectional(layoutXProperty());
 		root.layoutYProperty().bindBidirectional(layoutYProperty());
-		Repository.UI.dragNode(this, this::getHeight, this::getWidth);
+		Repository.UI.getRoom().dragNode(this);
 		//get all Children, and reposition them correctly
 
 		//Adds all selected Nodes to be in the Group
@@ -102,6 +102,8 @@ public class Group extends javafx.scene.Group {
 		getChildren().forEach(Node -> {
 //			Point2D poi = parentToLocal(Node.getLayoutX(), Node.getLayoutY());
 //			Node.relocate(poi.getX(), poi.getY());
+			//disable collision
+			root.dragNode(Node);
 			Node.setLayoutX(Node.getLayoutX() - getLayoutX());
 			Node.setLayoutY(Node.getLayoutY() - getLayoutY());
 		});
@@ -117,10 +119,7 @@ public class Group extends javafx.scene.Group {
 		selection.setVisible(false);
 		selection.hide();
 
-
-//		throw new NullPointerException("Test");
 		setup = true;
-
 		requestLayout();
 	}
 
@@ -193,11 +192,16 @@ public class Group extends javafx.scene.Group {
 		relocate(pos.getX(), pos.getY());
 	}
 
+	public void resize(Point2D pos) {
+		resize(pos.getX(), pos.getY());
+	}
+
 	/**
 	 Because this Node is unmanaged, we have to do this ourselves
 	 */
 	@Override
 	public void requestLayout() {
+		setup=false;
 		if (Main.layoutLogger.isLoggable(PlatformLogger.Level.FINER))
 			Main.layoutLogger.finer("Recomputing Layout of Group");
 
@@ -208,13 +212,15 @@ public class Group extends javafx.scene.Group {
 		}
 
 		Point2D pos = localToParent(getMinNodeX(), getMinNodeY());
-		if (getLayoutX() - getLayoutBounds().getMinX() != pos.getX())
+		if (getLayoutX() != pos.getX())
 			setLayoutX(pos.getX() - getLayoutBounds().getMinX());
-		if (getLayoutY() - getLayoutBounds().getMinY() != pos.getY())
+		if (getLayoutY() != pos.getY())
 			setLayoutY(pos.getY() - getLayoutBounds().getMinY());
-		root.resize(getWidth(),getHeight());
+		if(root.getWidth()!=getWidth() ||
+			root.getHeight()!=getHeight())root.resize(getWidth(), getHeight());
 
 		super.requestLayout();
+		setup=true;
 	}
 
 	/**
