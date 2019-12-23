@@ -21,15 +21,11 @@ public class RootPane extends AnchorPane {
 	 Node to apply the ability to drag to
 	 */
 	void dragNode(Node node) {
-		//TODO: Something is fishy about this. Just wrong
-		// Groups move double
-
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
 		//Calculate the amount dragged
 		node.setOnMousePressed(mouseEvent -> {
-			selections.get(0).hideAll();
 			dragDelta.x = node.getLayoutX() - mouseEvent.getSceneX();
 			dragDelta.y = node.getLayoutY() - mouseEvent.getSceneY();
 			mouseEvent.consume();
@@ -40,6 +36,7 @@ public class RootPane extends AnchorPane {
 
 
 		node.setOnMouseDragged(mouseEvent -> {
+			selections.get(0).hideAll();
 
 			//Move node, like it was dragged
 			node.relocate(mouseEvent.getSceneX() + dragDelta.x,mouseEvent.getSceneY() + dragDelta.y);
@@ -49,12 +46,6 @@ public class RootPane extends AnchorPane {
 			Point2D pos = col(node);
 			node.relocate(pos.getX(),pos.getY());
 
-			//check if node is in a Group
-			if(node.getParent().getParent() instanceof Group){
-				Group group = (Group) node.getParent().getParent();
-				group.checkLocation();
-
-			}
 			mouseEvent.consume();
 		});
 	}
@@ -79,11 +70,13 @@ public class RootPane extends AnchorPane {
 		int no = 0;
 		Delta out = new Delta();
 
+		//Bottom Collision
 		if (maxDeltaY > 0){
 			rotate=180;
 			no++;
 			node.setRotate(rotate);
 			out.y = node.getLayoutY() - maxDeltaY;
+		//Top Collision
 		} else if (minDeltaY < 0.0 ){
 			rotate=0;
 			no++;
@@ -92,12 +85,13 @@ public class RootPane extends AnchorPane {
 		} else {
 			out.y=node.getLayoutY();
 		}
-
+		//Right Collision
 		if (maxDeltaX > 0){
 			rotate=90;
 			no++;
 			node.setRotate(rotate);
 			out.x = node.getLayoutX() - maxDeltaX ;
+		//Left Collision
 		} else if (minDeltaX < 0.0){
 			rotate = 270;
 			no++;
