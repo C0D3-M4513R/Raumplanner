@@ -1,19 +1,23 @@
 package com.Moebel;
 
+import com.UI.ExeptionDialog;
 import com.UI.moebelListNodeController;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.function.Supplier;
+
+import static com.Moebel.Schrank.BILLY;
 
 public class SchrankWand<T extends Moebel> extends Moebel {
 
-	public static final Supplier<SchrankWand<Schrank>> BIGBILLY = (Supplier<SchrankWand<Schrank>>) PRESETS.put("BigBilly",()->SchrankWandBuilder.SchrankWandBuilder("BigBilly"));
+	public static final Supplier<SchrankWand<Schrank>> BIGBILLY = (Supplier<SchrankWand<Schrank>>) PRESETS.put("BigBilly",()->SchrankWand.SchrankWandBuilder("BigBilly"));
 
-    private List<T> furnitureList = new LinkedList<>();
+    private ArrayList<T> furnitureList = new ArrayList<>();
     private boolean inList = false;
     private boolean finished = false;
 
@@ -39,6 +43,30 @@ public class SchrankWand<T extends Moebel> extends Moebel {
         setHeight(furnitureList.get(0).getHeight());
         setWidth(furnitureList.get(0).getWidth() * (furnitureList.size() + 1));
     }
+
+    public static SchrankWand SchrankWandBuilder(String name){
+        final SchrankWand[] sw = new SchrankWand[1];
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Input the number of Billies you want");
+        dialog.setHeaderText("Input the number of Billies you want");
+        dialog.setContentText("Please input the number of Billies you would like in BigBilly:");
+        dialog.showAndWait().ifPresent(input->{
+            try {
+                int no = Integer.parseInt(input);
+                sw[0] = builder(name,no);
+            }catch (Throwable throwable){
+                ExeptionDialog ex = new ExeptionDialog(Alert.AlertType.ERROR,throwable);
+                ex.show();
+            }
+        });
+        return sw[0];
+    }
+
+    public static SchrankWand<Schrank> builder(String name,int no){
+        return new SchrankWand<>(name,no,BILLY);
+    }
+
+
 
     @Override
     protected void draw(Color color) throws ConcurrentModificationException {
