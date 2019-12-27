@@ -5,6 +5,7 @@ import com.Operators;
 import com.UI.Menu.MoebelMenu;
 import com.UI.moebelListNodeController;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.canvas.Canvas;
@@ -12,16 +13,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Supplier;
 
 
 /**
  This class handels most of the features related to Displaying Moebel instances
  */
-public abstract class Moebel extends Canvas {
+public abstract class Moebel extends Canvas implements Cost {
     /**
      * Indicates how many Objects of this class have already been created
      */
@@ -34,6 +33,9 @@ public abstract class Moebel extends Canvas {
     public static final Color DEFAULT_COLOR = Color.BLACK;
     public Color currentColor = DEFAULT_COLOR;
     private final Double width,height;
+    protected MoebelMenu menu = new MoebelMenu(this);
+    protected GraphicsContext gc = getGraphicsContext2D();
+    private List<InvalidationListener> invalidationListener = new ArrayList<>();
 
     /**
      * The name of the current Moebel
@@ -56,16 +58,13 @@ public abstract class Moebel extends Canvas {
         }
     };
 
+
     /**
      * @return Returns a list, that holds all Furniture Presets
      */
     public static HashMap<String, Supplier<? extends Moebel>> getPRESETS() {
         return PRESETS;
     }
-
-    protected MoebelMenu menu = new MoebelMenu(this);
-
-    protected GraphicsContext gc = getGraphicsContext2D();
 
     protected abstract void draw(Color color);
     protected final void fallbackDraw(Color color){
@@ -78,15 +77,6 @@ public abstract class Moebel extends Canvas {
     public void changeColor(Color color){
         gc.clearRect(0,0,getWidth(),getHeight());
         draw(color);
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if(obj instanceof Moebel)
-            return ((Moebel)obj).id == id;
-        else
-            return super.equals(obj);
     }
 
     public String getName() {
@@ -140,6 +130,4 @@ public abstract class Moebel extends Canvas {
             Event.consume();
         });
     }
-
-
 }

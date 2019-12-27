@@ -25,4 +25,12 @@ public class Stuhl extends Moebel {
         }
     }
 
+	public double getCostMoebel() {
+		return 50;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel();
+	}
 }

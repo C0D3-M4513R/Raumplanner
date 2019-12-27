@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 
 public class Esstisch extends Moebel {
 
-
 	public static final Supplier<Esstisch> WIKINGER = (Supplier<Esstisch>) PRESETS.put("Wikinger",() -> new Esstisch("Wikinger", 1.2, 1.2));
 
 	protected void draw(Color color){
@@ -25,4 +24,12 @@ public class Esstisch extends Moebel {
 		super(name, width, height);
 	}
 
+	public double getCostMoebel() {
+		return 250;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel()+ hourlyCost * 2;
+	}
 }

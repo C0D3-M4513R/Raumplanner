@@ -5,7 +5,6 @@ import javafx.scene.paint.Color;
 import java.util.function.Supplier;
 
 public class Schrank extends Moebel {
-
     public static final Supplier<Schrank> BILLY = (Supplier<Schrank>) PRESETS.put("Billy",()->new Schrank("Billy",1.5,2));
 
     public Schrank(String name, double width, double height) {
@@ -22,5 +21,14 @@ public class Schrank extends Moebel {
                 fallbackDraw(color);
                 break;
         }
+    }
+
+    public double getCostMoebel() {
+        return 200;
+    }
+
+    @Override
+    public double cost() {
+        return getCostMoebel() + hourlyCost*1.5;
     }
 }

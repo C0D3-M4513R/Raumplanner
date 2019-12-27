@@ -2,6 +2,9 @@ package com;
 
 /**
  This is just a random assortment of random things, that are always needed
+
+    this class is final instead of abstract, because it has no constructors and therefore cannot be instantiated
+    furthermore, you can't extend this class, because it is final
  */
 public final class Operators {
 	/**

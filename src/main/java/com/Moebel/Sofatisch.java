@@ -37,4 +37,12 @@ public class Sofatisch extends Moebel {
 	}
 
 
+	public double getCostMoebel() {
+		return 80;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel() + hourlyCost *0.5;
+	}
 }

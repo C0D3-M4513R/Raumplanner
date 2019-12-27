@@ -24,4 +24,12 @@ public class Sofa extends Moebel {
 		}
 	}
 
+	public double getCostMoebel() {
+		return 120;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel() + hourlyCost;
+	}
 }

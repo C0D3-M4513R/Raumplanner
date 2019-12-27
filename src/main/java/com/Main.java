@@ -16,6 +16,7 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args); //init javafx
+        //will later call start
     }
 
     //this is effectively a main method
@@ -49,7 +50,8 @@ public class Main extends Application {
         */
 //        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
 
-        Parent root=fxml.load(); //because the UI class is registered as the Controller and this is the layout root, it is managing everything inside of the Window-frame
+        Parent root=fxml.load();
+        //because the UI class is registered as the Controller and this is the layout root, it is managing everything inside of the Window-frame
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.maximizedProperty().addListener(ChangeListener -> {
@@ -60,5 +62,6 @@ public class Main extends Application {
         });
         primaryStage.setTitle("Raumplanner");
         primaryStage.show();
+        //Now UI is next with setting everything up
     }
 }

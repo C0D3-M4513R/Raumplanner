@@ -24,4 +24,12 @@ public class Sessel extends Moebel {
 		}
 	}
 
+	public double getCostMoebel() {
+		return 100;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel() + hourlyCost * 0.25;
+	}
 }

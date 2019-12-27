@@ -1,18 +1,42 @@
 package com.UI;
 
+import com.Moebel.Cost;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.UI.Menu.Selection.selections;
 
+/**
+ Superclass for everything, where you position Furniture
+ @author Timon Kayser
+ */
 public class RootPane extends AnchorPane {
+
+	private static List<RootPane> instances = new ArrayList<>();
+
+	/** States the price {@link Cost#totalCost}*/
+	private static Label price = new Label();
 
 	RootPane(){
 		super();
+		//register us
+		instances.add(this);
+
+		//prevent weird things from happening
 		setMinHeight(0);
 		setMinWidth(0);
+
+		//display price on the top left
+		getChildren().add(price);
+		price.setVisible(true);
+		price.relocate(10,10);
+		price.toFront();
 	}
 
 
@@ -102,6 +126,25 @@ public class RootPane extends AnchorPane {
 		}
 		if (no > 1)node.setRotate(rotatePrev);
 		return new Point2D(out.x,out.y);
+	}
+
+	public void delete(){
+		instances.remove(this);
+		((RootPane)getParent()).getChildren().remove(this);
+
+		//unregister from cost interface
+		getChildren().forEach(node -> {
+			if(node instanceof Cost ) ((Cost)node).remove();
+			else if (node instanceof RootPane) ((Group)node).delete();
+		});
+	}
+
+	public static List<RootPane> getInstances(){
+		return instances;
+	}
+
+	public static void updatePrice(){
+		price.setText("Price: "+RootPane.getInstances().stream().mapToDouble(rootPane -> rootPane.getChildrenUnmodifiable().filtered(node -> node instanceof Cost).stream().mapToDouble(node -> ((Cost)node).cost()).sum()).sum());
 	}
 
 	/** Simple Class to store a xy position */

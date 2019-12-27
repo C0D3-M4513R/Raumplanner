@@ -93,4 +93,13 @@ public class SchrankWand<T extends Moebel> extends Moebel {
     public moebelListNodeController getMoebelListNodeController(){
         return new moebelListNodeController(this,getWidth()/STRETCH,getHeight()/STRETCH);
     }
+
+    @Override
+    public double cost() {
+        if(furnitureList!=null && furnitureList.size()>0) {
+            double cost = furnitureList.stream().mapToDouble(Cost::cost).sum();
+            return cost + hourlyCost * furnitureList.size() * 0.5;
+        }
+    return 0;
+    }
 }

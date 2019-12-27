@@ -2,7 +2,6 @@ package com.UI;
 
 import com.Moebel.Moebel;
 import com.Moebel.SchrankWand;
-import com.Moebel.SchrankWandBuilder;
 import com.Repository;
 import com.UI.Menu.Selection;
 import com.sun.istack.internal.NotNull;
@@ -36,10 +35,12 @@ import java.util.Optional;
 public class UI {
 	/** This is a divider (and first element), to make a view on the side, of all the elements on the side */
 	@FXML
-	private SplitPane divider = new SplitPane(){@Override public void relocate(double x, double y){new IllegalAccessException("What? Who?").printStackTrace();}};
+	private SplitPane divider = new SplitPane();
 	/**
 	 This list is displaying everything, that can be used, to create new furniture in the {@link #room}<br>
-	 All elements in this list are of the type {@link moebelListNodeController}
+	 All elements in this list are of the type {@link moebelListNodeController}.
+
+	 The List representing everything displayed in here is {@link #displayList} though.
 
 	 @see moebelListNodeController
 	 */
@@ -59,14 +60,14 @@ public class UI {
 	/** Keeps track of all groups currently in use */
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 	/** The list, that is being displayed by {@link #moebelList} */
-	private static ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
+	private ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
 
 	/**
-	 First method to be run after this Object has been created from javafx ()
+	 First method to be run after this Object has been created from javafx
 	 */
 	@FXML
 	public void initialize() {
-		divider.getItems().add(1,room);
+		divider.getItems().add(1, room);
 		selection = new Selection(room);
 		moebelList.addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED, Event::consume);
 //		room.getChildren().add(selection);
@@ -75,7 +76,7 @@ public class UI {
 
 	/** This method initializes all Furniture elements, that are visible in the {@link #moebelList} */
 	private void populate() {
-		Repository.getAll().forEach((moebel) -> displayList.add(moebel.getMoebelListNodeController()));
+		Repository.Presets.forEach((moebel) -> displayList.add(moebel.getMoebelListNodeController()));
 		displayList.forEach(this::moebelSpawn);
 		moebelList.setItems(displayList);
 	}
@@ -94,7 +95,7 @@ public class UI {
 				System.out.println("Creating moebel");
 				Moebel img;
 				if (!node.isType(SchrankWand.class)) img = Moebel.getPRESETS().get(node.getName()).get();
-				else img = SchrankWandBuilder.SchrankWandBuilder(node.getName());
+				else img = SchrankWand.SchrankWandBuilder(node.getName());
 
 				//Set width, and make it visible
 				//No need to do this anymore, because it has already been set by Moebel
@@ -109,11 +110,12 @@ public class UI {
 
 				room.getChildren().add(img);
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
-				Point2D pos = getRoom().col(img);
+				Point2D pos = room.col(img);
 				img.relocate(pos.getX(),pos.getY());
+				img.add();
 
 				//applying all event handlers
-				getRoom().dragNode(img);
+				room.dragNode(img);
 				created = true;
 				System.out.println("Done");
 				if (!room.getChildrenUnmodifiable().contains(img))

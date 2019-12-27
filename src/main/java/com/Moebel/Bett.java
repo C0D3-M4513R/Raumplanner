@@ -6,7 +6,6 @@ import javafx.scene.paint.Color;
 import java.util.function.Supplier;
 
 public class Bett extends Moebel {
-
 	public final int PERSONS;
 	public static final Supplier<Bett> LEFRANCE = (Supplier<Bett>) PRESETS.put("Le France",() -> new Bett("Le France", 2, 2, 2));
 	public static final Supplier<Bett> LEPETITFRANCE = (Supplier<Bett>) PRESETS.put("Le Petit France",() -> new Bett("Le Petit France", 1, 1, 2));
@@ -28,5 +27,14 @@ public class Bett extends Moebel {
 				fallbackDraw(color);
 				break;
 		}
+	}
+
+	public double getCostMoebel() {
+		return 180;
+	}
+
+	@Override
+	public double cost() {
+		return getCostMoebel() + hourlyCost * 1.5;
 	}
 }

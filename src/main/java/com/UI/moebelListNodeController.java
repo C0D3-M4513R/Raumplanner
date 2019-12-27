@@ -12,7 +12,9 @@ import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 
-
+/**
+ This class represents individual entries in the {@link UI#moebelList}
+ */
 public class moebelListNodeController extends GridPane {
 
 	private static final String FILE_NAME = "moebelListNode.fxml";
