@@ -1,6 +1,7 @@
 package com.UI.Menu;
 
 import com.UI.Group;
+import com.UI.RootPane;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -17,13 +18,12 @@ public class GroupMenu implements Menu {
 		MenuItem ungroup = new MenuItem("UnGroup");
 		ungroup.setOnAction(evt -> {
 			//Delete all references and transfer all children, since we are only disbanding the group
-			group.getRoom().getChildren().remove(group);
 			group.getChildren().forEach(Node -> {
 				Point2D pos = group.localToParent(Node.getLayoutX(), Node.getLayoutY());
 				Node.setLayoutX(pos.getX());
 				Node.setLayoutY(pos.getY());
 			});
-			group.getRoom().getChildren().addAll(group.getChildren());
+			((RootPane)group.getParent()).getChildren().addAll(group.getChildren());
 //			group.getRoom().getChildren().forEach(Node -> {
 //				if (group.getChildren().contains(Node)) {
 //					Point2D pos = group.getRoom().screenToLocal(Node.getLayoutX(), Node.getLayoutY());
@@ -31,7 +31,8 @@ public class GroupMenu implements Menu {
 //					Node.setLayoutY(pos.getY());
 //				}
 //			});
-			group.getChildren().removeAll(group.getRoom().getChildren());
+			group.getChildren().removeAll(((RootPane)group.getParent()).getChildren());
+			((RootPane)group.getParent()).getChildren().remove(group); // this will remove the link to our parent, since then we will be parent-less
 		});
 
 

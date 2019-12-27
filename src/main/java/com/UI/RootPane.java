@@ -21,7 +21,9 @@ public class RootPane extends AnchorPane {
 	private static List<RootPane> instances = new ArrayList<>();
 
 	/** States the price {@link Cost#totalCost}*/
-	private static Label price = new Label();
+	protected static final Label price = new Label();
+	/** Used to track, if this is the first instance*/
+	protected static boolean first = true;
 
 	RootPane(){
 		super();
@@ -33,10 +35,13 @@ public class RootPane extends AnchorPane {
 		setMinWidth(0);
 
 		//display price on the top left
-		getChildren().add(price);
-		price.setVisible(true);
-		price.relocate(10,10);
-		price.toFront();
+		if (first) {
+			getChildren().add(price);
+			price.setVisible(true);
+			price.relocate(10, 10);
+			price.toFront();
+			first=false;
+		}
 	}
 
 

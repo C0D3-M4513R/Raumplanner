@@ -19,15 +19,8 @@ public class Group extends RootPane {
 	//TODO: Make all Moebels spawn inside the group
 	private GroupMenu menu = new GroupMenu(this);
 
-	RootPane room;
-
-	public RootPane getRoom() {
-		return room;
-	}
-
-	public Group(RootPane room, Selection selection) {
+	public Group(RootPane root,Selection selection) {
 		super();
-		this.room = room;
 
 		setStyle("-fx-background-color: rgba(0,255,255,0.25);" +
 				" -fx-border-style: solid;" +
@@ -36,15 +29,15 @@ public class Group extends RootPane {
 				" -fx-border-width: 2px;");
 
 		setVisible(true);
-		room.getChildren().add(this);
+		((RootPane)getParent()).getChildren().add(this);
 
-		getRoom().dragNode(this);
+		((RootPane)getParent()).dragNode(this);
 
 		//Adds all selected Nodes to be in the Group
 		getChildren().addAll(
 				//Get all nodes in the selection
-				room.getChildren().filtered(
-						(Node) -> selection.getBoundsInParent().intersects(Node.getBoundsInParent()) && !Node.equals(selection)//better to let javafx handle this
+				((RootPane)getParent()).getChildren().filtered(
+						(Node) -> selection.getBoundsInParent().intersects(Node.getBoundsInParent()) && !Node.equals(selection) && !Node.equals(price)//better to let javafx handle this
 				)
 		);
 
@@ -58,7 +51,7 @@ public class Group extends RootPane {
 					"Ein Möebel in kann nicht in mehreren Gruppen sein!", ButtonType.CANCEL);
 			noSelected.show();
 			//selection is done
-			room.getChildren().remove(this);
+			((RootPane)getParent()).getChildren().remove(this);
 			throw new IllegalStateException("We shoudln't have no Items here!");
 		}
 
@@ -71,14 +64,16 @@ public class Group extends RootPane {
 		getChildren().forEach(Node -> {
 			//disable collision
 			dragNode(Node);
-			Node.setLayoutX(Node.getLayoutX() - getLayoutX());
-			Node.setLayoutY(Node.getLayoutY() - getLayoutY());
+//			Node.setLayoutX(Node.getLayoutX() - getLayoutX());
+//			Node.setLayoutY(Node.getLayoutY() - getLayoutY());
+			Point2D pos = parentToLocal(Node.getLayoutX(),Node.getLayoutY());
+			Node.relocate(pos.getX(),pos.getY()); //TODO: if any of them are negative, relocate to the top
 		});
 
 		UI.groups.add(this);
 
 		//move all children to the right parent
-		room.getChildren().removeAll(getChildren());
+		((RootPane)getParent()).getChildren().removeAll(getChildren());
 
 		requestLayout();
 		System.out.println("Done");

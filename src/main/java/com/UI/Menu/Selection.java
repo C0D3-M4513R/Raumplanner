@@ -138,7 +138,7 @@ public class Selection extends Region implements Menu {
 			//setup everything for the drag
 			setVisible(false);
 			hide();
-			Group group = new Group(root, this);
+			Group group = new Group(getRoot(),this);
 			EventHandler.consume();
 		});
 
