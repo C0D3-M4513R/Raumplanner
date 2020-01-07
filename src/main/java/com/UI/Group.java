@@ -29,7 +29,7 @@ public class Group extends RootPane {
 				" -fx-border-width: 2px;");
 
 		setVisible(true);
-		((RootPane)getParent()).getChildren().add(this);
+		root.getChildren().add(this);
 
 		((RootPane)getParent()).dragNode(this);
 
