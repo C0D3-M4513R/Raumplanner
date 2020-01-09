@@ -19,7 +19,25 @@ public class Bett extends Moebel {
 		switch (name){
 			case "Le France":
 				//TODO: Vector Draw
-//				break;
+
+				gc.setStroke(Color.BLACK);
+				gc.setLineWidth(lw);
+				
+				gc.moveTo(0,0);
+				gc.beginPath();
+				gc.lineTo(getWidth(),0);
+				gc.lineTo(getWidth(),getHeight());
+				gc.lineTo(0,getHeight());
+				gc.lineTo(0,0);
+				gc.setFill(color);
+				gc.closePath();
+
+				//color in the middle first
+				gc.fill();
+				//so the black strokes are colored above
+				gc.stroke();
+
+				break;
 			case "Le Petit France":
 				//TODO: Vector Draw
 //				break;

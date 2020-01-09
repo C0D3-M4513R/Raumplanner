@@ -35,6 +35,8 @@ public abstract class Moebel extends Canvas implements Cost {
     private final Double width,height;
     protected MoebelMenu menu = new MoebelMenu(this);
     protected GraphicsContext gc = getGraphicsContext2D();
+    /** This defines how thick the strokes should be by standard */
+    protected static final double lw = 10.0;
     private List<InvalidationListener> invalidationListener = new ArrayList<>();
 
     /**
