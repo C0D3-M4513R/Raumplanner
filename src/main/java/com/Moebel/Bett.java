@@ -7,44 +7,44 @@ import java.util.function.Supplier;
 
 public class Bett extends Moebel {
 	public final int PERSONS;
-	public static final Supplier<Bett> LEFRANCE = (Supplier<Bett>) PRESETS.put("Le France",() -> new Bett("Le France", 2, 2, 2));
-	public static final Supplier<Bett> LEPETITFRANCE = (Supplier<Bett>) PRESETS.put("Le Petit France",() -> new Bett("Le Petit France", 1, 1, 2));
+	public static final Supplier<Bett> LEFRANCE = (Supplier<Bett>) PRESETS.put("Le France", () -> new Bett("Le France", 2, 2, 2));
+	public static final Supplier<Bett> LEPETITFRANCE = (Supplier<Bett>) PRESETS.put("Le Petit France", () -> new Bett("Le Petit France", 1, 1, 2));
 
 	public Bett(String name, int persons, double width, double height) {
 		super(name, width, height);
 		PERSONS = persons;
 	}
 
-	protected void draw(Color color){
-		switch (name){
-			case "Le France":
-				//TODO: Vector Draw
+	protected void draw(Color color) {
+		final double extraRatio = 0.20;
+		gc.clearRect(0, 0, getWidth(), getHeight());
+		gc.setLineWidth(lw);
+		drawRect(color);
+		drawName(color);
 
-				gc.setStroke(Color.BLACK);
-				gc.setLineWidth(lw);
+		//paint extras
 
-				gc.moveTo(0,0);
-				gc.beginPath();
-				gc.lineTo(getWidth(),0);
-				gc.lineTo(getWidth(),getHeight());
-				gc.lineTo(0,getHeight());
-				gc.lineTo(0,0);
-				gc.setFill(color);
-				gc.closePath();
+		if (name.equals("Le France")) {
+			//seperation line, if needed
+			gc.beginPath();
+			gc.setLineWidth(lw / 2);
+			gc.moveTo(getWidth() / 2, 0);
+			gc.lineTo(getWidth() / 2, getHeight());
+			gc.closePath();
 
-				//color in the middle first
-				gc.fill();
-				//so the black strokes are colored above
-				gc.stroke();
-
-				break;
-			case "Le Petit France":
-				//TODO: Vector Draw
-//				break;
-			default:
-				fallbackDraw(color);
-				break;
+			gc.stroke();
 		}
+
+		//bed cushions
+		gc.beginPath();
+		gc.setLineWidth(lw * extraRatio);
+		gc.moveTo(0, getHeight() * extraRatio);
+		gc.lineTo(getWidth(), getHeight() * extraRatio);
+		gc.closePath();
+
+		gc.stroke();
+
+
 	}
 
 	public double getCostMoebel() {

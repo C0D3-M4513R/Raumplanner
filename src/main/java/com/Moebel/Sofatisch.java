@@ -23,13 +23,22 @@ public class Sofatisch extends Moebel {
 
 
 	protected void draw(Color color){
+		gc.clearRect(0,0,getWidth(),getHeight());
+		gc.setStroke(Color.BLACK);
+		gc.setFill(color);
+		gc.setLineWidth(lw);
 		switch (name){
 			case "Admiral":
-				//TODO: Vector Draw
-//				break;
+				drawRect(color);
+				drawName(color);
+				break;
 			case "Monte Carlo":
-				//TODO: Vector Draw
-//				break;
+				//we have all those lineWith constants there to prevent clipping
+				gc.strokeRoundRect(lw/2,lw/2,getWidth()-lw,getHeight()-lw,getWidth()-lw,getHeight()-lw);
+				gc.fillRoundRect(lw/2,lw/2,getWidth()-lw,getHeight()-lw,getWidth()-lw,getHeight()-lw);
+
+				drawName(color);
+				break;
 			default:
 				fallbackDraw(color);
 				break;

@@ -74,9 +74,8 @@ public class SchrankWand<T extends Moebel> extends Moebel {
         if (!inList) {
 	        System.out.println("Drawing BigBillyc");
             for (T furniture : furnitureList) {
-                int no = furnitureList.indexOf(furniture);
                 furniture.gc=gc;//redirect the draw on us
-                furniture.draw(color);
+                furniture.draw(furniture.currentColor);
                 gc.translate(furniture.getWidth(), 0.0);//make sure,that we don't draw on the same spot no times
             }
         } else {

@@ -7,17 +7,20 @@ import java.util.function.Supplier;
 
 public class Esstisch extends Moebel {
 
+	final double inset = getWidth()*0.25;
 	public static final Supplier<Esstisch> WIKINGER = (Supplier<Esstisch>) PRESETS.put("Wikinger",() -> new Esstisch("Wikinger", 1.2, 1.2));
 
 	protected void draw(Color color){
-		switch (name){
-			case "Wikinger":
-				//TODO: Vector Draw
-//				break;
-			default:
-				fallbackDraw(color);
-				break;
-		}
+		gc.setLineWidth(lw);
+		drawRect(color);
+		drawName(color);
+
+		gc.setLineWidth(lw * 0.20);
+		drawSqr(inset,inset/2,color);   //top left
+		drawSqr(getWidth()-inset-inset/2,inset/2,color);    //bottom right
+		drawSqr(getWidth()-inset-inset/2,inset,inset/2,color);        //top right
+		drawSqr(inset,getHeight()-inset-inset/2,inset/2,color);        //bottom left
+
 	}
 
 	public Esstisch(String name, double width, double height) {

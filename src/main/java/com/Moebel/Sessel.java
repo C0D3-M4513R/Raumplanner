@@ -14,14 +14,22 @@ public class Sessel extends Moebel {
 	}
 
 	protected void draw(Color color){
-		switch (name){
-			case "deLuxe":
-				//TODO: Vector Draw
-//				break;
-			default:
-				fallbackDraw(color);
-				break;
-		}
+		gc.setFill(color.brighter());
+		gc.fillRoundRect(0,0,getWidth()/8,getHeight(),0,0);
+		gc.strokeRect(0,0,getWidth()/8,getHeight());               //armrests
+
+		gc.fillRoundRect(7*getWidth()/8,0,getWidth()/4,getHeight(),0,0);
+		gc.strokeRect(7*getWidth()/8,0,getWidth()/4,getHeight());  //armrests
+
+		gc.fillRoundRect(getWidth()/8,0,6*getWidth()/8,getHeight()/10,0,0);
+		gc.strokeRect(getWidth()/8,0,6*getWidth()/8,getHeight()/10);               //backrest
+
+		gc.setFill(color);
+		gc.fillRoundRect(getWidth()/8,getHeight()/10,6*getWidth()/8,9*getHeight()/10,0,0);
+		gc.strokeRect(getWidth()/8,getHeight()/10,6*getWidth()/8,9*getHeight()/10);               //body
+		gc.fill();
+
+		drawName(color);
 	}
 
 	public double getCostMoebel() {

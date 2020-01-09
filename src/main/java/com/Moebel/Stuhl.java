@@ -15,14 +15,15 @@ public class Stuhl extends Moebel {
 
 
     protected void draw(Color color){
-        switch (name){
-            case "Nomade":
-                //TODO: Vector Draw
-//                break;
-            default:
-                fallbackDraw(color);
-                break;
-        }
+	    gc.fillRoundRect(0,0,6*getWidth()/8,getHeight()/10,0,0);
+	    gc.strokeRect(0,0,6*getWidth()/8,getHeight()/10);               //backrest
+
+	    gc.setFill(color);
+	    gc.fillRoundRect(0,getHeight()/10,6*getWidth()/8,9*getHeight()/10,0,0);
+	    gc.strokeRect(0,getHeight()/10,6*getWidth()/8,9*getHeight()/10);               //body
+	    gc.fill();
+
+	    drawName(color);
     }
 
 	public double getCostMoebel() {

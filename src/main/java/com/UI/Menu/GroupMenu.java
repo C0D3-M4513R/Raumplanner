@@ -35,8 +35,7 @@ public class GroupMenu implements Menu {
 			((RootPane)group.getParent()).getChildren().remove(group); // this will remove the link to our parent, since then we will be parent-less
 		});
 
-
-		menu.getItems().addAll(MenuItems.colorHandler(group), ungroup, MenuItems.deleteHandler(group));
+		menu.getItems().addAll(MenuItems.colorHandler(group), MenuItems.deleteHandler(group));
 
 		group.setOnContextMenuRequested(ContextMenuEvent -> {
 			System.out.println("Region Context menu event fired");

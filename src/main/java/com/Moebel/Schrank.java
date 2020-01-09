@@ -13,14 +13,18 @@ public class Schrank extends Moebel {
 
     @Override
     protected void draw(Color color) {
-        switch (name) {
-            case "Billy":
-                //TODO: Vector Draw
-//                break;
-            default:
-                fallbackDraw(color);
-                break;
-        }
+        gc.setLineWidth(lw);
+        drawRect(color);
+        drawName(color);
+
+        gc.beginPath();
+        //"delete" the front section, where the door would be
+        gc.setStroke(color);
+        gc.setLineWidth(lw);
+        gc.lineTo(getWidth()/8,0);
+        gc.lineTo(getWidth()-getWidth()/8,0);
+        gc.closePath();
+        gc.stroke();
     }
 
     public double getCostMoebel() {

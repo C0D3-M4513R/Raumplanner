@@ -14,14 +14,22 @@ public class Sofa extends Moebel {
 	}
 
 	protected void draw(Color color){
-		switch (name){
-			case "Komfort":
-				//TODO: Vector Draw
-//				break;
-			default:
-				fallbackDraw(color);
-				break;
-		}
+		gc.setFill(color.brighter());
+		gc.fillRoundRect(0,0,getWidth()/4,getHeight(),0,0);
+		gc.strokeRect(0,0,getWidth()/4,getHeight());               //armrests
+
+		gc.fillRoundRect(3*getWidth()/4,0,getWidth()/4,getHeight(),0,0);
+		gc.strokeRect(3*getWidth()/4,0,getWidth()/4,getHeight());  //armrests
+
+		gc.fillRoundRect(getWidth()/4,0,getWidth()/2,getHeight()/10,0,0);
+		gc.strokeRect(getWidth()/4,0,getWidth()/2,getHeight()/10);               //backrest
+
+		gc.setFill(color);
+		gc.fillRoundRect(getWidth()/4,getHeight()/10,getWidth()/2,9*getHeight()/10,0,0);
+		gc.strokeRect(getWidth()/4,getHeight()/10,getWidth()/2,9*getHeight()/10);               //body
+		gc.fill();
+
+		drawName(color);
 	}
 
 	public double getCostMoebel() {
