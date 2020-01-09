@@ -120,6 +120,7 @@ public class UI {
 				System.out.println("Done");
 				if (!room.getChildrenUnmodifiable().contains(img))
 					System.out.println("But doesn't contain the newly generated Image");
+				img.draw();
 			}
 			mouseEvent.consume();
 		});

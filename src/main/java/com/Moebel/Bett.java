@@ -22,7 +22,7 @@ public class Bett extends Moebel {
 
 				gc.setStroke(Color.BLACK);
 				gc.setLineWidth(lw);
-				
+
 				gc.moveTo(0,0);
 				gc.beginPath();
 				gc.lineTo(getWidth(),0);

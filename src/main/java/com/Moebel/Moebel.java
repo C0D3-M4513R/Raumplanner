@@ -30,7 +30,7 @@ public abstract class Moebel extends Canvas implements Cost {
      */
     public final int id = (++no); //Unique id for all members of this class, to make identifying of duplicates easier
     public final static double STRETCH = 50.0;
-    public static final Color DEFAULT_COLOR = Color.BLACK;
+    public static final Color DEFAULT_COLOR = Color.GRAY;
     public Color currentColor = DEFAULT_COLOR;
     private final Double width,height;
     protected MoebelMenu menu = new MoebelMenu(this);
@@ -69,6 +69,9 @@ public abstract class Moebel extends Canvas implements Cost {
     }
 
     protected abstract void draw(Color color);
+    public void draw(){
+        draw(currentColor);
+    }
     protected final void fallbackDraw(Color color){
         System.out.println("Fallback draw");
         gc.setFill(color);
