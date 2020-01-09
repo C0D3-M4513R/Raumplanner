@@ -75,6 +75,7 @@ public abstract class Moebel extends Canvas implements Cost {
     }
 
     public void changeColor(Color color){
+        currentColor=color;
         gc.clearRect(0,0,getWidth(),getHeight());
         draw(color);
     }

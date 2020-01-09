@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
@@ -21,6 +22,7 @@ public class moebelListNodeController extends GridPane {
 	public static final String NULL_WIDTH = "Various?";
 	public static final String NULL_WIDTH_EXPECTED = "Below statement is to be expected. This Furniture is of a modular type.";
 	public static final Supplier<Moebel,Double,Double,String> NULL_WIDTH_WARNING = (moebel,width,height)-> "width or height is zero. This shouldn't happen with non modular Furniture! Class is " + moebel.getClass().getSimpleName() + " \n width is " + width + " height is " + height;
+	public static final Color base = Color.GRAY;
 
 	/**
 	 The title in the List, this node is displayed in
@@ -63,6 +65,7 @@ public class moebelListNodeController extends GridPane {
 				Main.layoutLogger.finest(NULL_WIDTH_WARNING.get(moebel,width,height));
 			}
 		}
+		moebel.changeColor(base);
 	}
 
 	public String getTitle() {

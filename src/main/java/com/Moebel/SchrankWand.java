@@ -79,7 +79,7 @@ public class SchrankWand<T extends Moebel> extends Moebel {
                 furniture.draw(color);
                 gc.translate(furniture.getWidth(), 0.0);//make sure,that we don't draw on the same spot no times
             }
-        }else {
+        } else {
 	        System.out.println("Drawing fallback");
             Schrank schrank=new Schrank("",0,0);
             schrank.draw(color);
@@ -101,5 +101,15 @@ public class SchrankWand<T extends Moebel> extends Moebel {
             return cost + hourlyCost * furnitureList.size() * 0.5;
         }
     return 0;
+    }
+
+    @Override
+    public void changeColor(Color color) {
+        // TODO: Fix this! Doesn't work
+        System.out.println("Testttttt");
+        furnitureList.forEach(
+                moebel->moebel.changeColor(color)
+        );
+        super.changeColor(color);
     }
 }
