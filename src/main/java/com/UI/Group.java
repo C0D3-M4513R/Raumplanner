@@ -75,6 +75,10 @@ public class Group extends RootPane {
 		System.out.println("Done");
 	}
 
+	/* ****************************************************************************************************************
+	 Start Convinience methods
+	 *****************************************************************************************************************/
+
 	public void relocate(Point2D pos) {
 		relocate(pos.getX(), pos.getY());
 	}

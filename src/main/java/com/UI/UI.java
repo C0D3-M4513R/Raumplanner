@@ -33,7 +33,7 @@ import java.util.Optional;
 
  @author Timon Kayser */
 public class UI {
-	/** This is a divider (and first element), to make a view on the side, of all the elements on the side */
+	/** This is a divider (and first element aka. layout root), to make a view on the side, of all the elements on the side */
 	@FXML
 	private SplitPane divider = new SplitPane();
 	/**

@@ -3,6 +3,8 @@ package com.UI;
 import com.Moebel.Cost;
 import com.Repository;
 import javafx.beans.InvalidationListener;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.StringPropertyBase;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -16,10 +18,15 @@ import static com.UI.Menu.Selection.selections;
 
 /**
  Superclass for everything, where you position Furniture
+ @see com.Moebel.Moebel
  @author Timon Kayser
  */
 public class RootPane extends AnchorPane {
 
+
+	/**
+	 All instances of RootPane Objects
+	 */
 	private static List<RootPane> instances = new ArrayList<>();
 
 	/** States the price {@link Cost#totalCost}*/
@@ -47,6 +54,20 @@ public class RootPane extends AnchorPane {
 			price.setVisible(true);
 			price.relocate(10, 10);
 			price.toFront();
+			StringProperty str = new StringPropertyBase() {
+				@Override
+				public Object getBean() {
+					return this;
+				}
+
+				@Override
+				public String getName() {
+					return "Text Property";
+				}
+			};
+			Cost.totalCost.addListener((observable)-> str.setValue(Cost.totalCost.getName()+Cost.totalCost.get()));
+
+			price.textProperty().bind(str);
 			first=false;
 		}
 	}
@@ -156,10 +177,6 @@ public class RootPane extends AnchorPane {
 
 	public static List<RootPane> getInstances(){
 		return instances;
-	}
-
-	public static void updatePrice(){
-		price.setText("Price: "+RootPane.getInstances().stream().mapToDouble(rootPane -> rootPane.getChildrenUnmodifiable().filtered(node -> node instanceof Cost).stream().mapToDouble(node -> ((Cost)node).cost()).sum()).sum());
 	}
 
 	/** Simple Class to store a xy position */
