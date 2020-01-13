@@ -2,6 +2,7 @@ package com.UI;
 
 import com.UI.Menu.GroupMenu;
 import com.UI.Menu.Selection;
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
@@ -18,9 +19,14 @@ public class Group extends RootPane {
 	//TODO: allow groups to expand up and left
 	//TODO: Make all Moebels spawn inside the group
 	private GroupMenu menu = new GroupMenu(this);
+	private RootPane root;
+	public RootPane getRoot(){
+		return root;
+	}
 
 	public Group(RootPane root,Selection selection) {
 		super();
+		this.root = root;
 
 		setStyle("-fx-background-color: rgba(0,255,255,0.25);" +
 				" -fx-border-style: solid;" +
@@ -28,21 +34,19 @@ public class Group extends RootPane {
 				" -fx-border-color: black;" +
 				" -fx-border-width: 2px;");
 
-		setVisible(true);
-		root.getChildren().add(this);
-
-		((RootPane)getParent()).dragNode(this);
-
+		//make visible
+		Platform.runLater(()-> {
+					setVisible(true);
+					root.getChildren().add(this);
+					root.dragNode(this);
+				});
 		//Adds all selected Nodes to be in the Group
 		getChildren().addAll(
 				//Get all nodes in the selection
-				((RootPane)getParent()).getChildren().filtered(
+				root.getChildren().filtered(
 						(Node) -> selection.getBoundsInParent().intersects(Node.getBoundsInParent()) && !Node.equals(selection) && !Node.equals(price)//better to let javafx handle this
 				)
 		);
-
-		selection.setVisible(false);
-		selection.hide();
 
 		//Check if we selected something
 		if (getChildren().size() <= 0) {
@@ -55,25 +59,17 @@ public class Group extends RootPane {
 			throw new IllegalStateException("We shoudln't have no Items here!");
 		}
 
-
 		relocate(getMinPos());
-
 
 		//make nodes location relative to the new Pane/Scene for them to stay in the same place
 		//Only now do the transform, because we needed the coordinates for the pos array
 		getChildren().forEach(Node -> {
-			//disable collision
-			dragNode(Node);
-//			Node.setLayoutX(Node.getLayoutX() - getLayoutX());
-//			Node.setLayoutY(Node.getLayoutY() - getLayoutY());
 			Point2D pos = parentToLocal(Node.getLayoutX(),Node.getLayoutY());
 			Node.relocate(pos.getX(),pos.getY()); //TODO: if any of them are negative, relocate to the top
+			col(Node);
 		});
 
 		UI.groups.add(this);
-
-		//move all children to the right parent
-		((RootPane)getParent()).getChildren().removeAll(getChildren());
 
 		requestLayout();
 		System.out.println("Done");

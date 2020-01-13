@@ -1,6 +1,8 @@
 package com.UI;
 
 import com.Moebel.Cost;
+import com.Repository;
+import javafx.beans.InvalidationListener;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -30,6 +32,11 @@ public class RootPane extends AnchorPane {
 		//register us
 		instances.add(this);
 
+		getChildren().addListener((InvalidationListener) (observable)->
+				getChildrenUnmodifiable().forEach(Node->{
+			if(Node instanceof Group && ((Group) Node).getChildren().size()==0) getChildren().remove(Node);
+		}));
+
 		//prevent weird things from happening
 		setMinHeight(0);
 		setMinWidth(0);
@@ -49,7 +56,7 @@ public class RootPane extends AnchorPane {
 	 Handles all EventHandlers related to dragging any displayed object@param node
 	 Node to apply the ability to drag to
 	 */
-	void dragNode(Node node) {
+	public void dragNode(Node node) {
 		// Custom object to hold x and y positions
 		final Delta dragDelta = new Delta();
 
@@ -133,15 +140,18 @@ public class RootPane extends AnchorPane {
 		return new Point2D(out.x,out.y);
 	}
 
-	public void delete(){
-		instances.remove(this);
-		((RootPane)getParent()).getChildren().remove(this);
+	public static void delete(RootPane pane){
+		instances.remove(pane);
+
+		((RootPane)pane.getParent()).getChildren().remove(pane);
+		UI.delete(Repository.UI.getRoom().getChildren(),pane);
 
 		//unregister from cost interface
-		getChildren().forEach(node -> {
+		pane.getChildren().forEach(node -> {
 			if(node instanceof Cost ) ((Cost)node).remove();
-			else if (node instanceof RootPane) ((Group)node).delete();
+			else if (node instanceof RootPane) delete((RootPane) node);
 		});
+		pane=null;
 	}
 
 	public static List<RootPane> getInstances(){

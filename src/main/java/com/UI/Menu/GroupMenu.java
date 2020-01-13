@@ -1,11 +1,18 @@
 package com.UI.Menu;
 
+import com.Repository;
 import com.UI.Group;
 import com.UI.RootPane;
+import com.UI.UI;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import org.omg.CORBA.NO_IMPLEMENT;
+
+import static com.UI.RootPane.delete;
 
 public class GroupMenu implements Menu {
 	ContextMenu menu = new ContextMenu();
@@ -17,25 +24,27 @@ public class GroupMenu implements Menu {
 
 		MenuItem ungroup = new MenuItem("UnGroup");
 		ungroup.setOnAction(evt -> {
-			//Delete all references and transfer all children, since we are only disbanding the group
-			group.getChildren().forEach(Node -> {
-				Point2D pos = group.localToParent(Node.getLayoutX(), Node.getLayoutY());
-				Node.setLayoutX(pos.getX());
-				Node.setLayoutY(pos.getY());
-			});
-			((RootPane)group.getParent()).getChildren().addAll(group.getChildren());
-//			group.getRoom().getChildren().forEach(Node -> {
-//				if (group.getChildren().contains(Node)) {
-//					Point2D pos = group.getRoom().screenToLocal(Node.getLayoutX(), Node.getLayoutY());
-//					Node.setLayoutX(pos.getX());
-//					Node.setLayoutY(pos.getY());
-//				}
-//			});
-			group.getChildren().removeAll(((RootPane)group.getParent()).getChildren());
-			((RootPane)group.getParent()).getChildren().remove(group); // this will remove the link to our parent, since then we will be parent-less
+			//save important vars
+			RootPane root = group.getRoot();
+			ObservableList<Node> children = group.getChildren();
+
+
+			Platform.runLater(()-> {
+						//Delete all references and transfer all children, since we are only disbanding the group
+						children.forEach(Node -> {
+							//relocate Nodes
+							Point2D pos = group.localToScreen(Node.getLayoutX(), Node.getLayoutY());
+							pos = root.screenToLocal(pos);
+							Node.relocate(pos.getX(), pos.getY());
+						});
+					});
+
+			//Transfer children and delete group from view
+			delete(group);
+			root.getChildren().addAll(children);
 		});
 
-		menu.getItems().addAll(MenuItems.colorHandler(group), MenuItems.deleteHandler(group));
+		menu.getItems().addAll(MenuItems.colorHandler(group),ungroup, MenuItems.deleteHandler(group));
 
 		group.setOnContextMenuRequested(ContextMenuEvent -> {
 			System.out.println("Region Context menu event fired");

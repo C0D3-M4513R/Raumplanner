@@ -48,7 +48,7 @@ public class Main extends Application {
         });
         MoebelList
         */
-//        layoutLogger.setLevel(PlatformLogger.Level.FINEST);
+        layoutLogger.setLevel(PlatformLogger.Level.FINER);
 
         Parent root=fxml.load();
         //because the UI class is registered as the Controller and this is the layout root, it is managing everything inside of the Window-frame

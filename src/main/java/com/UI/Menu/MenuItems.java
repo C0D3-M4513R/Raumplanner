@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import static com.UI.RootPane.delete;
+
 final class MenuItems {
 
 	private MenuItems() {
@@ -37,7 +39,7 @@ final class MenuItems {
 				sure.show();
 				sure.setOnCloseRequest(DialogEvent -> {
 					if (sure.getResult().equals(ButtonType.YES)) {
-						((RootPane) Node).delete();
+						delete((RootPane) Node);
 					}
 				});
 			} else if (Node instanceof Selection) {
