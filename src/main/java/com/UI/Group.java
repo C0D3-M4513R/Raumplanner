@@ -62,12 +62,19 @@ public class Group extends RootPane {
 		}
 
 
+		HashMap<Node, Point2D> poss = new HashMap<>();
 		//make nodes location relative to the new Pane/Scene for them to stay in the same place
-		//Only now do the transform, because we needed the coordinates for the pos array
 		getChildren().forEach(Node -> {
-			Point2D pos = parentToLocal(Node.getLayoutX(),Node.getLayoutY());
-			Node.relocate(pos.getX(),pos.getY()); //TODO: if any of them are negative, relocate to the top
-			col(Node);
+			poss.put(Node,root.localToScreen(Node.getLayoutX(), Node.getLayoutY()));
+		});
+
+		//relocate group
+		relocate(2*getLayoutX() + getBoundsInLocal().getMinX(),
+				2*getLayoutY() + getBoundsInLocal().getMinY());
+		//and then move them back to make them "stay" in place
+		getChildren().forEach(Node ->{
+			Point2D pos = screenToLocal(poss.get(Node));
+			if(pos!=null)Node.relocate(pos.getX(), pos.getY());
 		});
 
 		UI.groups.add(this);
