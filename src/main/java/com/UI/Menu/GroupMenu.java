@@ -1,16 +1,13 @@
 package com.UI.Menu;
 
-import com.Repository;
 import com.UI.Group;
 import com.UI.RootPane;
-import com.UI.UI;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import org.omg.CORBA.NO_IMPLEMENT;
 
 import static com.UI.RootPane.delete;
 
@@ -18,6 +15,10 @@ public class GroupMenu implements Menu {
 	ContextMenu menu = new ContextMenu();
 	Group group;
 
+	/**
+	 Initialises this Menu.
+	 @param group The Group is needed for ungrouping
+	 */
 	public GroupMenu(Group group) {
 		this.group = group;
 		init();
@@ -53,16 +54,25 @@ public class GroupMenu implements Menu {
 		});
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void visible(Node anchor, double screenX, double screenY) {
 		menu.show(anchor, screenX, screenY);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void hide() {
 		menu.hide();
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public boolean addItem(MenuItem item) {
 		return menu.getItems().add(item);

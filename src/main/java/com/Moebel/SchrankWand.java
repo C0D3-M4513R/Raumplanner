@@ -85,11 +85,17 @@ public class SchrankWand<T extends Moebel> extends HBox implements Moebel{
         return new SchrankWand<>(name,no,BILLY);
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public void remove(){
         RootPane.delete(this);
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public void draw(Color color) throws ConcurrentModificationException {
     	if(!finished) throw new ConcurrentModificationException("The constructor hasn't finished yet!"); //Halt execution, and wait for the constructor to finish
@@ -107,16 +113,17 @@ public class SchrankWand<T extends Moebel> extends HBox implements Moebel{
 
     }
 
-    @Override
-    public void draw() {
-        draw(getCurrentColor());
-    }
-
+    /**
+     @{inheritDoc}
+     */
     @Override
     public Color getCurrentColor() {
         return currentColor;
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public void changeColor(Color color) {
         // TODO: Fix this! Doesn't work
@@ -126,6 +133,9 @@ public class SchrankWand<T extends Moebel> extends HBox implements Moebel{
         );
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public moebelListNodeController<SchrankWand<T>> getMoebelListNodeController(){
         return new moebelListNodeController<>(this, getWidth() / STRETCH, getHeight() / STRETCH);
@@ -141,16 +151,25 @@ public class SchrankWand<T extends Moebel> extends HBox implements Moebel{
         UI.setHeight(this,b);
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public void setName(String name) {
         this.name=name;
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public Node getNode() {
         return this;

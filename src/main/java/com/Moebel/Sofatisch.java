@@ -22,6 +22,9 @@ public class Sofatisch extends AbstractMoebel {
 	}
 
 
+	/**
+	 @{inheritDoc}
+	 */
 	public void draw(Color color){
 		gc.clearRect(0,0,getWidth(),getHeight());
 		gc.setStroke(Color.BLACK);
@@ -45,11 +48,16 @@ public class Sofatisch extends AbstractMoebel {
 		}
 	}
 
-
+	/**
+	 @{inheritDoc}
+	 */
 	public double getCostMoebel() {
 		return 80;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public double cost() {
 		return getCostMoebel() + hourlyCost *0.5;

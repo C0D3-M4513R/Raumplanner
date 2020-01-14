@@ -52,7 +52,11 @@ public class Selection extends Region implements Menu {
 		selections.add(this);
 	}
 
+	/**
+	 Makes this group be able to be dragged in all four directions
+	 */
 	private void applyDraggable() {
+		//TODO: mabe adobt this logic for group
 		//Make blue selection follow mouse
 
 		//array for storing initial, final, delta
@@ -130,6 +134,9 @@ public class Selection extends Region implements Menu {
 
 	}
 
+	/**
+	 This sets up everything for a menu, so it shows, when requested
+	 */
 	private void initContextMenu() {
 		//Configure context menu for the selection box
 
@@ -152,16 +159,25 @@ public class Selection extends Region implements Menu {
 		});
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void visible(Node anchor, double screenX, double screenY) {
 		menu.show(anchor, screenX, screenY);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void hide() {
 		menu.hide();
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public boolean addItem(MenuItem item) {
 		return menu.getItems().add(item);

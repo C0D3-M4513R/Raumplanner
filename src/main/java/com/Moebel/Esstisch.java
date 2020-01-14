@@ -10,6 +10,9 @@ public class Esstisch extends AbstractMoebel {
 	final double inset = getWidth()*0.25;
 	public static final Supplier<Esstisch> WIKINGER = (Supplier<Esstisch>) PRESETS.put("Wikinger",() -> new Esstisch("Wikinger", 1.2, 1.2));
 
+	/**
+	 @{inheritDoc}
+	 */
 	public void draw(Color color){
 		gc.setLineWidth(lw);
 		drawRect(color);
@@ -27,10 +30,16 @@ public class Esstisch extends AbstractMoebel {
 		super(name, width, height);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	public double getCostMoebel() {
 		return 250;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public double cost() {
 		return getCostMoebel()+ hourlyCost * 2;

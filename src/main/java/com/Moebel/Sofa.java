@@ -13,6 +13,9 @@ public class Sofa extends AbstractMoebel {
 		super(name, width, height);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	public void draw(Color color){
 		gc.setFill(color.brighter());
 		gc.fillRoundRect(0,0,getWidth()/4,getHeight(),0,0);
@@ -32,10 +35,16 @@ public class Sofa extends AbstractMoebel {
 		drawName(color);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	public double getCostMoebel() {
 		return 120;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public double cost() {
 		return getCostMoebel() + hourlyCost;

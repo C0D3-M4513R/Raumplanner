@@ -11,6 +11,9 @@ public class Schrank extends AbstractMoebel {
         super(name, width, height);
     }
 
+    /**
+     @{inheritDoc}
+     */
     public void draw(Color color) {
         gc.setLineWidth(lw);
         drawRect(color);
@@ -28,10 +31,16 @@ public class Schrank extends AbstractMoebel {
         gc.setLineWidth(lw);
     }
 
+    /**
+     @{inheritDoc}
+     */
     public double getCostMoebel() {
         return 200;
     }
 
+    /**
+     @{inheritDoc}
+     */
     @Override
     public double cost() {
         return getCostMoebel() + hourlyCost*1.5;

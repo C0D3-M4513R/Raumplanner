@@ -99,21 +99,16 @@ public class UI {
 				if (!node.isType(SchrankWand.class)) img = Moebel.PRESETS.get(node.getName()).get();
 				else img = SchrankWand.SchrankWandBuilder(node.getName());
 
-				//Set width, and make it visible
-				//No need to do this anymore, because it has already been set by Moebel
-//				img.setFitWidth(img.getWidth() * 50);
-//				img.setFitHeight(img.getHeight() * 50);
-//				img.setVisible(true);
-
 				if (img == null) {//this would mean, that something in the Schrakwandbuilder failed, or the User aborted
-					return;
+					return;         //Abort this Operation therefore. Something has gone terribly wrong!
 				}
 
-
+				//Set the position of the new element
 				room.getChildren().add(img);
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 				Point2D pos = room.col(img);
 				img.relocate(pos.getX(),pos.getY());
+				//Make img count towards the Cost
 				if(img instanceof AbstractMoebel)((Cost)img).add();
 
 				//applying all event handlers

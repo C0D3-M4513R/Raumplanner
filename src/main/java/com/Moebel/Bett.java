@@ -15,6 +15,9 @@ public class Bett extends AbstractMoebel {
 		PERSONS = persons;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	public void draw(Color color) {
 		final double extraRatio = 0.20;
 		gc.clearRect(0, 0, getWidth(), getHeight());
@@ -47,10 +50,16 @@ public class Bett extends AbstractMoebel {
 
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	public double getCostMoebel() {
 		return 180;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public double cost() {
 		return getCostMoebel() + hourlyCost * 1.5;

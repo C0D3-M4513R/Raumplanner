@@ -18,6 +18,9 @@ import java.lang.reflect.Method;
 
 import static com.UI.RootPane.delete;
 
+/**
+ Defines several handlers for Menus
+ */
 final class MenuItems {
 
 	private MenuItems() {

@@ -20,16 +20,17 @@ public abstract class AbstractMoebel extends Canvas implements Moebel,Cost {
 		setHeight(height*STRETCH);
 	}
 
-	@Override
-	public void draw() {
-		draw(getCurrentColor());
-	}
-
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public Color getCurrentColor(){
 		return currentColor;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void changeColor(Color color) {
 		currentColor=color;
@@ -37,21 +38,33 @@ public abstract class AbstractMoebel extends Canvas implements Moebel,Cost {
 		draw(color);
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public Node getNode() {
 		return this;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public void remove() {
 		Cost.super.remove();

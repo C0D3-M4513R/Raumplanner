@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  This class handles everything, that has to do with Grouping multiple Furniture pieces together
@@ -20,11 +21,12 @@ public class Group extends RootPane {
 	//TODO: Make all Moebels spawn inside the group
 	private GroupMenu menu = new GroupMenu(this);
 	private RootPane root;
-	public RootPane getRoot(){
+
+	public RootPane getRoot() {
 		return root;
 	}
 
-	public Group(RootPane root,Selection selection) {
+	public Group(RootPane root, Selection selection) {
 		super();
 		this.root = root;
 
@@ -35,11 +37,11 @@ public class Group extends RootPane {
 				" -fx-border-width: 2px;");
 
 		//make visible
-		Platform.runLater(()-> {
-					setVisible(true);
-					root.getChildren().add(this);
-					root.dragNode(this);
-				});
+		Platform.runLater(() -> {
+			setVisible(true);
+			root.getChildren().add(this);
+			root.dragNode(this);
+		});
 		//Adds all selected Nodes to be in the Group
 		getChildren().addAll(
 				//Get all nodes in the selection
@@ -55,11 +57,10 @@ public class Group extends RootPane {
 					"Ein Möebel in kann nicht in mehreren Gruppen sein!", ButtonType.CANCEL);
 			noSelected.show();
 			//selection is done
-			((RootPane)getParent()).getChildren().remove(this);
+			((RootPane) getParent()).getChildren().remove(this);
 			throw new IllegalStateException("We shoudln't have no Items here!");
 		}
 
-		relocate(getMinPos());
 
 		//make nodes location relative to the new Pane/Scene for them to stay in the same place
 		//Only now do the transform, because we needed the coordinates for the pos array

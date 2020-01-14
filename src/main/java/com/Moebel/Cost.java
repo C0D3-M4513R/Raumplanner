@@ -18,18 +18,26 @@ public interface Cost {
 		}
 	};
 
-	double total = 0.0;
-
+	/**
+	 Add the price of the Current Node.
+	 */
 	default void add() {
 		totalCost.add(cost());
 		Platform.runLater(this::update);
 	}
 
+	/**
+	 Remove the price of the Current Node.
+	 */
 	default void remove() {
-		totalCost.add(-cost());
+		totalCost.subtract(cost());
 		Platform.runLater(this::update);
 	}
 
+	/**
+	 Recalculates the Price from scratch
+	 @deprecated Note: in the newer java versions this would be private
+	 */
 	default void update() {
 		totalCost.set(
 				RootPane.getInstances().stream().mapToDouble(                                                           //calculate (and later compound) all costs from all Panes together. That cost is calculated below
@@ -44,8 +52,11 @@ public interface Cost {
 	int hourlyCost = 30;
 
 	/**
+	 @return Returns the total cost of making this Moebel
+	 */
+	double getCostMoebel();
+	/**
 	 @return Returns the total cost of putting the furniture pice in
 	 */
 	double cost();
-	//TODO: Make the prices more realistic
 }

@@ -5,6 +5,10 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 
+/**
+ A simple implementation of a Menu
+ the showing of this menu is being done elsewhere
+ */
 public class MoebelMenu implements Menu {
 	ContextMenu menu = new ContextMenu();
 

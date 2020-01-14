@@ -13,7 +13,9 @@ public class Stuhl extends AbstractMoebel {
 		super(name, width, height);
 	}
 
-
+	/**
+	 @{inheritDoc}
+	 */
     public void draw(Color color){
 	    gc.fillRoundRect(0,0,6*getWidth()/8,getHeight()/10,0,0);
 	    gc.strokeRect(0,0,6*getWidth()/8,getHeight()/10);               //backrest
@@ -26,10 +28,16 @@ public class Stuhl extends AbstractMoebel {
 	    drawName(color);
     }
 
+	/**
+	 @{inheritDoc}
+	 */
 	public double getCostMoebel() {
 		return 50;
 	}
 
+	/**
+	 @{inheritDoc}
+	 */
 	@Override
 	public double cost() {
 		return getCostMoebel();

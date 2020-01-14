@@ -40,6 +40,7 @@ public class RootPane extends AnchorPane {
 		//register us
 		instances.add(this);
 
+		//check for empty groups. If there are some, delete them
 		getChildren().addListener((InvalidationListener) (observable)->
 				getChildrenUnmodifiable().forEach(Node->{
 			if(Node instanceof Group && ((Group) Node).getChildren().size()==0) getChildren().remove(Node);
@@ -51,10 +52,12 @@ public class RootPane extends AnchorPane {
 
 		//display price on the top left
 		if (first) {
+			//Make the Price visible in the right position
 			getChildren().add(price);
 			price.setVisible(true);
 			price.relocate(10, 10);
 			price.toFront();
+			//Make a property, that is updating with each change to the cost
 			StringProperty str = new StringPropertyBase() {
 				@Override
 				public Object getBean() {
@@ -67,7 +70,7 @@ public class RootPane extends AnchorPane {
 				}
 			};
 			Cost.totalCost.addListener((observable)-> str.setValue(Cost.totalCost.getName()+Cost.totalCost.get()));
-
+			//Then Bind that
 			price.textProperty().bind(str);
 			first=false;
 		}

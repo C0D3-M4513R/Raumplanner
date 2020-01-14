@@ -38,6 +38,7 @@ public class moebelListNodeController<T extends Moebel> extends GridPane {
 	Moebel moebel;
 
 	public moebelListNodeController(T moebel, double width, double height) {
+		//Load Preset
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource(FILE_NAME));
 			loader.setController(this);
@@ -46,13 +47,12 @@ public class moebelListNodeController<T extends Moebel> extends GridPane {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		//Add a Moebel to our preview
 		moebel.setVisible(true);
-
 		add(moebel.getNode(), 2, 2, 1, 2);
 		this.moebel = moebel;
 
-//        moebel.getImage(true);  //sets fallback
-//        img.imageProperty().bindBidirectional(moebel.imageProperty());
+		//Set all texts
 		title.textProperty().bindBidirectional(moebel.nameProperty());
 		title.setTooltip(new Tooltip(moebel.getClass().getSimpleName()));
 		if (width != 0.0 && height != 0.0) description.setText("" + width + "x" + height);
@@ -65,14 +65,6 @@ public class moebelListNodeController<T extends Moebel> extends GridPane {
 			}
 		}
 		moebel.changeColor(base);
-	}
-
-	public String getTitle() {
-		return title.getText();
-	}
-
-	public String getDescription() {
-		return description.getText();
 	}
 
 	/**
