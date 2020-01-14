@@ -1,35 +1,45 @@
 package com.Moebel;
 
 import com.UI.ExeptionDialog;
+import com.UI.RootPane;
+import com.UI.UI;
 import com.UI.moebelListNodeController;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.function.Supplier;
 
 import static com.Moebel.Schrank.BILLY;
 
-public class SchrankWand<T extends Moebel> extends Moebel {
+public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebel{
 
 	public static final Supplier<SchrankWand<Schrank>> BIGBILLY = (Supplier<SchrankWand<Schrank>>) PRESETS.put("BigBilly",()->SchrankWand.SchrankWandBuilder("BigBilly"));
 
-    private ArrayList<T> furnitureList = new ArrayList<>();
     private boolean inList = false;
     private boolean finished = false;
+    private Color currentColor = DEFAULT_COLOR;
+    private String name = "";
+
+    private SchrankWand(){
+        super();
+        init();
+        RootPane.add(this);
+    }
 
     public SchrankWand(String name, int no, Supplier<T> supplier) {
-        super(name, null, null);
+        this();
         System.out.println(""+no);
         if (no != 0) {
             for (int i = no; i > 0; i--) {
-                furnitureList.add(supplier.get());
+                getChildren().add(supplier.get());
             }
-            setHeight(furnitureList.get(0).getHeight());
-            setWidth(furnitureList.get(0).getWidth() * no);
+            setHeight(((T)getChildren().get(0)).getHeight());
+            setWidth(((T)getChildren().get(0)).getWidth() * no);
         } else {
             inList = true;
         }
@@ -38,10 +48,10 @@ public class SchrankWand<T extends Moebel> extends Moebel {
 
     @SafeVarargs
     public SchrankWand(String name, T... schranks) {
-        super(name, 0.0, 0.0);
-        furnitureList.addAll(Arrays.asList(schranks));
-        setHeight(furnitureList.get(0).getHeight());
-        setWidth(furnitureList.get(0).getWidth() * (furnitureList.size() + 1));
+        this();
+        getChildren().addAll(Arrays.asList(schranks));
+        setHeight(((T)getChildren().get(0)).getHeight());
+        setWidth(schranks[0].getWidth() * (getChildren().size() + 1));
     }
 
     public static SchrankWand SchrankWandBuilder(String name){
@@ -66,17 +76,18 @@ public class SchrankWand<T extends Moebel> extends Moebel {
         return new SchrankWand<>(name,no,BILLY);
     }
 
-
+    @Override
+    public void remove(){
+        RootPane.delete(this);
+    }
 
     @Override
-    protected void draw(Color color) throws ConcurrentModificationException {
+    public void draw(Color color) throws ConcurrentModificationException {
     	if(!finished) throw new ConcurrentModificationException("The constructor hasn't finished yet!"); //Halt execution, and wait for the constructor to finish
         if (!inList) {
 	        System.out.println("Drawing BigBillyc");
-            for (T furniture : furnitureList) {
-                furniture.gc=gc;//redirect the draw on us
-                furniture.draw(furniture.currentColor);
-                gc.translate(furniture.getWidth(), 0.0);//make sure,that we don't draw on the same spot no times
+            for (Node furniture : getChildren()) {
+                ((T)furniture).draw(currentColor);
             }
         } else {
 	        System.out.println("Drawing fallback");
@@ -87,6 +98,24 @@ public class SchrankWand<T extends Moebel> extends Moebel {
 
     }
 
+    @Override
+    public void draw() {
+        draw(getCurrentColor());
+    }
+
+    @Override
+    public Color getCurrentColor() {
+        return currentColor;
+    }
+
+    @Override
+    public void changeColor(Color color) {
+        // TODO: Fix this! Doesn't work
+        System.out.println("Testttttt");
+        getChildren().forEach(
+                moebel->((AbstractMoebel)moebel).changeColor(color)
+        );
+    }
 
     @Override
     public moebelListNodeController getMoebelListNodeController(){
@@ -94,21 +123,27 @@ public class SchrankWand<T extends Moebel> extends Moebel {
     }
 
     @Override
-    public double cost() {
-        if(furnitureList!=null && furnitureList.size()>0) {
-            double cost = furnitureList.stream().mapToDouble(Cost::cost).sum();
-            return cost + hourlyCost * furnitureList.size() * 0.5;
-        }
-    return 0;
+    public void setWidth(double b) {
+        UI.setWidth(this, b);
     }
 
     @Override
-    public void changeColor(Color color) {
-        // TODO: Fix this! Doesn't work
-        System.out.println("Testttttt");
-        furnitureList.forEach(
-                moebel->moebel.changeColor(color)
-        );
-        super.changeColor(color);
+    public void setHeight(double b) {
+        UI.setHeight(this,b);
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name=name;
+    }
+
+    @Override
+    public Node getNode() {
+        return this;
     }
 }

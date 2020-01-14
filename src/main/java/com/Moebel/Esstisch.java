@@ -5,12 +5,12 @@ import javafx.scene.paint.Color;
 
 import java.util.function.Supplier;
 
-public class Esstisch extends Moebel {
+public class Esstisch extends AbstractMoebel {
 
 	final double inset = getWidth()*0.25;
 	public static final Supplier<Esstisch> WIKINGER = (Supplier<Esstisch>) PRESETS.put("Wikinger",() -> new Esstisch("Wikinger", 1.2, 1.2));
 
-	protected void draw(Color color){
+	public void draw(Color color){
 		gc.setLineWidth(lw);
 		drawRect(color);
 		drawName(color);

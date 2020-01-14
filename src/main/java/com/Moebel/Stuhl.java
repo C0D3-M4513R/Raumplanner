@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 import java.util.function.Supplier;
 
-public class Stuhl extends Moebel {
+public class Stuhl extends AbstractMoebel {
 
 	public static final Supplier<Stuhl> NOMADE = (Supplier<Stuhl>) PRESETS.put("Nomade",() -> new Stuhl("Nomade", 0.5, 0.5));
 
@@ -14,7 +14,7 @@ public class Stuhl extends Moebel {
 	}
 
 
-    protected void draw(Color color){
+    public void draw(Color color){
 	    gc.fillRoundRect(0,0,6*getWidth()/8,getHeight()/10,0,0);
 	    gc.strokeRect(0,0,6*getWidth()/8,getHeight()/10);               //backrest
 

@@ -10,6 +10,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class RootPane extends AnchorPane {
 	/**
 	 All instances of RootPane Objects
 	 */
-	private static List<RootPane> instances = new ArrayList<>();
+	private static List<Pane> instances = new ArrayList<>();
 
 	/** States the price {@link Cost#totalCost}*/
 	protected static final Label price = new Label();
@@ -161,22 +162,38 @@ public class RootPane extends AnchorPane {
 		return new Point2D(out.x,out.y);
 	}
 
-	public static void delete(RootPane pane){
+	/**
+	 A methid to safely delete A RootPane
+	 @param pane Pane to be deleted
+	 */
+	public static void delete(Pane pane){
 		instances.remove(pane);
 
-		((RootPane)pane.getParent()).getChildren().remove(pane);
+		((Pane)pane.getParent()).getChildren().remove(pane);
 		UI.delete(Repository.UI.getRoom().getChildren(),pane);
 
 		//unregister from cost interface
 		pane.getChildren().forEach(node -> {
 			if(node instanceof Cost ) ((Cost)node).remove();
-			else if (node instanceof RootPane) delete((RootPane) node);
+			else if (node instanceof Pane) delete((Pane) node);
 		});
 		pane=null;
 	}
 
-	public static List<RootPane> getInstances(){
+	/**
+	 Getter for @link(#instances)
+	 @return Returns a List of all instances of RootPane Object
+	 */
+	public static List<Pane> getInstances(){
 		return instances;
+	}
+
+	/**
+	 Adds a Node to the @link(#instances) list.
+	 @param node Node to be added
+	 */
+	public static void add(Pane node) {
+		instances.add(node);
 	}
 
 	/** Simple Class to store a xy position */

@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 import java.util.function.Supplier;
 
-public class Sessel extends Moebel {
+public class Sessel extends AbstractMoebel {
 
 	public static final Supplier<Sessel> DELUXE = (Supplier<Sessel>) PRESETS.put("deLuxe",() -> new Sessel("deLuxe", 1, 1));
 
@@ -13,7 +13,7 @@ public class Sessel extends Moebel {
 		super(name, width, height);
 	}
 
-	protected void draw(Color color){
+	public void draw(Color color){
 		gc.setFill(color.brighter());
 		gc.fillRoundRect(0,0,getWidth()/8,getHeight(),0,0);
 		gc.strokeRect(0,0,getWidth()/8,getHeight());               //armrests

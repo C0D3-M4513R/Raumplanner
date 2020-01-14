@@ -53,7 +53,7 @@ final class MenuItems {
 				});
 				Node.setVisible(false);
 			} else if (Node instanceof Moebel) {
-				((Cost) Node).remove();
+				((Moebel) Node).remove();
 				((Pane) Node.getParent()).getChildren().remove(Node);
 			}
 //			delete.getParentMenu().hide();
@@ -71,7 +71,7 @@ final class MenuItems {
 		MenuItem color = new MenuItem("Color Change");
 		color.setOnAction(evt -> {
 			CustomColorDialog colorDialog = new CustomColorDialog(new Stage());
-			if (node instanceof Moebel) colorDialog.setCurrentColor(((Moebel) node).currentColor);
+			if (node instanceof Moebel) colorDialog.setCurrentColor(((Moebel) node).getCurrentColor());
 			colorDialog.show();
 
 			Runnable run = () -> {

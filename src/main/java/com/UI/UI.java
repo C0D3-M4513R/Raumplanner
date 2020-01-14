@@ -1,5 +1,7 @@
 package com.UI;
 
+import com.Moebel.AbstractMoebel;
+import com.Moebel.Cost;
 import com.Moebel.Moebel;
 import com.Moebel.SchrankWand;
 import com.Repository;
@@ -45,7 +47,7 @@ public class UI {
 	 @see moebelListNodeController
 	 */
 	@FXML
-	private ListView<moebelListNodeController> moebelList;
+	private ListView<moebelListNodeController<? extends Moebel>> moebelList;
 	/** This is the equivalent of the room, you are trying to place your Furniture into */
 	private RootPane room = new RootPane();
 
@@ -60,7 +62,7 @@ public class UI {
 	/** Keeps track of all groups currently in use */
 	static ObservableList<Group> groups = FXCollections.observableList(new LinkedList<>());
 	/** The list, that is being displayed by {@link #moebelList} */
-	private ObservableList<moebelListNodeController> displayList = FXCollections.observableList(new LinkedList<>());
+	private ObservableList<moebelListNodeController<? extends Moebel>> displayList = FXCollections.observableList(new LinkedList<>());
 
 	/**
 	 First method to be run after this Object has been created from javafx
@@ -93,8 +95,8 @@ public class UI {
 			if (mouseEvent.getScreenX() > divider.getScene().getWindow().getX() && !created) {
 				//Creating Moebel
 				System.out.println("Creating moebel");
-				Moebel img;
-				if (!node.isType(SchrankWand.class)) img = Moebel.getPRESETS().get(node.getName()).get();
+				Node img;
+				if (!node.isType(SchrankWand.class)) img = Moebel.PRESETS.get(node.getName()).get();
 				else img = SchrankWand.SchrankWandBuilder(node.getName());
 
 				//Set width, and make it visible
@@ -112,7 +114,7 @@ public class UI {
 				img.relocate(mouseEvent.getSceneX(), mouseEvent.getSceneY());
 				Point2D pos = room.col(img);
 				img.relocate(pos.getX(),pos.getY());
-				img.add();
+				if(img instanceof AbstractMoebel)((Cost)img).add();
 
 				//applying all event handlers
 				room.dragNode(img);
@@ -120,7 +122,7 @@ public class UI {
 				System.out.println("Done");
 				if (!room.getChildrenUnmodifiable().contains(img))
 					System.out.println("But doesn't contain the newly generated Image");
-				img.draw();
+				((Moebel)img).draw();
 			}
 			mouseEvent.consume();
 		});
@@ -243,14 +245,20 @@ public class UI {
 	 @return Returns the node, that was passed in
 	 */
 	public static <T extends Region> T setMinMax(T node, double width, double height) {
-		if (node.getMinWidth() != width) node.setMinWidth(width);
-		if (node.getMaxWidth() != width) node.setMaxWidth(width);
-		if (node.getPrefWidth() != width) node.setPrefWidth(width);
+		return setHeight(setWidth(node,width),height);
+	}
+
+	public static <T extends Region> T setHeight(T node, double height) {
 		if (node.getMinHeight() != height) node.setMinHeight(height);
 		if (node.getMaxHeight() != height) node.setMaxHeight(height);
 		if (node.getPrefHeight() != height) node.setPrefHeight(height);
 		return node;
 	}
-
+	public static <T extends Region> T setWidth(T node, double width) {
+		if (node.getMinWidth() != width) node.setMinWidth(width);
+		if (node.getPrefWidth() != width) node.setPrefWidth(width);
+		if (node.getMaxWidth() != width) node.setMaxWidth(width);
+		return node;
+	}
 
 }

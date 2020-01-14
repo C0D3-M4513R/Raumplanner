@@ -16,7 +16,7 @@ import java.io.IOException;
 /**
  This class represents individual entries in the {@link UI#moebelList}
  */
-public class moebelListNodeController extends GridPane {
+public class moebelListNodeController<T extends Moebel> extends GridPane {
 
 	private static final String FILE_NAME = "moebelListNode.fxml";
 	public static final String NULL_WIDTH = "Various?";
@@ -37,7 +37,7 @@ public class moebelListNodeController extends GridPane {
 
 	Moebel moebel;
 
-	public moebelListNodeController(Moebel moebel, double width, double height) {
+	public moebelListNodeController(T moebel, double width, double height) {
 		try {
 			FXMLLoader loader = new FXMLLoader(this.getClass().getClassLoader().getResource(FILE_NAME));
 			loader.setController(this);
@@ -47,9 +47,8 @@ public class moebelListNodeController extends GridPane {
 			e.printStackTrace();
 		}
 		moebel.setVisible(true);
-		moebel.setWidth(moebel.getHeight() * moebel.getWidth() /50.0);
-		moebel.setHeight(50.0);
-		add(moebel, 2, 2, 1, 2);
+
+		add(moebel.getNode(), 2, 2, 1, 2);
 		this.moebel = moebel;
 
 //        moebel.getImage(true);  //sets fallback
@@ -79,12 +78,12 @@ public class moebelListNodeController extends GridPane {
 	/**
 	 @param type
 	 Type to be checked
-	 @param <T>
+	 @param <C>
 	 Type to be checked
 
 	 @return Returns true, if {@link #moebel} is of the type, that is being put in
 	 */
-	public <T> boolean isType(Class<T> type) {
+	public <C> boolean isType(Class<C> type) {
 		return type.isInstance(moebel);
 	}
 

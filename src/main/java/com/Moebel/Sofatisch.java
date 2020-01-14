@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 
 import java.util.function.Supplier;
 
-public class Sofatisch extends Moebel {
+public class Sofatisch extends AbstractMoebel {
 
 	public static final Supplier<Sofatisch> ADMIRAL = (Supplier<Sofatisch>) PRESETS.put("Admiral",() -> new Sofatisch("Admiral", 1, 1));
 	public static final Supplier<Sofatisch> MONTECARLO = (Supplier<Sofatisch>) PRESETS.put("Monte Carlo",() -> new Sofatisch("Monte Carlo", 1));
@@ -22,7 +22,7 @@ public class Sofatisch extends Moebel {
 	}
 
 
-	protected void draw(Color color){
+	public void draw(Color color){
 		gc.clearRect(0,0,getWidth(),getHeight());
 		gc.setStroke(Color.BLACK);
 		gc.setFill(color);
