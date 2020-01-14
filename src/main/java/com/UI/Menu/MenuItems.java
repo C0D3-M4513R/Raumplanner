@@ -54,7 +54,7 @@ final class MenuItems {
 				Node.setVisible(false);
 			} else if (Node instanceof Moebel) {
 				((Moebel) Node).remove();
-				((Pane) Node.getParent()).getChildren().remove(Node);
+				if(Node.getParent()!=null)((Pane) Node.getParent()).getChildren().remove(Node);
 			}
 //			delete.getParentMenu().hide();
 		});
@@ -95,14 +95,14 @@ final class MenuItems {
 	 Color to be set
 	 */
 	private static void distributeColor(Object node, Color customColor) {
+		System.out.println("distributing color");
 		for (Method method : MenuItems.class.getDeclaredMethods()) {
 			Class<?> type = method.getParameterTypes()[0];
 			//check if the method is good
 			//does the name match?
 			//does it have the required amount of parameters?
 			//do the types match?
-			if (method.getName().equals("setColor") && method.getParameters().length == 2 &&
-					Node.class.isAssignableFrom(method.getParameterTypes()[0]) && method.getParameterTypes()[0].asSubclass(Node.class).isInstance(node) &&
+			if (method.getName().equals("setColor") && method.getParameters().length == 2  && method.getParameterTypes()[0].isInstance(node) &&
 					method.getParameterTypes()[1] == Color.class) {
 				try {
 					//if the method is good, call it

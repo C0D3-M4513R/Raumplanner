@@ -7,16 +7,19 @@ import com.UI.moebelListNodeController;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.ConcurrentModificationException;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static com.Moebel.Schrank.BILLY;
 
-public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebel{
+public class SchrankWand<T extends Moebel> extends HBox implements Moebel{
 
 	public static final Supplier<SchrankWand<Schrank>> BIGBILLY = (Supplier<SchrankWand<Schrank>>) PRESETS.put("BigBilly",()->SchrankWand.SchrankWandBuilder("BigBilly"));
 
@@ -25,21 +28,27 @@ public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebe
     private Color currentColor = DEFAULT_COLOR;
     private String name = "";
 
-    private SchrankWand(){
+    private SchrankWand(String name){
         super();
         init();
         RootPane.add(this);
+        setName(name);
+        //prevent Children from giving any Menus
+        addEventFilter(ContextMenuEvent.CONTEXT_MENU_REQUESTED,(Event)->{
+            getMenu().visible(getNode(),Event.getScreenX(),Event.getScreenY());
+            Event.consume();
+        });
     }
 
     public SchrankWand(String name, int no, Supplier<T> supplier) {
-        this();
+        this(name);
         System.out.println(""+no);
         if (no != 0) {
             for (int i = no; i > 0; i--) {
-                getChildren().add(supplier.get());
+                getChildren().add(supplier.get().getNode());
             }
-            setHeight(((T)getChildren().get(0)).getHeight());
-            setWidth(((T)getChildren().get(0)).getWidth() * no);
+            setHeight(((Moebel)getChildren().get(0)).getHeight());
+            setWidth(((Moebel)getChildren().get(0)).getWidth() * no);
         } else {
             inList = true;
         }
@@ -48,14 +57,14 @@ public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebe
 
     @SafeVarargs
     public SchrankWand(String name, T... schranks) {
-        this();
-        getChildren().addAll(Arrays.asList(schranks));
-        setHeight(((T)getChildren().get(0)).getHeight());
+        this(name);
+        getChildren().addAll((Collection<? extends Node>) Arrays.stream(schranks).map((Function<Moebel,Node>) Moebel::getNode));
+        setHeight(((Moebel)getChildren().get(0)).getHeight());
         setWidth(schranks[0].getWidth() * (getChildren().size() + 1));
     }
 
-    public static SchrankWand SchrankWandBuilder(String name){
-        final SchrankWand[] sw = new SchrankWand[1];
+    public static SchrankWand<Schrank> SchrankWandBuilder(String name){
+        final SchrankWand<Schrank>[] sw = new SchrankWand[1];
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Input the number of Billies you want");
         dialog.setHeaderText("Input the number of Billies you want");
@@ -87,7 +96,7 @@ public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebe
         if (!inList) {
 	        System.out.println("Drawing BigBillyc");
             for (Node furniture : getChildren()) {
-                ((T)furniture).draw(currentColor);
+                ((Moebel)furniture).draw(currentColor);
             }
         } else {
 	        System.out.println("Drawing fallback");
@@ -113,13 +122,13 @@ public class SchrankWand<T extends AbstractMoebel> extends HBox implements Moebe
         // TODO: Fix this! Doesn't work
         System.out.println("Testttttt");
         getChildren().forEach(
-                moebel->((AbstractMoebel)moebel).changeColor(color)
+                moebel->((Moebel)moebel).changeColor(color)
         );
     }
 
     @Override
-    public moebelListNodeController getMoebelListNodeController(){
-        return new moebelListNodeController(this,getWidth()/STRETCH,getHeight()/STRETCH);
+    public moebelListNodeController<SchrankWand<T>> getMoebelListNodeController(){
+        return new moebelListNodeController<>(this, getWidth() / STRETCH, getHeight() / STRETCH);
     }
 
     @Override

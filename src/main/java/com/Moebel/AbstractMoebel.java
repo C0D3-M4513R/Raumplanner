@@ -97,21 +97,6 @@ public abstract class AbstractMoebel extends Canvas implements Moebel,Cost {
 	 */
 	protected void drawRect(double startX, double startY, double width, double height,Color color)
 	{
-//        gc.setStroke(Color.BLACK);
-//        gc.beginPath();
-//
-//        gc.lineTo(startX, startY);             //effectively moves to 0,0
-//        gc.lineTo(startX+width, startY);        //top
-//        gc.lineTo(startX+width, startY+height);  //right
-//        gc.lineTo(startX, startY+height);       //bottom
-//        gc.lineTo(startX, startY);             //left
-//        gc.closePath();
-//
-//        gc.setFill(color);
-//        //color in the middle first
-//        gc.fill();
-//        //so the black strokes are colored above
-//        gc.stroke();
 		gc.setStroke(Color.BLACK);
 		gc.setFill(color);
 		gc.fillRoundRect(startX,startY,width,height,STRETCH/2,STRETCH/2);

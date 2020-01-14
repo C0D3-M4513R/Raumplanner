@@ -169,7 +169,8 @@ public class RootPane extends AnchorPane {
 	public static void delete(Pane pane){
 		instances.remove(pane);
 
-		((Pane)pane.getParent()).getChildren().remove(pane);
+
+		if(pane.getParent()!=null) ((Pane)pane.getParent()).getChildren().remove(pane);
 		UI.delete(Repository.UI.getRoom().getChildren(),pane);
 
 		//unregister from cost interface
